@@ -9,11 +9,7 @@
 
   <ItemGroup>
     <PackageReference Include="Lykke.Common" Version="3.0.0" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Domain\" />
-    <Folder Include="Services\" />
+    <PackageReference Include="Microsoft.Rest.ClientRuntime" Version="2.3.10" />
   </ItemGroup>
 
 </Project>

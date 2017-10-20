@@ -11,10 +11,16 @@
     <PackageReference Include="CsvHelper" Version="3.1.1" />
     <PackageReference Include="Flurl.Http" Version="2.0.1" />
     <PackageReference Include="Lykke.Common" Version="3.0.0" />
+    <PackageReference Include="Lykke.Service.Kyc.Abstractions" Version="1.0.23-beta" />
+    <PackageReference Include="Lykke.Service.Kyc.Client" Version="1.0.23-beta" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\Lykke.Service.ReferralLinks.Core\Lykke.Service.ReferralLinks.Core.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Generated\BitcoinCoreAPI\" />
   </ItemGroup>
 
 </Project>

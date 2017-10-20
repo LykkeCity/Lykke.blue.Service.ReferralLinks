@@ -1,11 +1,22 @@
 ﻿using Autofac;
 using Autofac.Extensions.DependencyInjection;
 using Common.Log;
+using Lykke.Service.Kyc.Abstractions.Services;
+using Lykke.Service.Kyc.Client;
 using Lykke.Service.ReferralLinks.Core.Services;
 using Lykke.Service.ReferralLinks.Core.Settings.ServiceSettings;
 using Lykke.Service.ReferralLinks.Services;
 using Lykke.SettingsReader;
 using Microsoft.Extensions.DependencyInjection;
+using Common;
+using Lykke.Service.ReferralLinks.Core.Assets;
+using System.Linq;
+using Lykke.Service.Assets.Client;
+using System;
+using Lykke.Service.ReferralLinks.Models;
+using Lykke.Service.ReferralLinks.AzureRepositories;
+using Lykke.Service.ReferralLinks.Services.Kyc;
+using Lykke.Service.ReferralLinks.Core.Kyc;
 
 namespace Lykke.Service.ReferralLinks.Modules
 {
@@ -46,7 +57,28 @@ namespace Lykke.Service.ReferralLinks.Modules
             builder.RegisterType<ShutdownManager>()
                 .As<IShutdownManager>();
 
-            // TODO: Add your dependencies here
+            builder.BindAzureRepositories(_settings, _log);
+
+            builder.RegisterType<Lykke.Service.Assets.Client.AssetsService>()
+                .As<Lykke.Service.Assets.Client.IAssetsService>()
+                .SingleInstance();
+
+            builder.Register<IAssetsService>(x =>
+            {
+                var assetsSrv = new AssetsService(new Uri(_settings.CurrentValue.Services.AssetsServiceUrl));
+                return assetsSrv;
+            }).SingleInstance();
+
+            builder.Register(c =>
+            {
+                var ctx = c.Resolve<IComponentContext>();
+                return new CachedDataDictionary<string, Asset>(
+                    async () =>
+                        (await ctx.Resolve<Lykke.Service.Assets.Client.IAssetsService>().AssetGetAllWithHttpMessagesAsync()).Body.Select(a=>a.ConvertToServiceModel()).ToDictionary(itm => itm.Id));
+            }).SingleInstance();
+
+            builder.RegisterType<KycStatusServiceClient>().As<IKycStatusService>().SingleInstance();
+            builder.RegisterType<SrvKycForAsset>().As<ISrvKycForAsset>().SingleInstance();
 
             builder.Populate(_services);
         }
