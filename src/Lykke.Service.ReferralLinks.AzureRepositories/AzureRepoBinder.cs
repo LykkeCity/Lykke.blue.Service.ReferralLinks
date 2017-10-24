@@ -2,6 +2,8 @@
 using AzureStorage.Tables;
 using Common.Log;
 using Lykke.Service.ReferralLinks.AzureRepositories.Kyc;
+using Lykke.Service.ReferralLinks.AzureRepositories.ReferralLink;
+using Lykke.Service.ReferralLinks.Core.Domain.ReferralLink;
 using Lykke.Service.ReferralLinks.Core.Kyc;
 using Lykke.Service.ReferralLinks.Core.Settings.ServiceSettings;
 using Lykke.SettingsReader;
@@ -17,6 +19,9 @@ namespace Lykke.Service.ReferralLinks.AzureRepositories
         {
             container.RegisterInstance<ISkipKycRepository>(
                new SkipKycRepository(AzureTableStorage<SkipKycClientEntity>.Create(settings.ConnectionString(n=>n.Services.AssetsServiceUrl), "SkipKycClients", log)));
+
+            container.RegisterInstance<IReferralLinkRepository>(
+               new ReferralLinkRepository(AzureTableStorage<ReferralLinkEntity>.Create(settings.ConnectionString(n => n.Db.ReferralLinksConnString), "ReferralLinks", log)));
         }
     }
 }
