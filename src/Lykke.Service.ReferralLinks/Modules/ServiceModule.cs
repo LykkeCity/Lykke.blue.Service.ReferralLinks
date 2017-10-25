@@ -17,6 +17,7 @@ using Lykke.Service.ReferralLinks.Models;
 using Lykke.Service.ReferralLinks.AzureRepositories;
 using Lykke.Service.ReferralLinks.Services.Kyc;
 using Lykke.Service.ReferralLinks.Core.Kyc;
+using Lykke.Service.ClientAccount.Client;
 
 namespace Lykke.Service.ReferralLinks.Modules
 {
@@ -79,6 +80,12 @@ namespace Lykke.Service.ReferralLinks.Modules
 
             builder.RegisterType<KycStatusServiceClient>().As<IKycStatusService>().SingleInstance();
             builder.RegisterType<SrvKycForAsset>().As<ISrvKycForAsset>().SingleInstance();
+
+            builder.RegisterType<ReferralLinksService>().As<IReferralLinksService>().SingleInstance();
+            builder.RegisterType<ClientAccountClient>()
+                .As<IClientAccountClient>()
+                .WithParameter("serviceUrl", _settings.CurrentValue.Services.ClientAccountServiceUrl)
+                .WithParameter("log", _log);
 
             builder.Populate(_services);
         }

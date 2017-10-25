@@ -3,6 +3,7 @@ using Lykke.Service.ReferralLinks.AzureRepositories.DTOs;
 using Lykke.Service.ReferralLinks.AzureRepositories.ReferralLink;
 using Lykke.Service.ReferralLinks.Core.Domain.ReferralLink;
 using Microsoft.WindowsAzure.Storage.Table;
+using System;
 
 namespace Lykke.Service.ReferralLinks.AzureRepositories
 {
@@ -11,7 +12,9 @@ namespace Lykke.Service.ReferralLinks.AzureRepositories
         public AutoMapperProfile()
         {
             //To entities
-            CreateMap<IReferralLink, ReferralLinkEntity>();
+            CreateMap<IReferralLink, ReferralLinkEntity>()
+                .ForMember(dest => dest.RecipientType, opt => opt.MapFrom(src => src.RecipientType.ToString()))
+                .ForMember(dest => dest.State, opt => opt.MapFrom(src => src.State.ToString()));
 
             ForAllMaps((map, cfg) =>
             {
@@ -25,7 +28,9 @@ namespace Lykke.Service.ReferralLinks.AzureRepositories
             });
 
             //From entities
-            CreateMap<ReferralLinkEntity, ReferralLinkDto>();
+            CreateMap<ReferralLinkEntity, ReferralLinkDto>()
+                .ForMember(dest => dest.RecipientType, opt => opt.MapFrom(src => Enum.Parse<RecipientType>(src.RecipientType)))
+                .ForMember(dest => dest.State, opt => opt.MapFrom(src => Enum.Parse<ReferralLinkState>(src.State)));
         }
     }
 }

@@ -32,13 +32,14 @@
 
   <ItemGroup>
     <PackageReference Include="AutoMapper" Version="6.1.1" />
-    <PackageReference Include="Lykke.Common" Version="3.0.0" />
+    <PackageReference Include="Lykke.Common" Version="3.0.2" />
     <PackageReference Include="Lykke.Common.ApiLibrary" Version="1.0.13" />
-    <PackageReference Include="Lykke.Logs" Version="3.2.1" />
-    <PackageReference Include="Lykke.Service.Assets.Client" Version="2.0.5-beta" />
+    <PackageReference Include="Lykke.Logs" Version="3.2.2" />
+    <PackageReference Include="Lykke.Service.Assets.Client" Version="2.0.6-beta" />
+    <PackageReference Include="Lykke.Service.ClientAccount.Client" Version="1.0.26-beta" />
     <PackageReference Include="Lykke.Service.Kyc.Abstractions" Version="1.0.23-beta" />
     <PackageReference Include="Lykke.Service.Kyc.Client" Version="1.0.23-beta" />
-    <PackageReference Include="Lykke.Service.Session" Version="1.0.33" />
+    <PackageReference Include="Lykke.Service.Session" Version="1.0.34-beta67" />
     <PackageReference Include="Lykke.SettingsReader" Version="1.0.42" />
     <PackageReference Include="Lykke.SlackNotification.AzureQueue" Version="1.0.5" />
     <PackageReference Include="Microsoft.ApplicationInsights.AspNetCore" Version="2.1.1" />

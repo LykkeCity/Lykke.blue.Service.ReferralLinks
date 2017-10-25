@@ -7,5 +7,6 @@ namespace Lykke.Service.ReferralLinks.Core.Settings.ServiceSettings
     public class Services
     {
         public string AssetsServiceUrl { get; set; }
+        public string ClientAccountServiceUrl { get; set; }
     }
 }
