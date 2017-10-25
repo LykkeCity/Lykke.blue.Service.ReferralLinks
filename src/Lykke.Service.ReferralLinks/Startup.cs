@@ -17,6 +17,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using AutoMapper;
+using Newtonsoft.Json.Converters;
 
 namespace Lykke.Service.ReferralLinks
 {
@@ -56,8 +57,8 @@ namespace Lykke.Service.ReferralLinks
                 services.AddMvc()
                     .AddJsonOptions(options =>
                     {
-                        options.SerializerSettings.ContractResolver =
-                            new Newtonsoft.Json.Serialization.DefaultContractResolver();
+                        options.SerializerSettings.Converters.Add(new StringEnumConverter());
+                        options.SerializerSettings.ContractResolver = new Newtonsoft.Json.Serialization.DefaultContractResolver();
                     });
 
                 services.AddSwaggerGen(options =>

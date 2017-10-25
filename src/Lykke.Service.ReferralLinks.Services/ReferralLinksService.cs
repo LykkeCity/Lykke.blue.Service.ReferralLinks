@@ -19,6 +19,11 @@ namespace Lykke.Service.ReferralLinks.Services
             return await _referralLinkRepository.Create(referralLink);
         }
 
+        public async Task<IReferralLink> Get(string id)
+        {
+            return await _referralLinkRepository.Get(id);
+        }
+
         private async Task Validate(IReferralLink referralLink)
         {
             //TODO: Add validation here and throw ValidationException with detailed message what is not valid

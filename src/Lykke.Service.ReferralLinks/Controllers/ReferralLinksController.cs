@@ -68,5 +68,35 @@ namespace Lykke.Service.ReferralLinks.Controllers
 
             return Created(uri: $"api/pledges/{referralLink.Id}", value: referralLink);
         }
+
+
+        /// <summary>
+        /// Get referral link.
+        /// </summary>
+        /// <param name="id">Id of a referral link we wanna get.</param>
+        /// <returns></returns>
+        [HttpGet("{id}")]
+        [SwaggerOperation("GetReferralLink")]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest)]
+        [ProducesResponseType((int)HttpStatusCode.NotFound)]
+        [ProducesResponseType(typeof(GetReferralLinkResponse), (int)HttpStatusCode.OK)]
+        public async Task<IActionResult> Get(string id)
+        {
+            if (String.IsNullOrEmpty(id))
+            {
+                return BadRequest();
+            }
+
+            var referralLink = await _referralLinksService.Get(id);
+
+            if (referralLink == null)
+            {
+                return NotFound();
+            }
+
+            var result = Mapper.Map<GetReferralLinkResponse>(referralLink);
+
+            return Ok(result);
+        }
     }
 }
