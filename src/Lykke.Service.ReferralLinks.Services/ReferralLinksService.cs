@@ -2,6 +2,7 @@
 using Lykke.Service.ReferralLinks.Core.Domain.ReferralLink;
 using Lykke.Service.ReferralLinks.Core.Services;
 using System.ComponentModel.DataAnnotations;
+using System.Collections.Generic;
 
 namespace Lykke.Service.ReferralLinks.Services
 {
@@ -22,6 +23,11 @@ namespace Lykke.Service.ReferralLinks.Services
         public async Task<IReferralLink> Get(string id)
         {
             return await _referralLinkRepository.Get(id);
+        }
+
+        public async Task<IEnumerable<IReferralLink>> GetReferralLinksBySenderClientIdAndOrStatus(string clientId, string state)
+        {
+            return await _referralLinkRepository.Get(clientId, state);
         }
 
         private async Task Validate(IReferralLink referralLink)

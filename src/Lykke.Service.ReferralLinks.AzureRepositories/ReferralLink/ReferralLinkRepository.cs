@@ -4,6 +4,7 @@ using AzureStorage;
 using System;
 using AutoMapper;
 using Lykke.Service.ReferralLinks.AzureRepositories.DTOs;
+using System.Collections.Generic;
 
 namespace Lykke.Service.ReferralLinks.AzureRepositories.ReferralLink
 {
@@ -45,6 +46,16 @@ namespace Lykke.Service.ReferralLinks.AzureRepositories.ReferralLink
             var entity = await _referralLinkTable.GetDataAsync(GetPartitionKey(), GetRowKey(id));
 
             return Mapper.Map<ReferralLinkDto>(entity);
+        }
+
+        public async Task<IEnumerable<IReferralLink>> Get(string senderClientId, string state)
+        {
+            var entities = await _referralLinkTable.GetDataAsync(
+                GetPartitionKey(),
+                x => (String.IsNullOrEmpty(senderClientId) || x.SenderClientId == senderClientId) && (String.IsNullOrEmpty(state) || x.State == state)
+            );
+
+            return Mapper.Map<IEnumerable<ReferralLinkDto>>(entities);
         }
 
         public async Task<IReferralLink> Update(IReferralLink referralLink)
