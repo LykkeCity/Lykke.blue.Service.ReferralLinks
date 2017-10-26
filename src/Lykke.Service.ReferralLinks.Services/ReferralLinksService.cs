@@ -35,6 +35,11 @@ namespace Lykke.Service.ReferralLinks.Services
             return await _referralLinkRepository.GetReferralLinksStatisticsBySenderId(senderClientId);
         }
 
+        public async Task SetUrl(string id, string url)
+        {
+            await _referralLinkRepository.SetUrl(id, url);
+        }
+
         public async Task UpdateState(string id, string state)
         {
             await _referralLinkRepository.UpdateState(id, state);

@@ -14,5 +14,6 @@ namespace Lykke.Service.ReferralLinks.Core.Domain.ReferralLink
         Task<IEnumerable<IReferralLink>> Get(string senderClientId, string state);
         Task UpdateState(string id, string state);
         Task<IReferralLinksStatistics> GetReferralLinksStatisticsBySenderId(string senderClientId);
+        Task SetUrl(string id, string url);
     }
 }

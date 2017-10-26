@@ -79,7 +79,6 @@ namespace Lykke.Service.ReferralLinks.Controllers
         [HttpGet("{id}")]
         [SwaggerOperation("GetReferralLink")]
         [ProducesResponseType((int)HttpStatusCode.BadRequest)]
-        [ProducesResponseType((int)HttpStatusCode.NotFound)]
         [ProducesResponseType(typeof(GetReferralLinkResponse), (int)HttpStatusCode.OK)]
         public async Task<IActionResult> Get(string id)
         {
@@ -92,7 +91,7 @@ namespace Lykke.Service.ReferralLinks.Controllers
 
             if (referralLink == null)
             {
-                return NotFound();
+                return BadRequest();
             }
 
             var result = Mapper.Map<GetReferralLinkResponse>(referralLink);
@@ -110,7 +109,6 @@ namespace Lykke.Service.ReferralLinks.Controllers
         [HttpGet]
         [SwaggerOperation("GetReferralLinksBySenderIdAndOrStatus")]
         [ProducesResponseType((int)HttpStatusCode.BadRequest)]
-        [ProducesResponseType((int)HttpStatusCode.NotFound)]
         [ProducesResponseType(typeof(IEnumerable<GetReferralLinkResponse>), (int)HttpStatusCode.OK)]
         public async Task<IActionResult> GetReferralLinksBySenderIdAndOrStatus([FromQuery] string senderClientId, [FromQuery] string state)
         {
@@ -148,13 +146,10 @@ namespace Lykke.Service.ReferralLinks.Controllers
         /// <param name="id">Id of a referral link we wanna change state for.</param>
         /// <param name="state">New referral link state.</param>
         /// <returns></returns>
-        //[HttpPut("updateState")]
         [HttpPut("updateState/{id}/{state}")]
         [SwaggerOperation("UpdateReferralLinkState")]
         [ProducesResponseType((int)HttpStatusCode.BadRequest)]
-        [ProducesResponseType((int)HttpStatusCode.NotFound)]
         [ProducesResponseType(typeof(void), (int)HttpStatusCode.NoContent)]
-        //public async Task<IActionResult> UpdateState([FromQuery] string id, [FromQuery] string state)
         public async Task<IActionResult> UpdateState(string id, string state)
         {
             if (String.IsNullOrEmpty(id)
@@ -184,7 +179,6 @@ namespace Lykke.Service.ReferralLinks.Controllers
         [HttpGet("getReferralLinksStatistics/{senderClientId}")]
         [SwaggerOperation("GetReferralLinksStatisticsBySenderId")]
         [ProducesResponseType((int)HttpStatusCode.BadRequest)]
-        [ProducesResponseType((int)HttpStatusCode.NotFound)]
         [ProducesResponseType(typeof(GetReferralLinksStatisticsBySenderIdResponse), (int)HttpStatusCode.OK)]
         public async Task<IActionResult> GetReferralLinksStatisticsBySenderId(string senderClientId)
         {
@@ -196,6 +190,35 @@ namespace Lykke.Service.ReferralLinks.Controllers
             var referraLinksStatistics = await _referralLinksService.GetReferralLinksStatisticsBySenderId(senderClientId);
 
             return Ok(referraLinksStatistics);
+        }
+
+        /// <summary>
+        /// Set referral link Url.
+        /// </summary>
+        /// <param name="id">Id of a referral link we wanna update url for.</param>
+        /// <param name="url">Url that we wanna set.</param>
+        /// <returns></returns>
+        [HttpPut("setUrl/{id}/{url}")]
+        [SwaggerOperation("SetReferralLinkUrl")]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest)]
+        [ProducesResponseType(typeof(void), (int)HttpStatusCode.NoContent)]
+        public async Task<IActionResult> SetUrl(string id, string url)
+        {
+            if (String.IsNullOrEmpty(id) || String.IsNullOrEmpty(url))
+            {
+                return BadRequest();
+            }
+
+            var referralLink = await _referralLinksService.Get(id);
+
+            if (referralLink == null)
+            {
+                return BadRequest();
+            }
+
+            await _referralLinksService.SetUrl(id, url);
+
+            return NoContent();
         }
     }
 }
