@@ -39,7 +39,6 @@ namespace Lykke.Service.ReferralLinks.Controllers
         [HttpPost]
         [SwaggerOperation("CreateReferralLink")]
         [ProducesResponseType((int)HttpStatusCode.BadRequest)]
-        [ProducesResponseType((int)HttpStatusCode.NotFound)]
         [ProducesResponseType(typeof(CreateReferralLinkResponse), (int)HttpStatusCode.Created)]
         public async Task<IActionResult> Create([FromBody] CreateReferralLinkRequest request)
         {
@@ -63,12 +62,12 @@ namespace Lykke.Service.ReferralLinks.Controllers
             //TODO: Add EMAIL validation for RecipientClientIdOrEmail here
             if (await _clientAccountClient.GetClientById(request.RecipientClientIdOrEmail) == null)
             {
-                return NotFound();
+                return BadRequest();
             }
 
             var referralLink = Mapper.Map<CreateReferralLinkResponse>(await _referralLinksService.Create(request));
 
-            return Created(uri: $"api/pledges/{referralLink.Id}", value: referralLink);
+            return Created(uri: $"api/referralLinks/{referralLink.Id}", value: referralLink);
         }
 
 

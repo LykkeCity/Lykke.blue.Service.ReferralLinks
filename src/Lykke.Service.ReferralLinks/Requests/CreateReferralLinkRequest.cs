@@ -21,7 +21,7 @@ namespace Lykke.Service.ReferralLinks.Requests
         [Required]
         public string Asset { get; set; }
         [Required]
-        public RecipientType RecipientType { get; set; }
+        public bool? IsNewUser { get; set; }
         [Required]
         public ReferralLinkState State { get; set; }
         [Required]

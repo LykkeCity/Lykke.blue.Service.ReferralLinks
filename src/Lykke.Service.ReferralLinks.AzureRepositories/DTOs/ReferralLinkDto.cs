@@ -17,7 +17,7 @@ namespace Lykke.Service.ReferralLinks.AzureRepositories.DTOs
 
         public string Asset { get; set; }
 
-        public RecipientType RecipientType { get; set; }
+        public bool? IsNewUser { get; set; }
 
         public ReferralLinkState State { get; set; }
 

@@ -13,7 +13,6 @@ namespace Lykke.Service.ReferralLinks.AzureRepositories
         {
             //To entities
             CreateMap<IReferralLink, ReferralLinkEntity>()
-                .ForMember(dest => dest.RecipientType, opt => opt.MapFrom(src => src.RecipientType.ToString()))
                 .ForMember(dest => dest.State, opt => opt.MapFrom(src => src.State.ToString()));
 
             ForAllMaps((map, cfg) =>
@@ -29,7 +28,6 @@ namespace Lykke.Service.ReferralLinks.AzureRepositories
 
             //From entities
             CreateMap<ReferralLinkEntity, ReferralLinkDto>()
-                .ForMember(dest => dest.RecipientType, opt => opt.MapFrom(src => Enum.Parse<RecipientType>(src.RecipientType)))
                 .ForMember(dest => dest.State, opt => opt.MapFrom(src => Enum.Parse<ReferralLinkState>(src.State)));
         }
     }

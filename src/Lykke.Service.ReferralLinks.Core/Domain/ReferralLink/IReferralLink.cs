@@ -12,7 +12,7 @@ namespace Lykke.Service.ReferralLinks.Core.Domain.ReferralLink
         string SenderClientId { get; }
         string RecipientClientIdOrEmail { get; }
         string Asset { get; }
-        RecipientType RecipientType { get; }
+        bool? IsNewUser { get; }
         ReferralLinkState State { get; }
         double Amount { get; }
     }

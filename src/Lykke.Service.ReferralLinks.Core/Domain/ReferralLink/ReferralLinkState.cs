@@ -2,6 +2,7 @@
 {
     public enum ReferralLinkState
     {
+        Initiated,
         Created,
         SentToRecipient,
         Claimed,

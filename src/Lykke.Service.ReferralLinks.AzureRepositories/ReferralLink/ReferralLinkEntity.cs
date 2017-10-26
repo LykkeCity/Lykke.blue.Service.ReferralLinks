@@ -14,7 +14,7 @@ namespace Lykke.Service.ReferralLinks.AzureRepositories.ReferralLink
         public string SenderClientId { get; set; }
         public string RecipientClientIdOrEmail { get; set; }
         public string Asset { get; set; }
-        public string RecipientType { get; set; }
+        public bool? IsNewUser { get; set; }
         public string State { get; set; }
         public double Amount { get; set; }
 
