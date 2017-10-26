@@ -30,6 +30,11 @@ namespace Lykke.Service.ReferralLinks.Services
             return await _referralLinkRepository.Get(clientId, state);
         }
 
+        public async Task UpdateState(string id, string state)
+        {
+            await _referralLinkRepository.UpdateState(id, state);
+        }
+
         private async Task Validate(IReferralLink referralLink)
         {
             //TODO: Add validation here and throw ValidationException with detailed message what is not valid

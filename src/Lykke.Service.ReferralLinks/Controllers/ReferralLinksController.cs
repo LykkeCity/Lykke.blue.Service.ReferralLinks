@@ -141,5 +141,37 @@ namespace Lykke.Service.ReferralLinks.Controllers
 
             return Ok(result);
         }
+
+        /// <summary>
+        /// Change referral link state.
+        /// </summary>
+        /// <param name="id">Id of a referral link we wanna change state for.</param>
+        /// <param name="state">New referral link state.</param>
+        /// <returns></returns>
+        [HttpPut("updateState")]
+        [SwaggerOperation("UpdateReferralLinkState")]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest)]
+        [ProducesResponseType((int)HttpStatusCode.NotFound)]
+        [ProducesResponseType(typeof(void), (int)HttpStatusCode.NoContent)]
+        public async Task<IActionResult> UpdateState([FromQuery] string id, [FromQuery] string state)
+        {
+            if (String.IsNullOrEmpty(id) 
+                || String.IsNullOrEmpty(state) 
+                || !Enum.IsDefined(typeof(ReferralLinkState), state))
+            {
+                return BadRequest();
+            }
+
+            var referralLink = await _referralLinksService.Get(id);
+
+            if(referralLink == null)
+            {
+                return BadRequest();
+            }
+
+            await _referralLinksService.UpdateState(id, state);
+
+            return NoContent();
+        }
     }
 }

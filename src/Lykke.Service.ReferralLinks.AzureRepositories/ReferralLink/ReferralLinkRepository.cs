@@ -69,5 +69,13 @@ namespace Lykke.Service.ReferralLinks.AzureRepositories.ReferralLink
 
             return Mapper.Map<ReferralLinkDto>(result);
         }
+
+        public async Task UpdateState(string id, string state)
+        {
+            var entity = await _referralLinkTable.GetDataAsync(GetPartitionKey(), GetRowKey(id));
+            entity.State = state;
+
+            await _referralLinkTable.InsertOrReplaceAsync(entity);
+        }
     }
 }

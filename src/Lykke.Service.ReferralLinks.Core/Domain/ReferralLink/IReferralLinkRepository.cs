@@ -12,5 +12,6 @@ namespace Lykke.Service.ReferralLinks.Core.Domain.ReferralLink
         Task<IReferralLink> Update(IReferralLink referralLink);
         Task Delete(string id);
         Task<IEnumerable<IReferralLink>> Get(string senderClientId, string state);
+        Task UpdateState(string id, string state);
     }
 }
