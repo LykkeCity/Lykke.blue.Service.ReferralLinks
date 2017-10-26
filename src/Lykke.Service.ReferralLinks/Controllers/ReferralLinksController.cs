@@ -107,12 +107,13 @@ namespace Lykke.Service.ReferralLinks.Controllers
         /// <param name="senderClientId">Sender client id for which we wanna find referral links.</param>
         /// <param name="state">State by which we wanna to find referral links.</param>
         /// <returns></returns>
+        /// REMARK: Swagger specification DOES NOT support optional parameters in path.
         [HttpGet]
-        [SwaggerOperation("GetReferralLinksByIdAndOrStatus")]
+        [SwaggerOperation("GetReferralLinksBySenderIdAndOrStatus")]
         [ProducesResponseType((int)HttpStatusCode.BadRequest)]
         [ProducesResponseType((int)HttpStatusCode.NotFound)]
         [ProducesResponseType(typeof(IEnumerable<GetReferralLinkResponse>), (int)HttpStatusCode.OK)]
-        public async Task<IActionResult> GetReferralLinksByIdAndOrStatus([FromQuery] string senderClientId = null, [FromQuery] string state = null)
+        public async Task<IActionResult> GetReferralLinksBySenderIdAndOrStatus([FromQuery] string senderClientId, [FromQuery] string state)
         {
             if (String.IsNullOrEmpty(senderClientId) && String.IsNullOrEmpty(state))
             {
@@ -129,7 +130,7 @@ namespace Lykke.Service.ReferralLinks.Controllers
                 return BadRequest();
             }
 
-            if(!String.IsNullOrEmpty(senderClientId) && !String.IsNullOrEmpty(state)
+            if (!String.IsNullOrEmpty(senderClientId) && !String.IsNullOrEmpty(state)
                 && (!Enum.IsDefined(typeof(ReferralLinkState), state) || await _clientAccountClient.GetClientById(senderClientId) == null))
             {
                 return BadRequest();
@@ -148,15 +149,17 @@ namespace Lykke.Service.ReferralLinks.Controllers
         /// <param name="id">Id of a referral link we wanna change state for.</param>
         /// <param name="state">New referral link state.</param>
         /// <returns></returns>
-        [HttpPut("updateState")]
+        //[HttpPut("updateState")]
+        [HttpPut("updateState/{id}/{state}")]
         [SwaggerOperation("UpdateReferralLinkState")]
         [ProducesResponseType((int)HttpStatusCode.BadRequest)]
         [ProducesResponseType((int)HttpStatusCode.NotFound)]
         [ProducesResponseType(typeof(void), (int)HttpStatusCode.NoContent)]
-        public async Task<IActionResult> UpdateState([FromQuery] string id, [FromQuery] string state)
+        //public async Task<IActionResult> UpdateState([FromQuery] string id, [FromQuery] string state)
+        public async Task<IActionResult> UpdateState(string id, string state)
         {
-            if (String.IsNullOrEmpty(id) 
-                || String.IsNullOrEmpty(state) 
+            if (String.IsNullOrEmpty(id)
+                || String.IsNullOrEmpty(state)
                 || !Enum.IsDefined(typeof(ReferralLinkState), state))
             {
                 return BadRequest();
@@ -164,7 +167,7 @@ namespace Lykke.Service.ReferralLinks.Controllers
 
             var referralLink = await _referralLinksService.Get(id);
 
-            if(referralLink == null)
+            if (referralLink == null)
             {
                 return BadRequest();
             }
@@ -172,6 +175,28 @@ namespace Lykke.Service.ReferralLinks.Controllers
             await _referralLinksService.UpdateState(id, state);
 
             return NoContent();
+        }
+
+        /// <summary>
+        /// Get referral links statistics by sender client id.
+        /// </summary>
+        /// <param name="senderClientId">Sender client id by which we wanna get statistics.</param>
+        /// <returns></returns>
+        [HttpGet("getReferralLinksStatistics/{senderClientId}")]
+        [SwaggerOperation("GetReferralLinksStatisticsBySenderId")]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest)]
+        [ProducesResponseType((int)HttpStatusCode.NotFound)]
+        [ProducesResponseType(typeof(GetReferralLinksStatisticsBySenderIdResponse), (int)HttpStatusCode.OK)]
+        public async Task<IActionResult> GetReferralLinksStatisticsBySenderId(string senderClientId)
+        {
+            if (String.IsNullOrEmpty(senderClientId) || await _clientAccountClient.GetClientById(senderClientId) == null)
+            {
+                return BadRequest();
+            }
+
+            var referraLinksStatistics = await _referralLinksService.GetReferralLinksStatisticsBySenderId(senderClientId);
+
+            return Ok(referraLinksStatistics);
         }
     }
 }

@@ -5,6 +5,7 @@ using System;
 using AutoMapper;
 using Lykke.Service.ReferralLinks.AzureRepositories.DTOs;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Lykke.Service.ReferralLinks.AzureRepositories.ReferralLink
 {
@@ -56,6 +57,30 @@ namespace Lykke.Service.ReferralLinks.AzureRepositories.ReferralLink
             );
 
             return Mapper.Map<IEnumerable<ReferralLinkDto>>(entities);
+        }
+
+        public async Task<IReferralLinksStatistics> GetReferralLinksStatisticsBySenderId(string senderClientId)
+        {
+            var referralLinks = await _referralLinkTable.GetDataAsync(
+                GetPartitionKey(),
+                x => x.SenderClientId == senderClientId 
+            );
+
+            var numberOfInvitationSent = referralLinks.Count(x => x.State == ReferralLinkState.SentToRecipient.ToString());
+            var numberOfInvitationAccepted = referralLinks.Count(x => x.State == ReferralLinkState.Claimed.ToString());
+
+            //TODO: Calculate amount of coins distributed
+            var amountOfCoinsDistributed = 0;
+            //TODO: Calculate amount of new users brought in to the Lykke platform
+            var numberOfNewUsersBroughtIn = 0;
+
+            return new ReferralLinksStatisticsDto
+            {
+                AmountOfCoinsDistributed = amountOfCoinsDistributed,
+                NumberOfInvitationAccepted = numberOfInvitationAccepted,
+                NumberOfInvitationsSent = numberOfInvitationSent,
+                NumberOfNewUsersBroughtIn = numberOfNewUsersBroughtIn
+            };
         }
 
         public async Task<IReferralLink> Update(IReferralLink referralLink)
