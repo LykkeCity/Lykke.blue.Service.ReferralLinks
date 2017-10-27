@@ -3,8 +3,10 @@ using Common.Log;
 using Lykke.Service.ClientAccount.Client;
 using Lykke.Service.ReferralLinks.Core.Domain.ReferralLink;
 using Lykke.Service.ReferralLinks.Core.Services;
+using Lykke.Service.ReferralLinks.Core.Settings;
 using Lykke.Service.ReferralLinks.Requests;
 using Lykke.Service.ReferralLinks.Responses;
+using Lykke.SettingsReader;
 using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.SwaggerGen.Annotations;
 using System;
@@ -26,6 +28,7 @@ namespace Lykke.Service.ReferralLinks.Controllers
             IReferralLinksService referralLinksService,
             IClientAccountClient clientAccountClient)
         {
+
             _log = log ?? throw new ArgumentException(nameof(log));
             _referralLinksService = referralLinksService ?? throw new ArgumentException(nameof(referralLinksService));
             _clientAccountClient = clientAccountClient ?? throw new ArgumentException(nameof(clientAccountClient));
@@ -50,17 +53,6 @@ namespace Lykke.Service.ReferralLinks.Controllers
             //TODO: Add asset validation via assets client service here
 
             if (String.IsNullOrEmpty(request.SenderClientId) || await _clientAccountClient.GetClientById(request.SenderClientId) == null)
-            {
-                return BadRequest();
-            }
-
-            if (String.IsNullOrEmpty(request.RecipientClientIdOrEmail))
-            {
-                return BadRequest();
-            }
-
-            //TODO: Add EMAIL validation for RecipientClientIdOrEmail here
-            if (await _clientAccountClient.GetClientById(request.RecipientClientIdOrEmail) == null)
             {
                 return BadRequest();
             }
@@ -246,6 +238,38 @@ namespace Lykke.Service.ReferralLinks.Controllers
             var state = await _referralLinksService.ClaimGiftCoins(request.Id, request.IsNewUser, request.ClaimingUserId);
 
             return Ok(state);
+        }
+
+        [HttpPost("requestReferralLink")]
+        [SwaggerOperation("RequestReferralLink")]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest)]
+        [ProducesResponseType(typeof(string), (int)HttpStatusCode.OK)]
+        public async Task<IActionResult> RequestReferralLink([FromBody] RequestReferralLinkRequest request)
+        {
+            if (request == null)
+            {
+                return BadRequest();
+            }
+
+            if(request.Amount <= 0)
+            {
+                return BadRequest();
+            }
+
+            //TODO: Add asset validation via assets client service here
+
+            if (String.IsNullOrEmpty(request.SenderClientId) || await _clientAccountClient.GetClientById(request.SenderClientId) == null)
+            {
+                return BadRequest();
+            }
+
+            //TODO: Check sender's TREE balance
+
+            //request.UrlExpirationDate = DateTime.UtcNow.AddDays(AppS)
+
+            var referralLink = Mapper.Map<CreateReferralLinkResponse>(await _referralLinksService.Create(request));
+
+            return Ok(referralLink.Id);
         }
     }
 }

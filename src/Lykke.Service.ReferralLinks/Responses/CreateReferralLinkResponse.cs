@@ -9,11 +9,9 @@ namespace Lykke.Service.ReferralLinks.Responses
 
         public string Url { get; set; }
 
-        public DateTime UrlExpirationDate { get; set; }
+        public DateTime ExpirationDate { get; set; }
 
         public string SenderClientId { get; set; }
-
-        public string RecipientClientIdOrEmail { get; set; }
 
         public string Asset { get; set; }
 

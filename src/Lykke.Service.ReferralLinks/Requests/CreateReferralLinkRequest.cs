@@ -10,20 +10,25 @@ namespace Lykke.Service.ReferralLinks.Requests
         //REMARK: We do not need to allow someone to set Id. Id is set automatically.
         [IgnoreDataMember]
         public string Id { get; }
+
         [Required]
         public string Url { get; set; }
+
         [Required]
-        public DateTime UrlExpirationDate { get; set; }
+        public DateTime ExpirationDate { get; set; }
+
         [Required]
         public string SenderClientId { get; set; }
-        [Required]
-        public string RecipientClientIdOrEmail { get; set; }
+
         [Required]
         public string Asset { get; set; }
+
         [Required]
         public bool? IsNewUser { get; set; }
+
         [Required]
         public ReferralLinkState State { get; set; }
+
         [Required]
         public double Amount { get; set; }
 

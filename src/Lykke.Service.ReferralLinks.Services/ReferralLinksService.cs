@@ -3,6 +3,7 @@ using Lykke.Service.ReferralLinks.Core.Domain.ReferralLink;
 using Lykke.Service.ReferralLinks.Core.Services;
 using System.ComponentModel.DataAnnotations;
 using System.Collections.Generic;
+using Lykke.Service.ReferralLinks.Core.Settings;
 
 namespace Lykke.Service.ReferralLinks.Services
 {

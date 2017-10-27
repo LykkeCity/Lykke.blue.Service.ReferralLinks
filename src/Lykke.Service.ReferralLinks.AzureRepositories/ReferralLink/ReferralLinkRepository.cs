@@ -6,16 +6,23 @@ using AutoMapper;
 using Lykke.Service.ReferralLinks.AzureRepositories.DTOs;
 using System.Collections.Generic;
 using System.Linq;
+using Lykke.SettingsReader;
+using Lykke.Service.ReferralLinks.Core.Settings;
+using Lykke.Service.ReferralLinks.Core.Settings.ServiceSettings;
 
 namespace Lykke.Service.ReferralLinks.AzureRepositories.ReferralLink
 {
     public class ReferralLinkRepository : IReferralLinkRepository
     {
+        private readonly IReloadingManager<ReferralLinksSettings> _settings;
         private readonly INoSQLTableStorage<ReferralLinkEntity> _referralLinkTable;
 
-        public ReferralLinkRepository(INoSQLTableStorage<ReferralLinkEntity> referralLinkTable)
+        public ReferralLinkRepository(
+            INoSQLTableStorage<ReferralLinkEntity> referralLinkTable,
+            IReloadingManager<ReferralLinksSettings> settings)
         {
             _referralLinkTable = referralLinkTable;
+            _settings = settings;
         }
 
         public static string GetPartitionKey() => "ReferallLink";
@@ -31,10 +38,8 @@ namespace Lykke.Service.ReferralLinks.AzureRepositories.ReferralLink
             entity.IsNewUser = newUser;
             entity.ClaimingClientId = claimingClientId;
 
-            if (entity.UrlExpirationDate < DateTime.UtcNow && entity.State != ReferralLinkState.Expired.ToString())
-            {
+            if (entity.ExpirationDate < DateTime.UtcNow && entity.State != ReferralLinkState.Expired.ToString())
                 entity.State = ReferralLinkState.Expired.ToString();
-            }
 
             await _referralLinkTable.InsertOrReplaceAsync(entity);
 
@@ -47,6 +52,9 @@ namespace Lykke.Service.ReferralLinks.AzureRepositories.ReferralLink
 
             entity.PartitionKey = GetPartitionKey();
             entity.RowKey = GetRowKey(referralLink.Id);
+
+            if (entity.ExpirationDate == DateTime.MinValue || entity.ExpirationDate == DateTime.MaxValue)
+                entity.ExpirationDate = DateTime.UtcNow.AddDays(_settings.CurrentValue.ExpirationDaysLimit);
 
             await _referralLinkTable.InsertAsync(entity);
 

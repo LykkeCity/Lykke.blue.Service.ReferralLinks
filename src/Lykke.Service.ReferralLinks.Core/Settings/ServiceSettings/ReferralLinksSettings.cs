@@ -5,5 +5,6 @@
         public DbSettings Db { get; set; }
         public BitcoinCoreSettings BitCoin { get; set; }
         public Services Services { get; set; }
+        public int ExpirationDaysLimit { get; set; }
     }
 }

@@ -21,7 +21,7 @@ namespace Lykke.Service.ReferralLinks.AzureRepositories
                new SkipKycRepository(AzureTableStorage<SkipKycClientEntity>.Create(settings.ConnectionString(n=>n.Services.AssetsServiceUrl), "SkipKycClients", log)));
 
             container.RegisterInstance<IReferralLinkRepository>(
-               new ReferralLinkRepository(AzureTableStorage<ReferralLinkEntity>.Create(settings.ConnectionString(n => n.Db.ReferralLinksConnString), "ReferralLinks", log)));
+               new ReferralLinkRepository(AzureTableStorage<ReferralLinkEntity>.Create(settings.ConnectionString(n => n.Db.ReferralLinksConnString), "ReferralLinks", log), settings));
         }
     }
 }

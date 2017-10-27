@@ -10,9 +10,8 @@ namespace Lykke.Service.ReferralLinks.AzureRepositories.ReferralLink
     {
         public string Id => RowKey;
         public string Url { get; set; }
-        public DateTime UrlExpirationDate { get; set; }
+        public DateTime ExpirationDate { get; set; }
         public string SenderClientId { get; set; }
-        public string RecipientClientIdOrEmail { get; set; }
         public string Asset { get; set; }
         public bool? IsNewUser { get; set; }
         public string State { get; set; }
