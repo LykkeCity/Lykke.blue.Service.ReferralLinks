@@ -92,11 +92,10 @@ namespace Lykke.Service.ReferralLinks.AzureRepositories.ReferralLink
 
             var numberOfInvitationSent = referralLinks.Count(x => x.State == ReferralLinkState.SentToRecipient.ToString());
             var numberOfInvitationAccepted = referralLinks.Count(x => x.State == ReferralLinkState.Claimed.ToString());
+            var numberOfNewUsersBroughtIn = referralLinks.Count(x => x.IsNewUser.HasValue && x.IsNewUser.Value);
 
             //TODO: Calculate amount of coins distributed
             var amountOfCoinsDistributed = 0;
-            //TODO: Calculate amount of new users brought in to the Lykke platform
-            var numberOfNewUsersBroughtIn = 0;
 
             return new ReferralLinksStatisticsDto
             {
