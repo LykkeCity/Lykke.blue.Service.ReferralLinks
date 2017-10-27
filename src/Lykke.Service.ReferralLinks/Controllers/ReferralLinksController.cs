@@ -249,7 +249,6 @@ namespace Lykke.Service.ReferralLinks.Controllers
                 return BadRequest();
             }
 
-
             var state = await _referralLinksService.ClaimGiftCoins(request.Id, request.IsNewUser, request.ClaimingUserId);
 
             return Ok(state);

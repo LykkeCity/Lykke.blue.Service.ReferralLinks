@@ -18,6 +18,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using AutoMapper;
 using Newtonsoft.Json.Converters;
+using System.Threading;
 
 namespace Lykke.Service.ReferralLinks
 {
@@ -30,6 +31,8 @@ namespace Lykke.Service.ReferralLinks
         public IContainer ApplicationContainer { get; private set; }
         public IConfigurationRoot Configuration { get; }
         public ILog Log { get; private set; }
+
+        private Timer _timer;
 
         public Startup(IHostingEnvironment env)
         {
@@ -99,7 +102,7 @@ namespace Lykke.Service.ReferralLinks
                 app.UseSwaggerUi();
                 app.UseStaticFiles();
 
-                appLifetime.ApplicationStarted.Register(() => StartApplication().Wait());
+                appLifetime.ApplicationStarted.Register(() => StartApplication(app).Wait());
                 appLifetime.ApplicationStopping.Register(() => StopApplication().Wait());
                 appLifetime.ApplicationStopped.Register(() => CleanUp().Wait());
             }
@@ -110,15 +113,19 @@ namespace Lykke.Service.ReferralLinks
             }
         }
 
-        private async Task StartApplication()
+        private async Task StartApplication(IApplicationBuilder app)
         {
             try
             {
-                // NOTE: Service not yet recieve and process requests here
+                // NOTE: Service not yet receive and process requests here
 
                 await ApplicationContainer.Resolve<IStartupManager>().StartAsync();
 
                 await Log.WriteMonitorAsync("", "", "Started");
+
+                //Start timer that will periodically check for expired referral links
+                var appSettings = Configuration.LoadSettings<AppSettings>();
+                ConfigureExpiredLinksTimer(app, appSettings);
             }
             catch (Exception ex)
             {
@@ -127,11 +134,23 @@ namespace Lykke.Service.ReferralLinks
             }
         }
 
+        private void ConfigureExpiredLinksTimer(IApplicationBuilder app, IReloadingManager<AppSettings> settings)
+        {
+            var referralLinksService = app.ApplicationServices.GetService<IReferralLinksService>();
+
+            _timer = new Timer(
+                x => { referralLinksService.ReturnCoinsToSender().Wait(); },
+                null,
+                TimeSpan.Zero,
+                TimeSpan.FromMinutes(settings.CurrentValue.ReferralLinksService.ExpiredLinksCheckTimeout)
+            );
+        }
+
         private async Task StopApplication()
         {
             try
             {
-                // NOTE: Service still can recieve and process requests here, so take care about it if you add logic here.
+                // NOTE: Service still can receive and process requests here, so take care about it if you add logic here.
 
                 await ApplicationContainer.Resolve<IShutdownManager>().StopAsync();
             }
@@ -186,7 +205,7 @@ namespace Lykke.Service.ReferralLinks
             var dbLogConnectionStringManager = settings.Nested(x => x.ReferralLinksService.Db.LogsConnString);
             var dbLogConnectionString = dbLogConnectionStringManager.CurrentValue;
 
-            // Creating azure storage logger, which logs own messages to concole log
+            // Creating azure storage logger, which logs own messages to console log
             if (!string.IsNullOrEmpty(dbLogConnectionString) && !(dbLogConnectionString.StartsWith("${") && dbLogConnectionString.EndsWith("}")))
             {
                 var persistenceManager = new LykkeLogToAzureStoragePersistenceManager(

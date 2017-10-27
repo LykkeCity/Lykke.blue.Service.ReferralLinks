@@ -6,6 +6,7 @@
         Created,
         SentToRecipient,
         Claimed,
-        Expired
+        Expired,
+        CoinsReturnedToSender
     }
 }

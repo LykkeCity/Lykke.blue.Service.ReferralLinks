@@ -36,10 +36,7 @@ namespace Lykke.Service.ReferralLinks.AzureRepositories.ReferralLink
         {
             var entity = await _referralLinkTable.GetDataAsync(GetPartitionKey(), GetRowKey(referralLinkId));
             entity.IsNewUser = newUser;
-            entity.ClaimingClientId = claimingClientId;
-
-            if (entity.ExpirationDate < DateTime.UtcNow && entity.State != ReferralLinkState.Expired.ToString())
-                entity.State = ReferralLinkState.Expired.ToString();
+            entity.ClaimingClientId = claimingClientId;            
 
             await _referralLinkTable.InsertOrReplaceAsync(entity);
 
@@ -104,6 +101,20 @@ namespace Lykke.Service.ReferralLinks.AzureRepositories.ReferralLink
                 NumberOfInvitationsSent = numberOfInvitationSent,
                 NumberOfNewUsersBroughtIn = numberOfNewUsersBroughtIn
             };
+        }
+
+        public async Task ReturnCoinsToSender()
+        {
+            var entities = await _referralLinkTable.GetDataAsync(
+                GetPartitionKey(), 
+                x => x.ExpirationDate < DateTime.UtcNow && x.State != ReferralLinkState.CoinsReturnedToSender.ToString()
+            );
+
+            foreach (var entity in entities)
+            {
+                await ClaimGiftCoins(entity.Id, false, entity.SenderClientId);
+                await UpdateState(entity.Id, ReferralLinkState.CoinsReturnedToSender.ToString());
+            }
         }
 
         public async Task SetUrl(string id, string url)
