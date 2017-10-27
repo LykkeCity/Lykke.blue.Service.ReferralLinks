@@ -255,6 +255,11 @@ namespace Lykke.Service.ReferralLinks.Controllers
             return Ok(state);
         }
 
+        /// <summary>
+        /// Request referral link.
+        /// </summary>
+        /// <param name="request"></param>
+        /// <returns></returns>
         [HttpPost("requestReferralLink")]
         [SwaggerOperation("RequestReferralLink")]
         [ProducesResponseType((int)HttpStatusCode.BadRequest)]
