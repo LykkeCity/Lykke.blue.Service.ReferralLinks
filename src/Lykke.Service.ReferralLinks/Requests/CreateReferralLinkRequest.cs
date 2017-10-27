@@ -26,5 +26,7 @@ namespace Lykke.Service.ReferralLinks.Requests
         public ReferralLinkState State { get; set; }
         [Required]
         public double Amount { get; set; }
+
+        public string ClaimingClientId { get; set; }
     }
 }

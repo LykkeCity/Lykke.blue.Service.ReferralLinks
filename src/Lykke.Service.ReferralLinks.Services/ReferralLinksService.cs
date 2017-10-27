@@ -15,6 +15,11 @@ namespace Lykke.Service.ReferralLinks.Services
             _referralLinkRepository = referralLinkRepository;
         }
 
+        public async Task<string> ClaimGiftCoins(string id, bool isNewUser, string claimingClientId)
+        {
+            return await _referralLinkRepository.ClaimGiftCoins(id, isNewUser, claimingClientId);
+        }
+
         public async Task<IReferralLink> Create(IReferralLink referralLink)
         {
             return await _referralLinkRepository.Create(referralLink);

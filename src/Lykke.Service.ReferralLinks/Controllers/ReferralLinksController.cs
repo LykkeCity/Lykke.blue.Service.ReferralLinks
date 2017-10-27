@@ -220,5 +220,32 @@ namespace Lykke.Service.ReferralLinks.Controllers
 
             return NoContent();
         }
+
+        /// <summary>
+        /// Claim gift coins.
+        /// </summary>
+        /// <param name="request"></param>
+        /// <returns></returns>
+        [HttpPut("claimGiftCoins")]
+        [SwaggerOperation("ClaimGiftCoins")]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest)]
+        [ProducesResponseType(typeof(string), (int)HttpStatusCode.OK)]
+        public async Task<IActionResult> ClaimGiftCoins([FromBody] ClaimGiftCoinsRequest request)
+        {
+            if (String.IsNullOrEmpty(request.Id) || await _referralLinksService.Get(request.Id) == null)
+            {
+                return BadRequest();
+            }
+
+            if (String.IsNullOrEmpty(request.ClaimingUserId) || await _clientAccountClient.GetClientById(request.ClaimingUserId) == null)
+            {
+                return BadRequest();
+            }
+
+
+            var state = await _referralLinksService.ClaimGiftCoins(request.Id, request.IsNewUser, request.ClaimingUserId);
+
+            return Ok(state);
+        }
     }
 }

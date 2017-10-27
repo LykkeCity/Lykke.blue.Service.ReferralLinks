@@ -14,5 +14,6 @@ namespace Lykke.Service.ReferralLinks.Core.Services
         Task UpdateState(string id, string state);
         Task<IReferralLinksStatistics> GetReferralLinksStatisticsBySenderId(string senderClientId);
         Task SetUrl(string id, string url);
+        Task<string> ClaimGiftCoins(string id, bool isNewUser, string claimingClientId);
     }
 }

@@ -17,6 +17,7 @@ namespace Lykke.Service.ReferralLinks.AzureRepositories.ReferralLink
         public bool? IsNewUser { get; set; }
         public string State { get; set; }
         public double Amount { get; set; }
+        public string ClaimingClientId { get; set; }
 
         public static IEqualityComparer<ReferralLinkEntity> ComparerById { get; } = new EqualityComparerById();
 
