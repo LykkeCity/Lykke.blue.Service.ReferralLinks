@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using Common.Log;
+using Lykke.Service.Assets.Client;
 using Lykke.Service.ClientAccount.Client;
 using Lykke.Service.ReferralLinks.Core.Domain.ReferralLink;
 using Lykke.Service.ReferralLinks.Core.Services;
@@ -10,6 +11,7 @@ using Lykke.SettingsReader;
 using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.SwaggerGen.Annotations;
 using System;
+using System.Linq;
 using System.Collections.Generic;
 using System.Net;
 using System.Threading.Tasks;
@@ -22,16 +24,19 @@ namespace Lykke.Service.ReferralLinks.Controllers
         private readonly ILog _log;
         private readonly IReferralLinksService _referralLinksService;
         private readonly IClientAccountClient _clientAccountClient;
+        private readonly IAssetsService _assetsClient;
 
         public ReferralLinksController(
             ILog log,
             IReferralLinksService referralLinksService,
-            IClientAccountClient clientAccountClient)
+            IClientAccountClient clientAccountClient,
+            IAssetsService assetsClient)
         {
 
             _log = log ?? throw new ArgumentException(nameof(log));
             _referralLinksService = referralLinksService ?? throw new ArgumentException(nameof(referralLinksService));
             _clientAccountClient = clientAccountClient ?? throw new ArgumentException(nameof(clientAccountClient));
+            _assetsClient = assetsClient ?? throw new ArgumentException(nameof(assetsClient));
         }
 
         /// <summary>
@@ -50,12 +55,22 @@ namespace Lykke.Service.ReferralLinks.Controllers
                 return BadRequest();
             }
 
-            //TODO: Add asset validation via assets client service here
+            if (request.Amount <= 0)
+            {
+                return BadRequest();
+            }
 
             if (String.IsNullOrEmpty(request.SenderClientId) || await _clientAccountClient.GetClientById(request.SenderClientId) == null)
             {
                 return BadRequest();
             }
+
+            if (String.IsNullOrEmpty(request.Asset) || (await _assetsClient.AssetGetAllAsync()).FirstOrDefault(x => x.Name == request.Asset) == null)
+            {
+                return BadRequest();
+            }
+
+            //TODO: Check sender's TREE balance
 
             var referralLink = Mapper.Map<CreateReferralLinkResponse>(await _referralLinksService.Create(request));
 
@@ -256,16 +271,17 @@ namespace Lykke.Service.ReferralLinks.Controllers
                 return BadRequest();
             }
 
-            //TODO: Add asset validation via assets client service here
-
             if (String.IsNullOrEmpty(request.SenderClientId) || await _clientAccountClient.GetClientById(request.SenderClientId) == null)
             {
                 return BadRequest();
             }
 
-            //TODO: Check sender's TREE balance
+            if (String.IsNullOrEmpty(request.Asset) || (await _assetsClient.AssetGetAllAsync()).FirstOrDefault(x => x.Name == request.Asset) == null)
+            {
+                return BadRequest();
+            }
 
-            //request.UrlExpirationDate = DateTime.UtcNow.AddDays(AppS)
+            //TODO: Check sender's TREE balance
 
             var referralLink = Mapper.Map<CreateReferralLinkResponse>(await _referralLinksService.Create(request));
 
