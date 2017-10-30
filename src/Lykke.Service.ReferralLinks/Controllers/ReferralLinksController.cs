@@ -70,6 +70,13 @@ namespace Lykke.Service.ReferralLinks.Controllers
                 return BadRequest();
             }
 
+            var referralLinksLimitReached = await _referralLinksService.IsReferralLinksNumberLimitReached(request.ClaimingClientId);
+
+            if (referralLinksLimitReached)
+            {
+                return BadRequest();
+            }
+
             //TODO: Check sender's TREE balance
 
             var referralLink = Mapper.Map<CreateReferralLinkResponse>(await _referralLinksService.Create(request));
@@ -281,6 +288,13 @@ namespace Lykke.Service.ReferralLinks.Controllers
             }
 
             if (String.IsNullOrEmpty(request.Asset) || (await _assetsClient.AssetGetAllAsync()).FirstOrDefault(x => x.Name == request.Asset) == null)
+            {
+                return BadRequest();
+            }
+
+            var referralLinksLimitReached = await _referralLinksService.IsReferralLinksNumberLimitReached(request.ClaimingClientId);
+
+            if(referralLinksLimitReached)
             {
                 return BadRequest();
             }

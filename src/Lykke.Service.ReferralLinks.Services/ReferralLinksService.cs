@@ -41,6 +41,11 @@ namespace Lykke.Service.ReferralLinks.Services
             return await _referralLinkRepository.GetReferralLinksStatisticsBySenderId(senderClientId);
         }
 
+        public async Task<bool> IsReferralLinksNumberLimitReached(string claimingClientId)
+        {
+            return await _referralLinkRepository.IsReferralLinksNumberLimitReached(claimingClientId);
+        }
+
         public async Task ReturnCoinsToSender()
         {
             await _referralLinkRepository.ReturnCoinsToSender();
