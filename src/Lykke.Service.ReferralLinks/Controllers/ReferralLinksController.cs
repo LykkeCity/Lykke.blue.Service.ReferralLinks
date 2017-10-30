@@ -15,6 +15,7 @@ using System.Linq;
 using System.Collections.Generic;
 using System.Net;
 using System.Threading.Tasks;
+using Lykke.Service.ReferralLinks.Strings;
 
 namespace Lykke.Service.ReferralLinks.Controllers
 {
@@ -52,29 +53,29 @@ namespace Lykke.Service.ReferralLinks.Controllers
         {
             if (request == null)
             {
-                return BadRequest();
+                return BadRequest(Phrases.InvalidRequest);
             }
 
             if (request.Amount <= 0)
             {
-                return BadRequest();
+                return BadRequest(Phrases.InvalidAmount);
             }
 
             if (String.IsNullOrEmpty(request.SenderClientId) || await _clientAccountClient.GetClientById(request.SenderClientId) == null)
             {
-                return BadRequest();
+                return BadRequest(Phrases.InvalidSenderClientId);
             }
 
             if (String.IsNullOrEmpty(request.Asset) || (await _assetsClient.AssetGetAllAsync()).FirstOrDefault(x => x.Name == request.Asset) == null)
             {
-                return BadRequest();
+                return BadRequest(Phrases.InvalidAsset);
             }
 
             var referralLinksLimitReached = await _referralLinksService.IsReferralLinksNumberLimitReached(request.ClaimingClientId);
 
             if (referralLinksLimitReached)
             {
-                return BadRequest();
+                return BadRequest(Phrases.ReferralLinksLimitReached);
             }
 
             //TODO: Check sender's TREE balance
@@ -98,14 +99,14 @@ namespace Lykke.Service.ReferralLinks.Controllers
         {
             if (String.IsNullOrEmpty(id))
             {
-                return BadRequest();
+                return BadRequest(Phrases.InvalidRequest);
             }
 
             var referralLink = await _referralLinksService.Get(id);
 
             if (referralLink == null)
             {
-                return BadRequest();
+                return BadRequest(Phrases.InvalidReferralLinkId);
             }
 
             var result = Mapper.Map<GetReferralLinkResponse>(referralLink);
@@ -128,23 +129,23 @@ namespace Lykke.Service.ReferralLinks.Controllers
         {
             if (String.IsNullOrEmpty(senderClientId) && String.IsNullOrEmpty(state))
             {
-                return BadRequest();
+                return BadRequest(Phrases.InvalidRequest);
             }
 
             if (String.IsNullOrEmpty(senderClientId) && !String.IsNullOrEmpty(state) && !Enum.IsDefined(typeof(ReferralLinkState), state))
             {
-                return BadRequest();
+                return BadRequest(Phrases.InvalidState);
             }
 
             if (String.IsNullOrEmpty(state) && !String.IsNullOrEmpty(senderClientId) && await _clientAccountClient.GetClientById(senderClientId) == null)
             {
-                return BadRequest();
+                return BadRequest(Phrases.InvalidSenderClientId);
             }
 
             if (!String.IsNullOrEmpty(senderClientId) && !String.IsNullOrEmpty(state)
                 && (!Enum.IsDefined(typeof(ReferralLinkState), state) || await _clientAccountClient.GetClientById(senderClientId) == null))
             {
-                return BadRequest();
+                return BadRequest(Phrases.InvalidRequest);
             }
 
             var referralLinks = await _referralLinksService.GetReferralLinksBySenderClientIdAndOrStatus(senderClientId, state);
@@ -170,14 +171,14 @@ namespace Lykke.Service.ReferralLinks.Controllers
                 || String.IsNullOrEmpty(state)
                 || !Enum.IsDefined(typeof(ReferralLinkState), state))
             {
-                return BadRequest();
+                return BadRequest(Phrases.InvalidRequest);
             }
 
             var referralLink = await _referralLinksService.Get(id);
 
             if (referralLink == null)
             {
-                return BadRequest();
+                return BadRequest(Phrases.InvalidReferralLinkId);
             }
 
             await _referralLinksService.UpdateState(id, state);
@@ -198,7 +199,7 @@ namespace Lykke.Service.ReferralLinks.Controllers
         {
             if (String.IsNullOrEmpty(senderClientId) || await _clientAccountClient.GetClientById(senderClientId) == null)
             {
-                return BadRequest();
+                return BadRequest(Phrases.InvalidSenderClientId);
             }
 
             var referraLinksStatistics = await _referralLinksService.GetReferralLinksStatisticsBySenderId(senderClientId);
@@ -220,14 +221,14 @@ namespace Lykke.Service.ReferralLinks.Controllers
         {
             if (String.IsNullOrEmpty(id) || String.IsNullOrEmpty(url))
             {
-                return BadRequest();
+                return BadRequest(Phrases.InvalidRequest);
             }
 
             var referralLink = await _referralLinksService.Get(id);
 
             if (referralLink == null)
             {
-                return BadRequest();
+                return BadRequest(Phrases.InvalidReferralLinkId);
             }
 
             await _referralLinksService.SetUrl(id, url);
@@ -246,14 +247,19 @@ namespace Lykke.Service.ReferralLinks.Controllers
         [ProducesResponseType(typeof(string), (int)HttpStatusCode.OK)]
         public async Task<IActionResult> ClaimGiftCoins([FromBody] ClaimGiftCoinsRequest request)
         {
+            if(request == null)
+            {
+                return BadRequest(Phrases.InvalidRequest);
+            }
+
             if (String.IsNullOrEmpty(request.Id) || await _referralLinksService.Get(request.Id) == null)
             {
-                return BadRequest();
+                return BadRequest(Phrases.InvalidReferralLinkId);
             }
 
             if (String.IsNullOrEmpty(request.ClaimingUserId) || await _clientAccountClient.GetClientById(request.ClaimingUserId) == null)
             {
-                return BadRequest();
+                return BadRequest(Phrases.InvalidClaimingClientId);
             }
 
             var state = await _referralLinksService.ClaimGiftCoins(request.Id, request.IsNewUser, request.ClaimingUserId);
@@ -274,29 +280,29 @@ namespace Lykke.Service.ReferralLinks.Controllers
         {
             if (request == null)
             {
-                return BadRequest();
+                return BadRequest(Phrases.InvalidRequest);
             }
 
             if(request.Amount <= 0)
             {
-                return BadRequest();
+                return BadRequest(Phrases.InvalidAmount);
             }
 
             if (String.IsNullOrEmpty(request.SenderClientId) || await _clientAccountClient.GetClientById(request.SenderClientId) == null)
             {
-                return BadRequest();
+                return BadRequest(Phrases.InvalidSenderClientId);
             }
 
             if (String.IsNullOrEmpty(request.Asset) || (await _assetsClient.AssetGetAllAsync()).FirstOrDefault(x => x.Name == request.Asset) == null)
             {
-                return BadRequest();
+                return BadRequest(Phrases.InvalidAsset);
             }
 
             var referralLinksLimitReached = await _referralLinksService.IsReferralLinksNumberLimitReached(request.ClaimingClientId);
 
             if(referralLinksLimitReached)
             {
-                return BadRequest();
+                return BadRequest(Phrases.ReferralLinksLimitReached);
             }
 
             //TODO: Check sender's TREE balance
