@@ -23,6 +23,7 @@ using Lykke.Service.ReferralLinks.Services.Offchain;
 using Lykke.Service.ExchangeOperations.Client;
 using Lykke.Service.ReferralLinks.Core.Domain.Offchain;
 using Lykke.Service.ClientAccount.Client;
+using Lykke.Service.Balances.Client;
 
 namespace Lykke.Service.ReferralLinks.Modules
 {
@@ -118,8 +119,18 @@ namespace Lykke.Service.ReferralLinks.Modules
             }).SingleInstance();
 
             builder.RegisterType<ReferralLinksService>().As<IReferralLinksService>().SingleInstance();
+
             builder.RegisterType<ClientAccountClient>()
                 .As<IClientAccountClient>()
+                .WithParameter("serviceUrl", _settings.CurrentValue.Services.ClientAccountServiceUrl)
+                .WithParameter("log", _log)
+                .SingleInstance();
+
+            builder.RegisterType<BalancesClient>()
+                .As<IBalancesClient>()
+                .WithParameter("serviceUrl", _settings.CurrentValue.Services.BalancesServiceUrl)
+                .WithParameter("log", _log)
+                .SingleInstance();
                 .WithParameter("serviceUrl", _settings.CurrentValue.ExternalServices.ClientAccountServiceUrl)
                 .WithParameter("log", _log);
 
