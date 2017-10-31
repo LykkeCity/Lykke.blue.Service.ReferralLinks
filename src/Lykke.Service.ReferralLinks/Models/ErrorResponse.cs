@@ -6,24 +6,24 @@ using Microsoft.AspNetCore.Mvc.ModelBinding;
 
 namespace Lykke.Service.ReferralLinks.Models
 {
-    public class ErrorResponse
+    public class ErrorResponseModel
     {
         public string ErrorMessage { get; }
 
         public Dictionary<string, List<string>> ModelErrors { get; }
 
-        private ErrorResponse() :
+        private ErrorResponseModel() :
             this(null)
         {
         }
 
-        private ErrorResponse(string errorMessage)
+        private ErrorResponseModel(string errorMessage)
         {
             ErrorMessage = errorMessage;
             ModelErrors = new Dictionary<string, List<string>>();
         }
 
-        public ErrorResponse AddModelError(string key, string message)
+        public ErrorResponseModel AddModelError(string key, string message)
         {
             if (!ModelErrors.TryGetValue(key, out List<string> errors))
             {
@@ -37,7 +37,7 @@ namespace Lykke.Service.ReferralLinks.Models
             return this;
         }
 
-        public ErrorResponse AddModelError(string key, Exception exception)
+        public ErrorResponseModel AddModelError(string key, Exception exception)
         {
             var ex = exception;
             var sb = new StringBuilder();
@@ -57,14 +57,14 @@ namespace Lykke.Service.ReferralLinks.Models
             }
         }
 
-        public static ErrorResponse Create()
+        public static ErrorResponseModel Create()
         {
-            return new ErrorResponse();
+            return new ErrorResponseModel();
         }
 
-        public static ErrorResponse Create(ModelStateDictionary modelState)
+        public static ErrorResponseModel Create(ModelStateDictionary modelState)
         {
-            var response = new ErrorResponse();
+            var response = new ErrorResponseModel();
 
             foreach (var state in modelState)
             {
@@ -82,9 +82,9 @@ namespace Lykke.Service.ReferralLinks.Models
             return response;
         }
 
-        public static ErrorResponse Create(string message)
+        public static ErrorResponseModel Create(string message)
         {
-            return new ErrorResponse(message);
+            return new ErrorResponseModel(message);
         }
     }
 }

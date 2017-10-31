@@ -1,11 +1,19 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 
 namespace Core.BitCoin.BitcoinApi.Models
 {
     public class ErrorResponse
     {
+        [JsonIgnore]
         public string Code { get; set; }
         public string Message { get; set; }
+
+        public ErrorResponse(string message, string code)
+        {
+            this.Message = message;
+            this.Code = code;
+        }
 
         public ErrorCode ErrorCode
         {
@@ -20,6 +28,15 @@ namespace Core.BitCoin.BitcoinApi.Models
                 return code;
             }
         }
+
+        public string ErrorCodeString
+        {
+            get
+            {
+                return ErrorCode.ToString();
+            }
+        }
+
     }
 
     public enum ErrorCode

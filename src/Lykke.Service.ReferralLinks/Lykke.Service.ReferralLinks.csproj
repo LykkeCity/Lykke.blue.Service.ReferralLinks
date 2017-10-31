@@ -33,8 +33,9 @@
   <ItemGroup>
     <PackageReference Include="Lykke.Common" Version="3.0.0" />
     <PackageReference Include="Lykke.Common.ApiLibrary" Version="1.0.13" />
-    <PackageReference Include="Lykke.Logs" Version="3.2.1" />
-    <PackageReference Include="Lykke.Service.Assets.Client" Version="2.0.5-beta" />
+    <PackageReference Include="Lykke.Logs" Version="3.2.2" />
+    <PackageReference Include="Lykke.Service.Assets.Client" Version="2.0.6-beta" />
+    <PackageReference Include="Lykke.Service.ExchangeOperations.Client" Version="1.0.11-beta" />
     <PackageReference Include="Lykke.Service.Kyc.Abstractions" Version="1.0.23-beta" />
     <PackageReference Include="Lykke.Service.Kyc.Client" Version="1.0.23-beta" />
     <PackageReference Include="Lykke.Service.Session" Version="1.0.33" />

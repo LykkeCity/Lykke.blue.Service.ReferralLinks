@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Lykke.Service.Kyc.Client;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
@@ -7,5 +8,8 @@ namespace Lykke.Service.ReferralLinks.Core.Settings.ServiceSettings
     public class Services
     {
         public string AssetsServiceUrl { get; set; }
+        public string ExchangeOperationsServiceUrl { get; set; }
+        public string BitcoinCoreApiUrl { get; set; }
+        public KycServiceSettings KycServiceSettings { get; set; }
     }
 }

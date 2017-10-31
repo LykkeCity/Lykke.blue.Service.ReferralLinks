@@ -14,9 +14,9 @@ namespace Lykke.Service.ReferralLinks.Services.Bitcoin
     {
         private readonly Lykke.Service.BitcoinApi.Client.BitcoinApi _apiClient;
 
-        public BitcoinApiClient(BitcoinCoreSettings bitcoinCoreSettings)
+        public BitcoinApiClient(ReferralLinksSettings settings)
         {
-            _apiClient = new Lykke.Service.BitcoinApi.Client.BitcoinApi(new Uri(bitcoinCoreSettings.BitcoinCoreApiUrl));
+            _apiClient = new Lykke.Service.BitcoinApi.Client.BitcoinApi(new Uri(settings.ExternalServices.BitcoinCoreApiUrl));
             _apiClient.SetRetryPolicy(null);
         }
 
@@ -38,6 +38,83 @@ namespace Lykke.Service.ReferralLinks.Services.Bitcoin
             return PrepareOffchainResult(response);
         }
 
+        public async Task<OffchainResponse> CreateHubCommitment(CreateHubComitmentData data)
+        {
+            var request = new CreateHubCommitmentModel(data.ClientPubKey, data.AssetId, data.Amount, data.SignedByClientChannel);
+
+            var response = await _apiClient.ApiOffchainCreatehubcommitmentPostAsync(request);
+
+            return PrepareOffchainResult(response);
+        }
+
+        public async Task<OffchainBaseResponse> CloseChannel(CloseChannelData data)
+        {
+            var request = new BroadcastClosingChannelModel(data.ClientPubKey, data.AssetId, data.SignedClosingTransaction, !string.IsNullOrWhiteSpace(data.OffchainTransferId) ? Guid.Parse(data.OffchainTransferId) : (Guid?)null);
+
+            var response = await _apiClient.ApiOffchainBroadcastclosingPostAsync(request);
+
+            return PrepareOffchainTransactionHashResult(response);
+        }
+
+        public async Task<OffchainResponse> Finalize(FinalizeData data)
+        {
+            var request = new FinalizeChannelModel(data.ClientPubKey, data.AssetId, data.ClientRevokePubKey, data.SignedByClientHubCommitment, !string.IsNullOrWhiteSpace(data.ExternalTransferId) ? Guid.Parse(data.ExternalTransferId) : (Guid?)null, !string.IsNullOrWhiteSpace(data.OffchainTransferId) ? Guid.Parse(data.OffchainTransferId) : (Guid?)null);
+
+            var response = await _apiClient.ApiOffchainFinalizePostAsync(request);
+
+            return PrepareFinalizeOffchainResult(response);
+        }
+
+        private OffchainResponse PrepareFinalizeOffchainResult(object response)
+        {
+            var error = response as ApiException;
+
+            if (error != null)
+            {
+                return new OffchainResponse
+                {
+                    Error = new ErrorResponse (error.Error.Message, error.Error.Code )
+                };
+            }
+
+            var transaction = response as FinalizeOffchainApiResponse;
+            if (transaction != null)
+            {
+                return new OffchainResponse
+                {
+                    Transaction = transaction.Transaction,
+                    TransferId = transaction.TransferId,
+                    TxHash = transaction.Hash
+                };
+            }
+
+            throw new ArgumentException("Unkown response object");
+        }
+
+        private OffchainBaseResponse PrepareOffchainTransactionHashResult(object response)
+        {
+            var error = response as ApiException;
+
+            if (error != null)
+            {
+                return new OffchainBaseResponse
+                {
+                    Error = new ErrorResponse ( error.Error.Message, error.Error.Code /* Code = error.Error.Code, Message = error.Error.Message*/ )
+                };
+            }
+
+            var transaction = response as TransactionHashResponse;
+            if (transaction != null)
+            {
+                return new OffchainBaseResponse
+                {
+                    TxHash = transaction.TransactionHash
+                };
+            }
+
+            throw new ArgumentException("Unkown response object");
+        }
+
         private OffchainClosingResponse PrepareOffchainClosingResult(object response)
         {
             var error = response as ApiException;
@@ -46,7 +123,7 @@ namespace Lykke.Service.ReferralLinks.Services.Bitcoin
             {
                 return new OffchainClosingResponse
                 {
-                    Error = new ErrorResponse { Code = error.Error.Code, Message = error.Error.Message }
+                    Error = new ErrorResponse(error.Error.Message, error.Error.Code) //{ Code = error.Error.Code, Message =  }
                 };
             }
 
@@ -72,7 +149,7 @@ namespace Lykke.Service.ReferralLinks.Services.Bitcoin
             {
                 return new OffchainClosingResponse
                 {
-                    Error = new ErrorResponse { Code = error.Error.Code, Message = error.Error.Message }
+                    Error = new ErrorResponse (error.Error.Message, error.Error.Code) 
                 };
             }
 

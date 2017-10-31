@@ -17,6 +17,11 @@ using Lykke.Service.ReferralLinks.Models;
 using Lykke.Service.ReferralLinks.AzureRepositories;
 using Lykke.Service.ReferralLinks.Services.Kyc;
 using Lykke.Service.ReferralLinks.Core.Kyc;
+using Lykke.Service.ReferralLinks.Core.BitCoinApi;
+using Lykke.Service.ReferralLinks.Services.Bitcoin;
+using Lykke.Service.ReferralLinks.Services.Offchain;
+using Lykke.Service.ExchangeOperations.Client;
+using Lykke.Service.ReferralLinks.Core.Domain.Offchain;
 
 namespace Lykke.Service.ReferralLinks.Modules
 {
@@ -37,50 +42,79 @@ namespace Lykke.Service.ReferralLinks.Modules
 
         protected override void Load(ContainerBuilder builder)
         {
-            // TODO: Do not register entire settings in container, pass necessary settings to services which requires them
-            // ex:
-            //  builder.RegisterType<QuotesPublisher>()
-            //      .As<IQuotesPublisher>()
-            //      .WithParameter(TypedParameter.From(_settings.CurrentValue.QuotesPublication))
+            RegisterLocalTypes(builder);
+            RegisterRepos(builder);
+            RegisterExternalServices(builder);
+            RegisterLocalServices(builder);        
+            
+            RegisterDictionaryData(builder);
 
-            builder.RegisterInstance(_log)
-                .As<ILog>()
-                .SingleInstance();
+            builder.Populate(_services);
+        }
 
-            builder.RegisterType<HealthService>()
-                .As<IHealthService>()
-                .SingleInstance();
+        private void RegisterLocalTypes(ContainerBuilder builder)
+        {
+            builder.RegisterInstance(_log).As<ILog>().SingleInstance();
+            builder.RegisterInstance(_settings.CurrentValue);
+            
+        }
 
-            builder.RegisterType<StartupManager>()
-                .As<IStartupManager>();
+        private void RegisterLocalServices(ContainerBuilder builder)
+        {
+            builder.RegisterType<HealthService>().As<IHealthService>().SingleInstance();
+            builder.RegisterType<StartupManager>().As<IStartupManager>();
+            builder.RegisterType<ShutdownManager>().As<IShutdownManager>();
+            builder.RegisterType<BitcoinTransactionService>().As<IBitcoinTransactionService>().SingleInstance();
+            builder.RegisterInstance(_settings.CurrentValue.ExternalServices.KycServiceSettings);
+            builder.RegisterType<KycStatusServiceClient>().As<IKycStatusService>().SingleInstance();
+            builder.RegisterType<SrvKycForAsset>().As<ISrvKycForAsset>().SingleInstance();
+            builder.RegisterType<BitcoinApiClient>().As<IBitcoinApiClient>().SingleInstance();
+            builder.RegisterType<OffchainRequestService>().As<IOffchainRequestService>();
+            builder.RegisterType<OffchainService>().As<IOffchainService>().SingleInstance();
+            
+        }
 
-            builder.RegisterType<ShutdownManager>()
-                .As<IShutdownManager>();
-
+        private void RegisterRepos(ContainerBuilder builder)
+        {
             builder.BindAzureRepositories(_settings, _log);
+        }
 
-            builder.RegisterType<Lykke.Service.Assets.Client.AssetsService>()
-                .As<Lykke.Service.Assets.Client.IAssetsService>()
-                .SingleInstance();
-
+        private void RegisterExternalServices(ContainerBuilder builder)
+        {
             builder.Register<IAssetsService>(x =>
             {
-                var assetsSrv = new AssetsService(new Uri(_settings.CurrentValue.Services.AssetsServiceUrl));
+                var assetsSrv = new AssetsService(new Uri(_settings.CurrentValue.ExternalServices.AssetsServiceUrl));
                 return assetsSrv;
             }).SingleInstance();
 
+            builder.Register<IExchangeOperationsServiceClient>(x =>
+            {
+                var exchOpSrv = new ExchangeOperationsServiceClient(_settings.CurrentValue.ExternalServices.ExchangeOperationsServiceUrl);
+                return exchOpSrv;
+            }).SingleInstance();
+        }
+
+        private void RegisterDictionaryData(ContainerBuilder builder)
+        {
             builder.Register(c =>
             {
                 var ctx = c.Resolve<IComponentContext>();
-                return new CachedDataDictionary<string, Asset>(
+                return new CachedDataDictionary<string, Assets.Client.Models.Asset>(
                     async () =>
-                        (await ctx.Resolve<Lykke.Service.Assets.Client.IAssetsService>().AssetGetAllWithHttpMessagesAsync()).Body.Select(a=>a.ConvertToServiceModel()).ToDictionary(itm => itm.Id));
+                        (await ctx.Resolve<Lykke.Service.Assets.Client.IAssetsService>().AssetGetAllWithHttpMessagesAsync()).Body.ToDictionary(itm => itm.Id)); //.Select(a => a.ConvertToServiceModel())
             }).SingleInstance();
 
-            builder.RegisterType<KycStatusServiceClient>().As<IKycStatusService>().SingleInstance();
-            builder.RegisterType<SrvKycForAsset>().As<ISrvKycForAsset>().SingleInstance();
+            builder.Register(x =>
+            {
 
-            builder.Populate(_services);
+                var ctx = x.Resolve<IComponentContext>();
+
+                return new CachedDataDictionary<string, Assets.Client.Models.AssetPair>
+                (
+                    async () => (await ctx.Resolve<IAssetsService>().AssetPairGetAllAsync()).ToDictionary(itm => itm.Id)
+                );
+
+            }).SingleInstance();
         }
     }
 }

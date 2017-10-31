@@ -4,8 +4,8 @@ using System.Text;
 
 namespace Lykke.Service.ReferralLinks.Core.Settings.ServiceSettings
 {
-    public class BitcoinCoreSettings
-    {
-        public string BitcoinCoreApiUrl { get; set; }
-    }
+    //public class BitcoinCoreSettings
+    //{
+    //    public string BitcoinCoreApiUrl { get; set; }
+    //}
 }

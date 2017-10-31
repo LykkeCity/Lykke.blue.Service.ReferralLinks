@@ -13,12 +13,12 @@ namespace Lykke.Service.ReferralLinks.Services.Kyc
 {
     public class SrvKycForAsset : ISrvKycForAsset
     {
-        private readonly CachedDataDictionary<string, Asset> _assets;
+        private readonly CachedDataDictionary<string, Lykke.Service.Assets.Client.Models.Asset> _assets;
         private readonly IKycStatusService _kycStatusService;
         private readonly ISkipKycRepository _skipKycRepository;
 
         public SrvKycForAsset(
-            CachedDataDictionary<string, Asset> assets,
+            CachedDataDictionary<string, Lykke.Service.Assets.Client.Models.Asset> assets,
             IKycStatusService kycStatusService,
             ISkipKycRepository skipKycRepository)
         {

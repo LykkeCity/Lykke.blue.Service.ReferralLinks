@@ -9,6 +9,10 @@ namespace Lykke.Service.ReferralLinks.Core.Domain.Offchain
     {
         public ErrorCode Type { get; }
 
+        public string OffchainExceptionMessage { get; }
+        public string OffchainExceptionCode { get; }
+
+
         public string AssetId { get; }
 
         public bool ShouldCheckAsset { get; }
@@ -23,6 +27,15 @@ namespace Lykke.Service.ReferralLinks.Core.Domain.Offchain
             Type = type;
             AssetId = assetId;
             ShouldCheckAsset = shouldCheckAsset;
+        }
+
+        public OffchainException(ErrorCode type, string message, string offchainExceptionCode,  string assetId, bool shouldCheckAsset = true)
+        {
+            Type = type;
+            AssetId = assetId;
+            ShouldCheckAsset = shouldCheckAsset;
+            OffchainExceptionMessage = message;
+            OffchainExceptionCode = offchainExceptionCode;
         }
     }
 }

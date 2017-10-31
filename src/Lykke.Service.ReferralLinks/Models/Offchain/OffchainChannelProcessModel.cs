@@ -4,11 +4,10 @@ using System.Text;
 
 namespace Lykke.Service.ReferralLinks.Models.Offchain
 {
-    public class TransferToLykkeWallet
+    public class OffchainChannelProcessModel
     {
+        public string TransferId { get; set; }
         public string ClientId { get; set; }
-        public string Asset { get; set; }
-        public decimal Amount { get; set; }
-        public string PrevTempPrivateKey { get; set; }
+        public string SignedChannelTransaction { get; set; }
     }
 }

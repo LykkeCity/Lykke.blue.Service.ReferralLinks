@@ -19,10 +19,10 @@ namespace Lykke.Service.ReferralLinks.Core.BitCoinApi
         //offchain
         Task<OffchainResponse> OffchainTransferAsync(OffchainTransferData data);
         Task<OffchainClosingResponse> CreateChannelAsync(CreateChannelData data);
-        //Task<OffchainResponse> CreateHubCommitment(CreateHubComitmentData data);
-        //Task<OffchainResponse> Finalize(FinalizeData data);
+        Task<OffchainResponse> CreateHubCommitment(CreateHubComitmentData data);
+        Task<OffchainResponse> Finalize(FinalizeData data);
         //Task<OffchainClosingResponse> Cashout(CashoutData data);
-        //Task<OffchainBaseResponse> CloseChannel(CloseChannelData data);
+        Task<OffchainBaseResponse> CloseChannel(CloseChannelData data);
         //Task<OffchainClosingResponse> HubCashout(HubCashoutData data);
         //Task<OffchainBalancesResponse> Balances(string multisig);
         //Task<OffchainAssetBalancesResponse> ChannelsInfo(string asset);

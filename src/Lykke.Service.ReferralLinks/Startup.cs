@@ -16,6 +16,8 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Lykke.Service.ReferralLinks.AzureRepositories;
+using Lykke.Service.ReferralLinks.Controllers;
 
 namespace Lykke.Service.ReferralLinks
 {
@@ -57,7 +59,7 @@ namespace Lykke.Service.ReferralLinks
 
                 var builder = new ContainerBuilder();
                 var appSettings = Configuration.LoadSettings<AppSettings>();
-                Log = CreateLogWithSlack(services, appSettings);
+                Log = builder.BindLog(appSettings.ConnectionString(x => x.ReferralLinksService.Db.LogsConnString), "ReferralLinksService", "ReferralLinks");
 
                 builder.RegisterModule(new ServiceModule(appSettings.Nested(x => x.ReferralLinksService), Log));
                 builder.Populate(services);
@@ -81,7 +83,7 @@ namespace Lykke.Service.ReferralLinks
                     app.UseDeveloperExceptionPage();
                 }
 
-                app.UseLykkeMiddleware("ReferralLinks", ex => new {Message = "Technical problem"});
+                //app.UseLykkeMiddleware("ReferralLinks", ex => new {Message = "Technical problem"});
 
                 app.UseMvc();
                 app.UseSwagger();
