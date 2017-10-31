@@ -16,6 +16,7 @@ using System.Collections.Generic;
 using System.Net;
 using System.Threading.Tasks;
 using Lykke.Service.ReferralLinks.Strings;
+using Lykke.Service.Balances.Client;
 
 namespace Lykke.Service.ReferralLinks.Controllers
 {
@@ -26,18 +27,21 @@ namespace Lykke.Service.ReferralLinks.Controllers
         private readonly IReferralLinksService _referralLinksService;
         private readonly IClientAccountClient _clientAccountClient;
         private readonly IAssetsService _assetsClient;
+        private readonly IBalancesClient _balancesClient;
 
         public ReferralLinksController(
             ILog log,
             IReferralLinksService referralLinksService,
             IClientAccountClient clientAccountClient,
-            IAssetsService assetsClient)
+            IAssetsService assetsClient,
+            IBalancesClient balancesClient)
         {
 
             _log = log ?? throw new ArgumentException(nameof(log));
             _referralLinksService = referralLinksService ?? throw new ArgumentException(nameof(referralLinksService));
             _clientAccountClient = clientAccountClient ?? throw new ArgumentException(nameof(clientAccountClient));
             _assetsClient = assetsClient ?? throw new ArgumentException(nameof(assetsClient));
+            _balancesClient = balancesClient ?? throw new ArgumentException(nameof(balancesClient));
         }
 
         /// <summary>
@@ -66,7 +70,9 @@ namespace Lykke.Service.ReferralLinks.Controllers
                 return BadRequest(Phrases.InvalidSenderClientId);
             }
 
-            if (String.IsNullOrEmpty(request.Asset) || (await _assetsClient.AssetGetAllAsync()).FirstOrDefault(x => x.Name == request.Asset) == null)
+            var asset = (await _assetsClient.AssetGetAllAsync()).FirstOrDefault(x => x.Name == request.Asset);
+
+            if (String.IsNullOrEmpty(request.Asset) || asset == null)
             {
                 return BadRequest(Phrases.InvalidAsset);
             }
@@ -78,7 +84,13 @@ namespace Lykke.Service.ReferralLinks.Controllers
                 return BadRequest(Phrases.ReferralLinksLimitReached);
             }
 
-            //TODO: Check sender's TREE balance
+            var clientBalances = await _balancesClient.GetClientBalances(request.SenderClientId);
+            var balance = clientBalances.FirstOrDefault(x => x.AssetId == asset.Id)?.Balance;
+
+            if (!balance.HasValue || balance.Value < request.Amount)
+            {
+                return BadRequest(Phrases.InvalidTreesAmount);
+            }
 
             var referralLink = Mapper.Map<CreateReferralLinkResponse>(await _referralLinksService.Create(request));
 
@@ -293,7 +305,9 @@ namespace Lykke.Service.ReferralLinks.Controllers
                 return BadRequest(Phrases.InvalidSenderClientId);
             }
 
-            if (String.IsNullOrEmpty(request.Asset) || (await _assetsClient.AssetGetAllAsync()).FirstOrDefault(x => x.Name == request.Asset) == null)
+            var asset = (await _assetsClient.AssetGetAllAsync()).FirstOrDefault(x => x.Name == request.Asset);
+
+            if (String.IsNullOrEmpty(request.Asset) || asset == null)
             {
                 return BadRequest(Phrases.InvalidAsset);
             }
@@ -305,7 +319,13 @@ namespace Lykke.Service.ReferralLinks.Controllers
                 return BadRequest(Phrases.ReferralLinksLimitReached);
             }
 
-            //TODO: Check sender's TREE balance
+            var clientBalances = await _balancesClient.GetClientBalances(request.SenderClientId);
+            var balance = clientBalances.FirstOrDefault(x => x.AssetId == asset.Id)?.Balance;
+
+            if(!balance.HasValue || balance.Value < request.Amount)
+            {
+                return BadRequest(Phrases.InvalidTreesAmount);
+            }
 
             var referralLink = Mapper.Map<CreateReferralLinkResponse>(await _referralLinksService.Create(request));
 
