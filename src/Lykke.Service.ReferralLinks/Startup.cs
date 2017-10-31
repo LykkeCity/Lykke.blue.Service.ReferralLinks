@@ -200,8 +200,8 @@ namespace Lykke.Service.ReferralLinks
             // Creating slack notification service, which logs own azure queue processing messages to aggregate log
             var slackService = services.UseSlackNotificationsSenderViaAzureQueue(new AzureQueueIntegration.AzureQueueSettings
             {
-                ConnectionString = settings.CurrentValue.SlackNotifications.AzureQueue.ConnectionString,
-                QueueName = settings.CurrentValue.SlackNotifications.AzureQueue.QueueName
+                ConnectionString = settings.CurrentValue.ReferralLinksService.SlackNotifications.AzureQueue.ConnectionString,
+                QueueName = settings.CurrentValue.ReferralLinksService.SlackNotifications.AzureQueue.QueueName
             }, aggregateLogger);
 
             var dbLogConnectionStringManager = settings.Nested(x => x.ReferralLinksService.Db.LogsConnString);
