@@ -120,7 +120,7 @@ namespace Lykke.Service.ReferralLinks.Modules
             builder.RegisterType<ReferralLinksService>().As<IReferralLinksService>().SingleInstance();
             builder.RegisterType<ClientAccountClient>()
                 .As<IClientAccountClient>()
-                .WithParameter("serviceUrl", _settings.CurrentValue.Services.ClientAccountServiceUrl)
+                .WithParameter("serviceUrl", _settings.CurrentValue.ExternalServices.ClientAccountServiceUrl)
                 .WithParameter("log", _log);
 
         }
