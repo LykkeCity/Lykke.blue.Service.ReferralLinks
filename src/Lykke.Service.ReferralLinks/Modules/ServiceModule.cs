@@ -22,6 +22,7 @@ using Lykke.Service.ReferralLinks.Services.Bitcoin;
 using Lykke.Service.ReferralLinks.Services.Offchain;
 using Lykke.Service.ExchangeOperations.Client;
 using Lykke.Service.ReferralLinks.Core.Domain.Offchain;
+using Lykke.Service.ClientAccount.Client;
 
 namespace Lykke.Service.ReferralLinks.Modules
 {
@@ -115,6 +116,13 @@ namespace Lykke.Service.ReferralLinks.Modules
                 );
 
             }).SingleInstance();
+
+            builder.RegisterType<ReferralLinksService>().As<IReferralLinksService>().SingleInstance();
+            builder.RegisterType<ClientAccountClient>()
+                .As<IClientAccountClient>()
+                .WithParameter("serviceUrl", _settings.CurrentValue.Services.ClientAccountServiceUrl)
+                .WithParameter("log", _log);
+
         }
     }
 }

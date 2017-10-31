@@ -11,5 +11,6 @@ namespace Lykke.Service.ReferralLinks.Core.Settings.ServiceSettings
         public string ExchangeOperationsServiceUrl { get; set; }
         public string BitcoinCoreApiUrl { get; set; }
         public KycServiceSettings KycServiceSettings { get; set; }
+        public string ClientAccountServiceUrl { get; set; }
     }
 }

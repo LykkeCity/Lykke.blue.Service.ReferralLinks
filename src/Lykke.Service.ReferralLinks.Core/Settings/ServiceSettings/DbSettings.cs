@@ -6,6 +6,7 @@
         public string ClientPersonalInfoConnString { get; set; }
         public string OffchainConnString { get; set; }
         public string BitCoinQueueConnectionString { get; set; }
-        
+        public string ReferralLinksConnString { get; set; }
+
     }
 }

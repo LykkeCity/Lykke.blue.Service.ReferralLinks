@@ -7,6 +7,8 @@ using Lykke.Logs;
 using Lykke.Service.ReferralLinks.AzureRepositories.Bitcoin;
 using Lykke.Service.ReferralLinks.AzureRepositories.Client;
 using Lykke.Service.ReferralLinks.AzureRepositories.Kyc;
+using Lykke.Service.ReferralLinks.AzureRepositories.ReferralLink;
+using Lykke.Service.ReferralLinks.Core.Domain.ReferralLink;
 using Lykke.Service.ReferralLinks.AzureRepositories.Offchain;
 using Lykke.Service.ReferralLinks.AzureRepositories.WalletCredentials;
 using Lykke.Service.ReferralLinks.Core.BitCoinApi;
@@ -56,6 +58,9 @@ namespace Lykke.Service.ReferralLinks.AzureRepositories
 
             container.RegisterInstance(new BitcoinTransactionContextBlobStorage(AzureBlobStorage.Create(settings.ConnectionString(x => x.Db.BitCoinQueueConnectionString))))
                 .As<IBitcoinTransactionContextBlobStorage>();
+
+            container.RegisterInstance<IReferralLinkRepository>(
+               new ReferralLinkRepository(AzureTableStorage<ReferralLinkEntity>.Create(settings.ConnectionString(n => n.Db.ReferralLinksConnString), "ReferralLinks", log), settings));
 
             container.RegisterInstance<IOffchainFinalizeCommandProducer>(new OffchainFinalizeCommandProducer(AzureQueueExt.Create(settings.ConnectionString(x => x.Db.BitCoinQueueConnectionString), "offchain-finalization")));
         }
