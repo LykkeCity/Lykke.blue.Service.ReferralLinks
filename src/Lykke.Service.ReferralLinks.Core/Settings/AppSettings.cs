@@ -5,7 +5,6 @@ namespace Lykke.Service.ReferralLinks.Core.Settings
 {
     public class AppSettings
     {
-        public ReferralLinksSettings ReferralLinksService { get; set; }
-        public SlackNotificationsSettings SlackNotifications { get; set; }
+        public ReferralLinksSettings ReferralLinksService { get; set; }        
     }
 }
