@@ -73,7 +73,7 @@ namespace Lykke.Service.ReferralLinks.Modules
             builder.RegisterType<BitcoinApiClient>().As<IBitcoinApiClient>().SingleInstance();
             builder.RegisterType<OffchainRequestService>().As<IOffchainRequestService>();
             builder.RegisterType<OffchainService>().As<IOffchainService>().SingleInstance();
-            
+            builder.RegisterType<ReferralLinksService>().As<IReferralLinksService>().SingleInstance();
         }
 
         private void RegisterRepos(ContainerBuilder builder)
@@ -94,6 +94,18 @@ namespace Lykke.Service.ReferralLinks.Modules
                 var exchOpSrv = new ExchangeOperationsServiceClient(_settings.CurrentValue.ExternalServices.ExchangeOperationsServiceUrl);
                 return exchOpSrv;
             }).SingleInstance();
+
+            builder.RegisterType<ClientAccountClient>()
+                .As<IClientAccountClient>()
+                .WithParameter("serviceUrl", _settings.CurrentValue.ExternalServices.ClientAccountServiceUrl)
+                .WithParameter("log", _log)
+                .SingleInstance();
+
+            builder.RegisterType<BalancesClient>()
+                .As<IBalancesClient>()
+                .WithParameter("serviceUrl", _settings.CurrentValue.ExternalServices.BalancesServiceUrl)
+                .WithParameter("log", _log)
+                .SingleInstance();
         }
 
         private void RegisterDictionaryData(ContainerBuilder builder)
@@ -116,24 +128,7 @@ namespace Lykke.Service.ReferralLinks.Modules
                     async () => (await ctx.Resolve<IAssetsService>().AssetPairGetAllAsync()).ToDictionary(itm => itm.Id)
                 );
 
-            }).SingleInstance();
-
-            builder.RegisterType<ReferralLinksService>().As<IReferralLinksService>().SingleInstance();
-
-            builder.RegisterType<ClientAccountClient>()
-                .As<IClientAccountClient>()
-                .WithParameter("serviceUrl", _settings.CurrentValue.Services.ClientAccountServiceUrl)
-                .WithParameter("log", _log)
-                .SingleInstance();
-
-            builder.RegisterType<BalancesClient>()
-                .As<IBalancesClient>()
-                .WithParameter("serviceUrl", _settings.CurrentValue.Services.BalancesServiceUrl)
-                .WithParameter("log", _log)
-                .SingleInstance();
-                .WithParameter("serviceUrl", _settings.CurrentValue.ExternalServices.ClientAccountServiceUrl)
-                .WithParameter("log", _log);
-
+            }).SingleInstance();            
         }
     }
 }
