@@ -9,5 +9,6 @@ namespace Lykke.Service.ReferralLinks.Core.Settings.ServiceSettings
         public int ExpiredLinksCheckTimeout { get; set; }
         public Services ExternalServices { get; set; }
         public SlackNotificationsSettings SlackNotifications { get; set; }
+        public string LykkeReferralClientId { get; set; }
     }
 }

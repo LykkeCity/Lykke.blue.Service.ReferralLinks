@@ -79,7 +79,7 @@ namespace Lykke.Service.ReferralLinks.Controllers
 
                 await _exchangeOperationsService.StartTransferAsync(
                     response.TransferId,
-                    "e8904673-6651-43eb-8b16-ba98488f7cae", //_baseSettings.MarginSettings.MoneyTrasferClientId,
+                    _settings.LykkeReferralClientId, //send to shared lykke wallet where coins will be temporary stored until claimed by the recipient
                     clientId,
                     TransferType.Common.ToString()
                     );
