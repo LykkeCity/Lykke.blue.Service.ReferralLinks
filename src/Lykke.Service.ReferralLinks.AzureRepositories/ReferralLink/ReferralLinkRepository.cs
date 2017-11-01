@@ -9,6 +9,12 @@ using System.Linq;
 using Lykke.SettingsReader;
 using Lykke.Service.ReferralLinks.Core.Settings;
 using Lykke.Service.ReferralLinks.Core.Settings.ServiceSettings;
+using System.Net.Http;
+using System.Net.Http.Headers;
+using System.Text;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
+using System.Dynamic;
 
 namespace Lykke.Service.ReferralLinks.AzureRepositories.ReferralLink
 {
@@ -53,10 +59,15 @@ namespace Lykke.Service.ReferralLinks.AzureRepositories.ReferralLink
             if (entity.ExpirationDate == DateTime.MinValue || entity.ExpirationDate == DateTime.MaxValue)
                 entity.ExpirationDate = DateTime.UtcNow.AddDays(_settings.CurrentValue.ExpirationDaysLimit);
 
+            if(String.IsNullOrEmpty(entity.Url))
+            {
+                entity.Url = await GenerateUrl(entity.RowKey);
+            }
+
             await _referralLinkTable.InsertAsync(entity);
 
             return Mapper.Map<ReferralLinkDto>(entity);
-        }
+        }        
 
         public async Task Delete(string id)
         {
@@ -153,6 +164,44 @@ namespace Lykke.Service.ReferralLinks.AzureRepositories.ReferralLink
             entity.State = state;
 
             await _referralLinkTable.InsertOrReplaceAsync(entity);
+        }
+
+        private async Task<string> GenerateUrl(string id)
+        {
+            using (var httpClient = new HttpClient())
+            {
+                httpClient.DefaultRequestHeaders.Accept.Clear();
+                httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+
+                dynamic expando = new ExpandoObject();
+                expando.dynamicLinkInfo = new ExpandoObject();
+                expando.dynamicLinkInfo.dynamicLinkDomain = _settings.CurrentValue.DynamicLinks.DynamicLinkDomain;
+                expando.dynamicLinkInfo.link = $"{_settings.CurrentValue.DynamicLinks.Link}{id}";
+                expando.dynamicLinkInfo.androidInfo = new ExpandoObject();
+                expando.dynamicLinkInfo.androidInfo.androidPackageName = _settings.CurrentValue.DynamicLinks.AndroidInfo.AndroidPackageName;
+                expando.dynamicLinkInfo.iosInfo = new ExpandoObject();
+                expando.dynamicLinkInfo.iosInfo.iosBundleId = _settings.CurrentValue.DynamicLinks.IosInfo.IosBundleId;
+
+                var jsonContent = JsonConvert.SerializeObject(expando);
+
+                using (var stringContent = new StringContent(jsonContent, Encoding.UTF8, "application/json"))
+                {
+                    var response = await httpClient.PostAsync(
+                        _settings.CurrentValue.DynamicLinks.ApiUrl,
+                        stringContent);
+
+                    var result = response.Content.ReadAsStringAsync().Result;
+
+                    dynamic dyn = JObject.Parse(result);
+
+                    if (dyn.error != null)
+                    {
+                        throw new Exception($"Failed to create short link. Details: {dyn.error.message}");
+                    }
+
+                    return dyn.shortLink;
+                }
+            }
         }
     }
 }
