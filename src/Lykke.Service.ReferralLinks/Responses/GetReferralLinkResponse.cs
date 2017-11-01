@@ -24,5 +24,7 @@ namespace Lykke.Service.ReferralLinks.Responses
         public double Amount { get; set; }
 
         public string ClaimingClientId { get; set; }
+
+        public ReferralLinkType Type { get; set; }
     }
 }

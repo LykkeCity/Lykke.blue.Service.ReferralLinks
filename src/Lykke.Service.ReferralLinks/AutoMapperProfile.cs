@@ -11,9 +11,11 @@ namespace Lykke.Service.ReferralLinks
         {
             CreateMap<IReferralLink, CreateReferralLinkRequest>();
             CreateMap<IReferralLink, CreateReferralLinkResponse>();
-            CreateMap<IReferralLink, GetReferralLinkResponse>();
-            CreateMap<IReferralLinksStatistics, GetReferralLinksStatisticsBySenderIdResponse>();
+            CreateMap<IReferralLink, GetReferralLinkResponse>();            
+            CreateMap<IReferralLinksStatistics, GetReferralLinksStatisticsBySenderIdResponse>();            
             CreateMap<IReferralLink, RequestReferralLinkRequest>();
+
+            CreateMap<IReferralLink, RequestReferralLinkResponse>();
         }
     }
 }

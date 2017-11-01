@@ -19,6 +19,7 @@ namespace Lykke.Service.ReferralLinks.AzureRepositories.ReferralLink
         public string ClaimingClientId { get; set; }
 
         public static IEqualityComparer<ReferralLinkEntity> ComparerById { get; } = new EqualityComparerById();
+        public string Type { get; internal set; }
 
         private class EqualityComparerById : IEqualityComparer<ReferralLinkEntity>
         {

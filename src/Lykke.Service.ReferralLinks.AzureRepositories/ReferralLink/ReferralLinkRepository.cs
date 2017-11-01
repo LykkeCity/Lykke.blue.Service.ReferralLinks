@@ -174,13 +174,19 @@ namespace Lykke.Service.ReferralLinks.AzureRepositories.ReferralLink
                 httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
 
                 dynamic expando = new ExpandoObject();
+
                 expando.dynamicLinkInfo = new ExpandoObject();
                 expando.dynamicLinkInfo.dynamicLinkDomain = _settings.CurrentValue.DynamicLinks.DynamicLinkDomain;
                 expando.dynamicLinkInfo.link = $"{_settings.CurrentValue.DynamicLinks.Link}{id}";
+
                 expando.dynamicLinkInfo.androidInfo = new ExpandoObject();
                 expando.dynamicLinkInfo.androidInfo.androidPackageName = _settings.CurrentValue.DynamicLinks.AndroidInfo.AndroidPackageName;
+
                 expando.dynamicLinkInfo.iosInfo = new ExpandoObject();
                 expando.dynamicLinkInfo.iosInfo.iosBundleId = _settings.CurrentValue.DynamicLinks.IosInfo.IosBundleId;
+
+                expando.suffix = new ExpandoObject();
+                expando.suffix.option = "UNGUESSABLE";
 
                 var jsonContent = JsonConvert.SerializeObject(expando);
 

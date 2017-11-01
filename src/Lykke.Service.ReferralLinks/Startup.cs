@@ -170,7 +170,7 @@ namespace Lykke.Service.ReferralLinks
         {
             try
             {
-                // NOTE: Service can't recieve and process requests here, so you can destroy all resources
+                // NOTE: Service can't receive and process requests here, so you can destroy all resources
                 
                 if (Log != null)
                 {

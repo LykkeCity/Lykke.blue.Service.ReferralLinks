@@ -32,5 +32,7 @@ namespace Lykke.Service.ReferralLinks.Requests
 
         [IgnoreDataMember]
         public string ClaimingClientId { get; set; }
+
+        public ReferralLinkType Type { get; set; }
     }
 }

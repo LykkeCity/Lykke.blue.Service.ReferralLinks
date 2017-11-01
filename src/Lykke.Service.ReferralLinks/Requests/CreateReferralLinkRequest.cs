@@ -33,5 +33,8 @@ namespace Lykke.Service.ReferralLinks.Requests
         public double Amount { get; set; }
 
         public string ClaimingClientId { get; set; }
+
+        [Required]
+        public ReferralLinkType Type { get; set; }
     }
 }

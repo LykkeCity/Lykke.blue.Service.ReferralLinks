@@ -15,5 +15,6 @@ namespace Lykke.Service.ReferralLinks.Core.Domain.ReferralLink
         ReferralLinkState State { get; }
         double Amount { get; }
         string ClaimingClientId { get; }
+        ReferralLinkType Type { get; }
     }
 }

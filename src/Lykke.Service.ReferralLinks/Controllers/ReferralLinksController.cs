@@ -287,7 +287,7 @@ namespace Lykke.Service.ReferralLinks.Controllers
         [HttpPost("requestReferralLink")]
         [SwaggerOperation("RequestReferralLink")]
         [ProducesResponseType((int)HttpStatusCode.BadRequest)]
-        [ProducesResponseType(typeof(string), (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(RequestReferralLinkResponse), (int)HttpStatusCode.OK)]
         public async Task<IActionResult> RequestReferralLink([FromBody] RequestReferralLinkRequest request)
         {
             if (request == null)
@@ -327,9 +327,9 @@ namespace Lykke.Service.ReferralLinks.Controllers
                 return BadRequest(Phrases.InvalidTreesAmount);
             }
 
-            var referralLink = Mapper.Map<CreateReferralLinkResponse>(await _referralLinksService.Create(request));
+            var referralLink = Mapper.Map<RequestReferralLinkResponse>(await _referralLinksService.Create(request));
 
-            return Ok(referralLink.Id);
+            return Ok(referralLink);
         }
     }
 }
