@@ -32,8 +32,19 @@ namespace Lykke.Service.ReferralLinks.Controllers
         private readonly IOffchainRequestRepository _offchainRequestRepository;
         private readonly ILog _log;
         private readonly IOffchainEncryptedKeysRepository _offchainEncryptedKeysRepository;
+        private readonly IReferralLinksService _referralLinksService;
+        private readonly CachedDataDictionary<string, Lykke.Service.Assets.Client.Models.Asset> _assets;
 
-        public TransfersController(ISrvKycForAsset srvKycForAsset, IClientSettingsRepository clientSettingsRepository, IOffchainService offchainService, ReferralLinksSettings settings, ILog log, IExchangeOperationsServiceClient exchangeOperationsService, IOffchainEncryptedKeysRepository offchainEncryptedKeysRepository, IOffchainRequestRepository offchainRequestRepository)
+        public TransfersController(ISrvKycForAsset srvKycForAsset, 
+            IClientSettingsRepository clientSettingsRepository, 
+            IOffchainService offchainService, 
+            ReferralLinksSettings settings, 
+            ILog log, 
+            IExchangeOperationsServiceClient exchangeOperationsService, 
+            IOffchainEncryptedKeysRepository offchainEncryptedKeysRepository, 
+            IOffchainRequestRepository offchainRequestRepository, 
+            IReferralLinksService referralLinksService,
+            CachedDataDictionary<string, Lykke.Service.Assets.Client.Models.Asset> assets)
         {
             _srvKycForAsset = srvKycForAsset;
             _clientSettingsRepository = clientSettingsRepository;
@@ -43,6 +54,8 @@ namespace Lykke.Service.ReferralLinks.Controllers
             _exchangeOperationsService = exchangeOperationsService;
             _offchainEncryptedKeysRepository = offchainEncryptedKeysRepository;
             _offchainRequestRepository = offchainRequestRepository;
+            _referralLinksService = referralLinksService;
+            _assets = assets;
         }
 
         protected async Task CheckOffchain(string clientId)
@@ -97,6 +110,51 @@ namespace Lykke.Service.ReferralLinks.Controllers
             }
         }
 
+        [HttpPost("transferFromLykkeWalletToRecipient")]
+        public async Task<IActionResult> ClaimCoins([FromBody] TransferFromLykkeWalletToRecipient model)
+        {
+            var refLink = await _referralLinksService.GetReferralLinkById(model.ReferalLinkId); //?? await _referralLinksService.GetReferralLinkByUrl(model.ReferalLinkUrl);
+            if(refLink == null)
+            {
+                return BadRequest(new ErrorResponse($"RefLink with id {model.ReferalLinkId} not found.", ""));                    
+            }
+
+            if(refLink.Amount == 0)
+            {
+                return BadRequest(new ErrorResponse($"Requested amount for RefLink with id {model.ReferalLinkId} is 0 (not set). Check transfer's history.", ""));
+            }
+
+            var asset = (await _assets.GetDictionaryAsync()).Values.Where(v => v.Symbol == refLink.Asset).FirstOrDefault();
+
+            if(asset == null)
+            {
+                return BadRequest(new ErrorResponse($"Asset {refLink.Asset} for Referral link {model.ReferalLinkId} not found. Check transfer's history.", ""));
+            }
+
+            if (await _srvKycForAsset.IsKycNeeded(model.RecipientClientId, asset.Id))
+                return BadRequest(new ErrorResponse("Kyc for recipient Needed", "")); //ResponseModel<OffchainTradeRespModel>.CreateFail(ResponseModel.ErrorCodeType.InconsistentData, Phrases.KycNeeded);
+
+            try
+            {
+                var response = await _exchangeOperationsService.TransferAsync(
+                    model.RecipientClientId,
+                    _settings.LykkeReferralClientId, //send from shared lykke wallet where coins are temporary stored until claimed by the recipient
+                    refLink.Amount,
+                    asset.Id,
+                    TransferType.Common.ToString()
+                    );
+
+                return Ok(new TransferFromLykkeWalletResponseModel
+                {
+                    TransactionId = response.TransactionId,
+                    Message = response.Message
+                });
+            }
+            catch (OffchainException ex)
+            {
+                return NotFound(ProcessError(ex));
+            }
+        }
         [HttpPost("processChannel")]
         public async Task<IActionResult> ProcessChannel([FromBody] OffchainChannelProcessModel model)
         {

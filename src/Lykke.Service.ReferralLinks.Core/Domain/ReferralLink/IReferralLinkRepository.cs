@@ -18,5 +18,6 @@ namespace Lykke.Service.ReferralLinks.Core.Domain.ReferralLink
         Task<string> ClaimGiftCoins(string id, bool isNewUser, string claimingUserId);
         Task ReturnCoinsToSender();
         Task<bool> IsReferralLinksNumberLimitReached(string claimingClientId);
+        Task<IReferralLink> GetReferalLinkByUrl(string url);
     }
 }
