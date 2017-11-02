@@ -116,16 +116,16 @@ namespace Lykke.Service.ReferralLinks.AzureRepositories.ReferralLink
             };
         }
 
-        public async Task<bool> IsReferralLinksNumberLimitReached(string claimingClientId)
+        public async Task<bool> IsReferralLinksNumberLimitReached(string senderClientId)
         {
-            var numberOfInitiatedAndCreatedReflinks = (await _referralLinkTable.GetDataAsync(
+            var numberOfCreatedReflinks = (await _referralLinkTable.GetDataAsync(
                 GetPartitionKey(),
-                x => x.ClaimingClientId == claimingClientId 
-                    && (x.State == ReferralLinkState.Created.ToString() || x.State == ReferralLinkState.Claimed.ToString())
+                x => x.SenderClientId == senderClientId 
+                    && x.State == ReferralLinkState.Created.ToString()
                     && x.Timestamp.Date == DateTime.Today
             )).Count();
 
-            return numberOfInitiatedAndCreatedReflinks > 100;
+            return numberOfCreatedReflinks >= 1;
         }
 
         public async Task ReturnCoinsToSender()

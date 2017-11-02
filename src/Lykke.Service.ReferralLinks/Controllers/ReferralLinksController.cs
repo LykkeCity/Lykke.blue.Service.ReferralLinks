@@ -348,7 +348,7 @@ namespace Lykke.Service.ReferralLinks.Controllers
             }
 
             //TODO: Check LEW-88 and update below accordingly
-            var referralLinksLimitReached = await _referralLinksService.IsReferralLinksNumberLimitReached(request.ClaimingClientId);
+            var referralLinksLimitReached = await _referralLinksService.IsReferralLinksNumberLimitReached(request.SenderClientId);
 
             if (referralLinksLimitReached)
             {
