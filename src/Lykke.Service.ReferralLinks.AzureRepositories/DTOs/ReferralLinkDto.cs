@@ -19,7 +19,7 @@ namespace Lykke.Service.ReferralLinks.AzureRepositories.DTOs
 
         public ReferralLinkState State { get; set; }
 
-        public double? Amount { get; set; }
+        public double Amount { get; set; }
 
         public string ClaimingClientId { get; set; }
 
