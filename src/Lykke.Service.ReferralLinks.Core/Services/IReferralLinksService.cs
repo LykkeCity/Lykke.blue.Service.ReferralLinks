@@ -16,6 +16,8 @@ namespace Lykke.Service.ReferralLinks.Core.Services
         Task SetUrl(string id, string url);
         Task<string> ClaimGiftCoins(string id, bool isNewUser, string claimingClientId);
         Task ReturnCoinsToSender();
+        Task<IReferralLink> GetReferralLinkById(string id);
+        Task<IReferralLink> GetReferralLinkByUrl(string url);
         Task<bool> IsReferralLinksNumberLimitReached(string senderClientId);
     }
 }
