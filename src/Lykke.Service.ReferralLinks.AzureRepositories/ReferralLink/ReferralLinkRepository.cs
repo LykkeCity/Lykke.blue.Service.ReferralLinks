@@ -108,6 +108,7 @@ namespace Lykke.Service.ReferralLinks.AzureRepositories.ReferralLink
                 GetPartitionKey(),
                 x => x.SenderClientId == senderClientId 
                     && x.State == ReferralLinkState.Created.ToString()
+                    && x.Type == ReferralLinkType.Invitation.ToString()
                     && x.Timestamp.Date == DateTime.Today
             )).Count();
 

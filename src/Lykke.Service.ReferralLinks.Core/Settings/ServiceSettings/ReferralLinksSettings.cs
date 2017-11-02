@@ -10,6 +10,6 @@ namespace Lykke.Service.ReferralLinks.Core.Settings.ServiceSettings
         public Services ExternalServices { get; set; }
         public SlackNotificationsSettings SlackNotifications { get; set; }
         public string LykkeReferralClientId { get; set; }
-        public DynamicLinkSettings DynamicLinks { get; set; }
+        public FirebaseSettings Firebase { get; set; }
     }
 }

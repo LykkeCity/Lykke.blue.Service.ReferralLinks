@@ -30,14 +30,14 @@ namespace Lykke.Service.ReferralLinks.Services
                 dynamic expando = new ExpandoObject();
 
                 expando.dynamicLinkInfo = new ExpandoObject();
-                expando.dynamicLinkInfo.dynamicLinkDomain = _settings.DynamicLinks.DynamicLinkDomain;
-                expando.dynamicLinkInfo.link = $"{_settings.DynamicLinks.Link}{id}";
+                expando.dynamicLinkInfo.dynamicLinkDomain = _settings.Firebase.DynamicLinkDomain;
+                expando.dynamicLinkInfo.link = $"{_settings.Firebase.Link}{id}";
 
                 expando.dynamicLinkInfo.androidInfo = new ExpandoObject();
-                expando.dynamicLinkInfo.androidInfo.androidPackageName = _settings.DynamicLinks.AndroidInfo.AndroidPackageName;
+                expando.dynamicLinkInfo.androidInfo.androidPackageName = _settings.Firebase.AndroidInfo.AndroidPackageName;
 
                 expando.dynamicLinkInfo.iosInfo = new ExpandoObject();
-                expando.dynamicLinkInfo.iosInfo.iosBundleId = _settings.DynamicLinks.IosInfo.IosBundleId;
+                expando.dynamicLinkInfo.iosInfo.iosBundleId = _settings.Firebase.IosInfo.IosBundleId;
 
                 expando.suffix = new ExpandoObject();
                 expando.suffix.option = "UNGUESSABLE";
@@ -47,7 +47,7 @@ namespace Lykke.Service.ReferralLinks.Services
                 using (var stringContent = new StringContent(jsonContent, Encoding.UTF8, "application/json"))
                 {
                     var response = await httpClient.PostAsync(
-                        _settings.DynamicLinks.ApiUrl,
+                        _settings.Firebase.ApiUrl,
                         stringContent);
 
                     var result = response.Content.ReadAsStringAsync().Result;
