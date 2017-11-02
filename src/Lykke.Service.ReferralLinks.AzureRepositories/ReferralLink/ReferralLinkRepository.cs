@@ -120,7 +120,9 @@ namespace Lykke.Service.ReferralLinks.AzureRepositories.ReferralLink
         {
             var numberOfInitiatedAndCreatedReflinks = (await _referralLinkTable.GetDataAsync(
                 GetPartitionKey(),
-                x => x.ClaimingClientId == claimingClientId &&(x.State == ReferralLinkState.Created.ToString() || x.State == ReferralLinkState.Claimed.ToString())
+                x => x.ClaimingClientId == claimingClientId 
+                    && (x.State == ReferralLinkState.Created.ToString() || x.State == ReferralLinkState.Claimed.ToString())
+                    && x.Timestamp.Date == DateTime.Today
             )).Count();
 
             return numberOfInitiatedAndCreatedReflinks > 100;
