@@ -20,15 +20,11 @@ namespace Lykke.Service.ReferralLinks.AzureRepositories.ReferralLink
 {
     public class ReferralLinkRepository : IReferralLinkRepository
     {
-        private readonly IReloadingManager<ReferralLinksSettings> _settings;
         private readonly INoSQLTableStorage<ReferralLinkEntity> _referralLinkTable;
 
-        public ReferralLinkRepository(
-            INoSQLTableStorage<ReferralLinkEntity> referralLinkTable,
-            IReloadingManager<ReferralLinksSettings> settings)
+        public ReferralLinkRepository(INoSQLTableStorage<ReferralLinkEntity> referralLinkTable)
         {
             _referralLinkTable = referralLinkTable;
-            _settings = settings;
         }
 
         public static string GetPartitionKey() => "ReferallLink";
@@ -55,16 +51,6 @@ namespace Lykke.Service.ReferralLinks.AzureRepositories.ReferralLink
 
             entity.PartitionKey = GetPartitionKey();
             entity.RowKey = GetRowKey(referralLink.Id);
-
-            if (referralLink.Type == ReferralLinkType.MoneyTransfer)
-                entity.ExpirationDate = DateTime.UtcNow.AddDays(_settings.CurrentValue.ExpirationDaysLimit);
-            else if (referralLink.Type == ReferralLinkType.Invitation)
-                entity.ExpirationDate = null;
-
-            if (String.IsNullOrEmpty(entity.Url))
-            {
-                entity.Url = await GenerateUrl(entity.RowKey);
-            }
 
             await _referralLinkTable.InsertAsync(entity);
 
@@ -131,6 +117,7 @@ namespace Lykke.Service.ReferralLinks.AzureRepositories.ReferralLink
                 GetPartitionKey(),
                 x => x.SenderClientId == senderClientId 
                     && x.State == ReferralLinkState.Created.ToString()
+                    && x.Type == ReferralLinkType.Invitation.ToString()
                     && x.Timestamp.Date == DateTime.Today
             )).Count();
 
@@ -177,50 +164,6 @@ namespace Lykke.Service.ReferralLinks.AzureRepositories.ReferralLink
             entity.State = state;
 
             await _referralLinkTable.InsertOrReplaceAsync(entity);
-        }
-
-        private async Task<string> GenerateUrl(string id)
-        {
-            using (var httpClient = new HttpClient())
-            {
-                httpClient.DefaultRequestHeaders.Accept.Clear();
-                httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-
-                dynamic expando = new ExpandoObject();
-
-                expando.dynamicLinkInfo = new ExpandoObject();
-                expando.dynamicLinkInfo.dynamicLinkDomain = _settings.CurrentValue.DynamicLinks.DynamicLinkDomain;
-                expando.dynamicLinkInfo.link = $"{_settings.CurrentValue.DynamicLinks.Link}{id}";
-
-                expando.dynamicLinkInfo.androidInfo = new ExpandoObject();
-                expando.dynamicLinkInfo.androidInfo.androidPackageName = _settings.CurrentValue.DynamicLinks.AndroidInfo.AndroidPackageName;
-
-                expando.dynamicLinkInfo.iosInfo = new ExpandoObject();
-                expando.dynamicLinkInfo.iosInfo.iosBundleId = _settings.CurrentValue.DynamicLinks.IosInfo.IosBundleId;
-
-                expando.suffix = new ExpandoObject();
-                expando.suffix.option = "UNGUESSABLE";
-
-                var jsonContent = JsonConvert.SerializeObject(expando);
-
-                using (var stringContent = new StringContent(jsonContent, Encoding.UTF8, "application/json"))
-                {
-                    var response = await httpClient.PostAsync(
-                        _settings.CurrentValue.DynamicLinks.ApiUrl,
-                        stringContent);
-
-                    var result = response.Content.ReadAsStringAsync().Result;
-
-                    dynamic dyn = JObject.Parse(result);
-
-                    if (dyn.error != null)
-                    {
-                        throw new Exception($"Failed to create short link. Details: {dyn.error.message}");
-                    }
-
-                    return dyn.shortLink;
-                }
-            }
         }
     }
 }

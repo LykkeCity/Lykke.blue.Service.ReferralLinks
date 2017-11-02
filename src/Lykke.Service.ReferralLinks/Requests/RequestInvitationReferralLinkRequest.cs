@@ -38,6 +38,7 @@ namespace Lykke.Service.ReferralLinks.Requests
         [IgnoreDataMember]
         public ReferralLinkType Type => ReferralLinkType.Invitation;
 
+        [IgnoreDataMember]
         public string SenderTransactionId { get; set; }
     }
 }

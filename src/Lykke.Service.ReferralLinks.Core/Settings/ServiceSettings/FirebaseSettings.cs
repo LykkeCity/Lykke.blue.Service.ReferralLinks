@@ -4,7 +4,7 @@ using System.Text;
 
 namespace Lykke.Service.ReferralLinks.Core.Settings.ServiceSettings
 {
-    public class DynamicLinkSettings
+    public class FirebaseSettings
     {
         public string ApiUrl { get; set; }
         public string DynamicLinkDomain { get; set; }
