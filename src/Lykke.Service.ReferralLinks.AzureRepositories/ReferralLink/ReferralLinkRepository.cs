@@ -59,7 +59,7 @@ namespace Lykke.Service.ReferralLinks.AzureRepositories.ReferralLink
             if (referralLink.Type == ReferralLinkType.MoneyTransfer)
                 entity.ExpirationDate = DateTime.UtcNow.AddDays(_settings.CurrentValue.ExpirationDaysLimit);
             else if (referralLink.Type == ReferralLinkType.Invitation)
-                entity.ExpirationDate = DateTime.MaxValue;
+                entity.ExpirationDate = null;
 
             if (String.IsNullOrEmpty(entity.Url))
             {
@@ -109,7 +109,7 @@ namespace Lykke.Service.ReferralLinks.AzureRepositories.ReferralLink
 
             return new ReferralLinksStatisticsDto
             {
-                AmountOfCoinsDistributed = amountOfCoinsDistributed,
+                AmountOfCoinsDistributed = amountOfCoinsDistributed.HasValue ? amountOfCoinsDistributed.Value : 0,
                 NumberOfInvitationAccepted = numberOfInvitationAccepted,
                 NumberOfInvitationsSent = numberOfInvitationSent,
                 NumberOfNewUsersBroughtIn = numberOfNewUsersBroughtIn

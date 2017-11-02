@@ -16,7 +16,7 @@ namespace Lykke.Service.ReferralLinks.Requests
         public string Url { get; set; }
 
         [IgnoreDataMember]
-        public DateTime ExpirationDate { get; set; }
+        public DateTime? ExpirationDate { get; set; }
 
         public string SenderClientId { get; set; }
 
@@ -28,12 +28,15 @@ namespace Lykke.Service.ReferralLinks.Requests
         [IgnoreDataMember]
         public ReferralLinkState State { get; set; }
 
-        public double Amount { get; set; }
+        public double? Amount { get; set; }
 
         [IgnoreDataMember]
         public string ClaimingClientId { get; set; }
 
         [IgnoreDataMember]
         public ReferralLinkType Type => ReferralLinkType.MoneyTransfer;
+
+        [IgnoreDataMember]
+        public string SenderTransactionId { get; set; }
     }
 }

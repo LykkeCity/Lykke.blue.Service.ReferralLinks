@@ -10,16 +10,19 @@ namespace Lykke.Service.ReferralLinks.AzureRepositories.ReferralLink
     {
         public string Id => RowKey;
         public string Url { get; set; }
-        public DateTime ExpirationDate { get; set; }
         public string SenderClientId { get; set; }
+        public DateTime? ExpirationDate { get; set; }        
         public string Asset { get; set; }
-        public bool? IsNewUser { get; set; }
+        public double? Amount { get; set; }
+        public string SenderTransactionId { get; }
+        public string Type { get; set; }
         public string State { get; set; }
-        public double Amount { get; set; }
+
+        public bool? IsNewUser { get; set; }
         public string ClaimingClientId { get; set; }
 
         public static IEqualityComparer<ReferralLinkEntity> ComparerById { get; } = new EqualityComparerById();
-        public string Type { get; set; }
+        
 
         private class EqualityComparerById : IEqualityComparer<ReferralLinkEntity>
         {

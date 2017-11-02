@@ -9,7 +9,7 @@ namespace Lykke.Service.ReferralLinks.AzureRepositories.DTOs
 
         public string Url { get; set; }
 
-        public DateTime ExpirationDate { get; set; }
+        public DateTime? ExpirationDate { get; set; }
 
         public string SenderClientId { get; set; }
 
@@ -19,10 +19,12 @@ namespace Lykke.Service.ReferralLinks.AzureRepositories.DTOs
 
         public ReferralLinkState State { get; set; }
 
-        public double Amount { get; set; }
+        public double? Amount { get; set; }
 
         public string ClaimingClientId { get; set; }
 
         public ReferralLinkType Type { get; set; }
+
+        public string SenderTransactionId { get; set; }
     }
 }

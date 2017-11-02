@@ -14,8 +14,7 @@ namespace Lykke.Service.ReferralLinks.Requests
         [Required]
         public string Url { get; set; }
 
-        [Required]
-        public DateTime ExpirationDate { get; set; }
+        public DateTime? ExpirationDate { get; set; }
 
         [Required]
         public string SenderClientId { get; set; }
@@ -29,12 +28,13 @@ namespace Lykke.Service.ReferralLinks.Requests
         [Required]
         public ReferralLinkState State { get; set; }
 
-        [Required]
-        public double Amount { get; set; }
+        public double? Amount { get; set; }
 
         public string ClaimingClientId { get; set; }
 
         [Required]
         public ReferralLinkType Type { get; set; }
+
+        public string SenderTransactionId { get; set; }
     }
 }
