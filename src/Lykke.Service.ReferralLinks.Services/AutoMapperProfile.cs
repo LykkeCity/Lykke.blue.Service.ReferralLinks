@@ -1,4 +1,6 @@
 ﻿using AutoMapper;
+using Lykke.Service.ReferralLinks.Core.Domain.ReferralLink;
+using Lykke.Service.ReferralLinks.Services.Domain;
 
 namespace Lykke.Service.ReferralLinks.Services
 {
@@ -6,7 +8,7 @@ namespace Lykke.Service.ReferralLinks.Services
     {
         public AutoMapperProfile()
         {
-
+            CreateMap<IReferralLink, ReferralLink>();
         }
     }
 }

@@ -73,7 +73,11 @@ namespace Lykke.Service.ReferralLinks.Modules
             builder.RegisterType<BitcoinApiClient>().As<IBitcoinApiClient>().SingleInstance();
             builder.RegisterType<OffchainRequestService>().As<IOffchainRequestService>();
             builder.RegisterType<OffchainService>().As<IOffchainService>().SingleInstance();
-            builder.RegisterType<ReferralLinksService>().As<IReferralLinksService>().SingleInstance();
+
+            builder.RegisterType<ReferralLinksService>()
+                .As<IReferralLinksService>()
+                .WithParameter("settings", _settings.CurrentValue)
+                .SingleInstance();
         }
 
         private void RegisterRepos(ContainerBuilder builder)
@@ -105,6 +109,11 @@ namespace Lykke.Service.ReferralLinks.Modules
                 .As<IBalancesClient>()
                 .WithParameter("serviceUrl", _settings.CurrentValue.ExternalServices.BalancesServiceUrl)
                 .WithParameter("log", _log)
+                .SingleInstance();
+
+            builder.RegisterType<FirebaseService>()
+                .As<IFirebaseService>()
+                .WithParameter("settings", _settings.CurrentValue)
                 .SingleInstance();
         }
 
