@@ -2,9 +2,8 @@
 {
     public enum ReferralLinkState
     {
-        Initiated,
         Created,
-        SentToRecipient,
+        SentToLykkeSharedWallet,
         Claimed,
         Expired,
         CoinsReturnedToSender

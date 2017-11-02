@@ -6,7 +6,7 @@ using System.Text;
 
 namespace Lykke.Service.ReferralLinks.Requests
 {
-    public class RequestReferralLinkRequest : IReferralLink
+    public class RequestMoneyTransferReferralLink : IReferralLink
     {
         //REMARK: We do not need to allow someone to set Id. Id is set automatically.
         [IgnoreDataMember]
@@ -33,6 +33,7 @@ namespace Lykke.Service.ReferralLinks.Requests
         [IgnoreDataMember]
         public string ClaimingClientId { get; set; }
 
-        public ReferralLinkType Type { get; set; }
+        [IgnoreDataMember]
+        public ReferralLinkType Type => ReferralLinkType.MoneyTransfer;
     }
 }

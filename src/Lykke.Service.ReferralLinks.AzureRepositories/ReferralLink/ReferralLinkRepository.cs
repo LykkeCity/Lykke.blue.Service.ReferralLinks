@@ -56,10 +56,12 @@ namespace Lykke.Service.ReferralLinks.AzureRepositories.ReferralLink
             entity.PartitionKey = GetPartitionKey();
             entity.RowKey = GetRowKey(referralLink.Id);
 
-            if (entity.ExpirationDate == DateTime.MinValue || entity.ExpirationDate == DateTime.MaxValue)
+            if (referralLink.Type == ReferralLinkType.MoneyTransfer)
                 entity.ExpirationDate = DateTime.UtcNow.AddDays(_settings.CurrentValue.ExpirationDaysLimit);
+            else if (referralLink.Type == ReferralLinkType.Invitation)
+                entity.ExpirationDate = DateTime.MaxValue;
 
-            if(String.IsNullOrEmpty(entity.Url))
+            if (String.IsNullOrEmpty(entity.Url))
             {
                 entity.Url = await GenerateUrl(entity.RowKey);
             }
@@ -98,7 +100,7 @@ namespace Lykke.Service.ReferralLinks.AzureRepositories.ReferralLink
                 x => x.SenderClientId == senderClientId
             );
 
-            var numberOfInvitationSent = referralLinks.Count(x => x.State == ReferralLinkState.SentToRecipient.ToString());
+            var numberOfInvitationSent = referralLinks.Count(x => x.State == ReferralLinkState.SentToLykkeSharedWallet.ToString());
             var numberOfInvitationAccepted = referralLinks.Count(x => x.State == ReferralLinkState.Claimed.ToString());
             var numberOfNewUsersBroughtIn = referralLinks.Count(x => x.IsNewUser.HasValue && x.IsNewUser.Value);
             var amountOfCoinsDistributed = referralLinks
@@ -118,7 +120,7 @@ namespace Lykke.Service.ReferralLinks.AzureRepositories.ReferralLink
         {
             var numberOfInitiatedAndCreatedReflinks = (await _referralLinkTable.GetDataAsync(
                 GetPartitionKey(),
-                x => x.State == ReferralLinkState.Initiated.ToString() || x.State == ReferralLinkState.Claimed.ToString()
+                x => x.ClaimingClientId == claimingClientId &&(x.State == ReferralLinkState.Created.ToString() || x.State == ReferralLinkState.Claimed.ToString())
             )).Count();
 
             return numberOfInitiatedAndCreatedReflinks > 100;

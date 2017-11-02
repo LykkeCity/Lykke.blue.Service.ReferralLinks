@@ -17,6 +17,7 @@ using System.Net;
 using System.Threading.Tasks;
 using Lykke.Service.ReferralLinks.Strings;
 using Lykke.Service.Balances.Client;
+using Lykke.Service.ReferralLinks.AzureRepositories.ReferralLink;
 
 namespace Lykke.Service.ReferralLinks.Controllers
 {
@@ -280,15 +281,15 @@ namespace Lykke.Service.ReferralLinks.Controllers
         }
 
         /// <summary>
-        /// Request referral link.
+        /// Request money transfer referral link.
         /// </summary>
         /// <param name="request"></param>
         /// <returns></returns>
-        [HttpPost("requestReferralLink")]
-        [SwaggerOperation("RequestReferralLink")]
+        [HttpPost("requestMoneyTransferReferralLink")]
+        [SwaggerOperation("RequestMoneyTransferReferralLink")]
         [ProducesResponseType((int)HttpStatusCode.BadRequest)]
-        [ProducesResponseType(typeof(RequestReferralLinkResponse), (int)HttpStatusCode.OK)]
-        public async Task<IActionResult> RequestReferralLink([FromBody] RequestReferralLinkRequest request)
+        [ProducesResponseType(typeof(string), (int)HttpStatusCode.OK)]
+        public async Task<IActionResult> RequestMoneyTransferReferralLink([FromBody] RequestMoneyTransferReferralLink request)
         {
             if (request == null)
             {
@@ -312,13 +313,6 @@ namespace Lykke.Service.ReferralLinks.Controllers
                 return BadRequest(Phrases.InvalidAsset);
             }
 
-            var referralLinksLimitReached = await _referralLinksService.IsReferralLinksNumberLimitReached(request.ClaimingClientId);
-
-            if(referralLinksLimitReached)
-            {
-                return BadRequest(Phrases.ReferralLinksLimitReached);
-            }
-
             var clientBalances = await _balancesClient.GetClientBalances(request.SenderClientId);
             var balance = clientBalances.FirstOrDefault(x => x.AssetId == asset.Id)?.Balance;
 
@@ -327,9 +321,43 @@ namespace Lykke.Service.ReferralLinks.Controllers
                 return BadRequest(Phrases.InvalidTreesAmount);
             }
 
-            var referralLink = Mapper.Map<RequestReferralLinkResponse>(await _referralLinksService.Create(request));
+            var referralLink = Mapper.Map<CreateReferralLinkResponse>(await _referralLinksService.Create(request));
 
-            return Ok(referralLink);
+            return Ok(referralLink.Id);
+        }
+
+        /// <summary>
+        /// Request invitation referral link.
+        /// </summary>
+        /// <param name="request"></param>
+        /// <returns></returns>
+        [HttpPost("requestInvitationReferralLink")]
+        [SwaggerOperation("RequestInvitationReferralLink")]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest)]
+        [ProducesResponseType(typeof(string), (int)HttpStatusCode.OK)]
+        public async Task<IActionResult> RequestInvitationReferralLink([FromBody] RequestInvitationReferralLink request)
+        {
+            if (request == null)
+            {
+                return BadRequest(Phrases.InvalidRequest);
+            }
+
+            if (String.IsNullOrEmpty(request.SenderClientId) || await _clientAccountClient.GetClientById(request.SenderClientId) == null)
+            {
+                return BadRequest(Phrases.InvalidSenderClientId);
+            }
+
+            //TODO: Check LEW-88 and update below accordingly
+            var referralLinksLimitReached = await _referralLinksService.IsReferralLinksNumberLimitReached(request.ClaimingClientId);
+
+            if (referralLinksLimitReached)
+            {
+                return BadRequest(Phrases.ReferralLinksLimitReached);
+            }
+
+            var referralLink = Mapper.Map<CreateReferralLinkResponse>(await _referralLinksService.Create(request));
+
+            return Ok(referralLink.Url);
         }
     }
 }
