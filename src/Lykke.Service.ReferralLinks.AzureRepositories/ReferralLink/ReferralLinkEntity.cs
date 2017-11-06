@@ -6,23 +6,22 @@ using System.Text;
 
 namespace Lykke.Service.ReferralLinks.AzureRepositories.ReferralLink
 {
-    public class ReferralLinkEntity : TableEntity
+    public class ReferralLinkEntity : TableEntity, IReferralLink
     {
         public string Id => RowKey;
         public string Url { get; set; }
         public string SenderClientId { get; set; }
         public DateTime? ExpirationDate { get; set; }        
         public string Asset { get; set; }
-        public double? Amount { get; set; }
-        public string SenderTransactionId { get; }
-        public string Type { get; set; }
-        public string State { get; set; }
+        public decimal Amount { get; set; }
+        public string SenderTransactionId { get; set; }
+        public ReferralLinkType Type { get; set; }
+        public ReferralLinkState State { get; set; }
 
-        public bool? IsNewUser { get; set; }
-        public string ClaimingClientId { get; set; }
+        //public bool? IsNewUser { get; set; }
+        //public string ClaimingClientId { get; set; }
 
         public static IEqualityComparer<ReferralLinkEntity> ComparerById { get; } = new EqualityComparerById();
-        
 
         private class EqualityComparerById : IEqualityComparer<ReferralLinkEntity>
         {

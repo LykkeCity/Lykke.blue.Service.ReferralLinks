@@ -37,6 +37,7 @@ namespace Lykke.Service.ReferralLinks.Services.Offchain
         public OffchainService(IBitcoinApiClient bitcoinApiClient, 
                                 IWalletCredentialsRepository walletCredentialsRepository, 
                                 IOffchainTransferRepository offchainTransferRepository,
+                                IMatchingEngineClient matchingEngineConnector,
                                 IOffchainEncryptedKeysRepository offchainEncryptedKeysRepository,
                                 IOffchainOrdersRepository offchainOrdersRepository,
                                 IBitcoinTransactionService bitcoinTransactionService,
@@ -52,6 +53,7 @@ namespace Lykke.Service.ReferralLinks.Services.Offchain
             _offchainEncryptedKeysRepository = offchainEncryptedKeysRepository;
             _offchainOrdersRepository = offchainOrdersRepository;
             _bitcoinTransactionService = bitcoinTransactionService;
+            _matchingEngineConnector = matchingEngineConnector;
             _offchainFinalizeCommandProducer = offchainFinalizeCommandProducer;
             _offchainRequestService = offchainRequestService;
             _logger = logger;

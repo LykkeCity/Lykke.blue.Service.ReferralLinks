@@ -1,33 +1,34 @@
-﻿using Microsoft.WindowsAzure.Storage.Table;
+﻿using Lykke.Service.ReferralLinks.Core.Domain.ReferralLink;
+using Microsoft.WindowsAzure.Storage.Table;
 using System;
 using System.Collections.Generic;
 using System.Text;
 
 namespace Lykke.Service.ReferralLinks.AzureRepositories.ReferralLink
 {
-    public class ReferralLinkClaimsEntity : TableEntity
+    public class ReferralLinkClaimEntity : TableEntity, IReferralLinkClaim
     {
+        public string Id => RowKey;
         public string ReferralLinkId { get; set; }
-        public string ClientId { get; set; }
-        public bool ShouldReceive { get; set; }
-        public bool HasReceived { get; set; }
-        public bool IsNewUser { get; set; }
+        public string RecipientClientId { get; set; }
+        public bool ShouldReceiveReward { get; set; }
+        public string RecipientTransactionId { get; set; }
+        public bool IsNewClient { get; set; }
 
-        public static IEqualityComparer<ReferralLinkClaimsEntity> ComparerById { get; } = new EqualityComparerById();
+        public static IEqualityComparer<ReferralLinkClaimEntity> ComparerById { get; } = new EqualityComparerById();
 
-
-        private class EqualityComparerById : IEqualityComparer<ReferralLinkClaimsEntity>
+        private class EqualityComparerById : IEqualityComparer<ReferralLinkClaimEntity>
         {
-            public bool Equals(ReferralLinkClaimsEntity x, ReferralLinkClaimsEntity y)
+            public bool Equals(ReferralLinkClaimEntity x, ReferralLinkClaimEntity y)
             {
                 if (x == y)
                     return true;
                 if (x == null || y == null)
                     return false;
-                return x.ReferralLinkId == y.ReferralLinkId;
+                return x.Id == y.Id;
             }
 
-            public int GetHashCode(ReferralLinkClaimsEntity obj)
+            public int GetHashCode(ReferralLinkClaimEntity obj)
             {
                 if (obj?.ReferralLinkId == null)
                     return 0;

@@ -11,9 +11,9 @@ namespace Lykke.Service.ReferralLinks.AzureRepositories.ReferralLink
 {
     public class ReferralLinkClaimsRepository : IReferralLinkClaimsRepository
     {
-        private readonly INoSQLTableStorage<ReferralLinkClaimsEntity> _referralLinkClaimsTable;
+        private readonly INoSQLTableStorage<ReferralLinkClaimEntity> _referralLinkClaimsTable;
 
-        public ReferralLinkClaimsRepository(INoSQLTableStorage<ReferralLinkClaimsEntity> referralLinkClaimsTable)
+        public ReferralLinkClaimsRepository(INoSQLTableStorage<ReferralLinkClaimEntity> referralLinkClaimsTable)
         {
             _referralLinkClaimsTable = referralLinkClaimsTable;
         }
@@ -25,12 +25,12 @@ namespace Lykke.Service.ReferralLinks.AzureRepositories.ReferralLink
             return String.IsNullOrEmpty(id) ? Guid.NewGuid().ToString() : id;
         }
 
-        public async Task<IReferralLinkClaims> Create(IReferralLinkClaims referralLinkClaims)
+        public async Task<IReferralLinkClaim> Create(IReferralLinkClaim referralLinkClaim)
         {
-            var entity = Mapper.Map<ReferralLinkClaimsEntity>(referralLinkClaims);
+            var entity = Mapper.Map<ReferralLinkClaimEntity>(referralLinkClaim);
 
             entity.PartitionKey = GetPartitionKey();
-            entity.RowKey = GetRowKey(referralLinkClaims.ReferralLinkId);
+            entity.RowKey = GetRowKey(referralLinkClaim.Id);
 
             await _referralLinkClaimsTable.InsertAsync(entity);
 
@@ -42,16 +42,16 @@ namespace Lykke.Service.ReferralLinks.AzureRepositories.ReferralLink
             await _referralLinkClaimsTable.DeleteAsync(GetPartitionKey(), GetRowKey(id));
         }
 
-        public async Task<IReferralLinkClaims> Get(string id)
+        public async Task<IReferralLinkClaim> Get(string id)
         {
             var entity = await _referralLinkClaimsTable.GetDataAsync(GetPartitionKey(), GetRowKey(id));
 
             return Mapper.Map<ReferralLinkClaimsDto>(entity);
         }
 
-        public async Task<IReferralLinkClaims> Update(IReferralLinkClaims referralLinkClaims)
+        public async Task<IReferralLinkClaim> Update(IReferralLinkClaim referralLinkClaims)
         {
-            var result = await _referralLinkClaimsTable.MergeAsync(GetPartitionKey(), GetRowKey(referralLinkClaims.ReferralLinkId), x =>
+            var result = await _referralLinkClaimsTable.MergeAsync(GetPartitionKey(), GetRowKey(referralLinkClaims.Id), x =>
             {
                 Mapper.Map(referralLinkClaims, x);
 

@@ -11,5 +11,6 @@ namespace Lykke.Service.ReferralLinks.Models.Offchain
         public string ClientRevokeEncryptedPrivateKey { get; set; }
         public string SignedTransferTransaction { get; set; }
         public string ClientId { get; set; }
+        public string RefLinkId { get; set; }
     }
 }

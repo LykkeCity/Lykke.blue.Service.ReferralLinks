@@ -9,7 +9,7 @@ namespace Lykke.Service.ReferralLinks.Responses
     {
         public int NumberOfInvitationsSent { get; set; }
         public int NumberOfInvitationAccepted { get; set; }
-        public double AmountOfCoinsDistributed { get; set; }
+        public decimal AmountOfCoinsDistributed { get; set; }
         public int NumberOfNewUsersBroughtIn { get; set; }
     }
 }

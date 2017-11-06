@@ -7,9 +7,9 @@ namespace Lykke.Service.ReferralLinks.Core.Domain.ReferralLink
 {
     public interface IReferralLinkClaimsRepository
     {
-        Task<IReferralLinkClaims> Create(IReferralLinkClaims referralLinkClaims);
-        Task<IReferralLinkClaims> Get(string id);
-        Task<IReferralLinkClaims> Update(IReferralLinkClaims referralLinkClaims);
+        Task<IReferralLinkClaim> Create(IReferralLinkClaim referralLinkClaims);
+        Task<IReferralLinkClaim> Get(string id);
+        Task<IReferralLinkClaim> Update(IReferralLinkClaim referralLinkClaims);
         Task Delete(string id);
     }
 }

@@ -30,7 +30,7 @@ namespace Lykke.Service.ReferralLinks.Requests
         public ReferralLinkState State { get; set; }
 
         [IgnoreDataMember]
-        public double Amount { get; set; }
+        public decimal Amount { get; set; }
 
         [IgnoreDataMember]
         public string ClaimingClientId { get; set; }

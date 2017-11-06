@@ -27,10 +27,10 @@ namespace Lykke.Service.ReferralLinks.Services
             _settings = settings;
         }
 
-        public async Task<string> ClaimGiftCoins(string id, bool isNewUser, string claimingClientId)
-        {
-            return await _referralLinkRepository.ClaimGiftCoins(id, isNewUser, claimingClientId);
-        }
+        //public async Task<string> ClaimGiftCoins(string id, bool isNewUser, string claimingClientId)
+        //{
+        //    return await _referralLinkRepository.ClaimGiftCoins(id, isNewUser, claimingClientId);
+        //}
 
         public async Task<IReferralLink> Create(IReferralLink referralLink)
         {
@@ -51,6 +51,7 @@ namespace Lykke.Service.ReferralLinks.Services
                 entity.Url = await _firebaseService.GenerateUrl(entity.Id);
             }
 
+            entity.State = ReferralLinkState.Created;
             return await _referralLinkRepository.Create(entity);
         }
 
@@ -69,7 +70,7 @@ namespace Lykke.Service.ReferralLinks.Services
             return await _referralLinkRepository.Get(id);
         }
         
-        public async Task<IEnumerable<IReferralLink>> GetReferralLinksBySenderClientIdAndOrStatus(string clientId, string state)
+        public async Task<IEnumerable<IReferralLink>> GetReferralLinksBySenderClientIdAndOrStatus(string clientId, ReferralLinkState state)
         {
             return await _referralLinkRepository.Get(clientId, state);
         }
@@ -94,7 +95,7 @@ namespace Lykke.Service.ReferralLinks.Services
             await _referralLinkRepository.SetUrl(id, url);
         }
 
-        public async Task UpdateState(string id, string state)
+        public async Task UpdateState(string id, ReferralLinkState state)
         {
             await _referralLinkRepository.UpdateState(id, state);
         }
@@ -103,6 +104,11 @@ namespace Lykke.Service.ReferralLinks.Services
         {
             //TODO: Add validation here and throw ValidationException with detailed message what is not valid
             throw new ValidationException("Not implemented, yet");
+        }
+
+        public async Task<IReferralLink> UpdateAsync(IReferralLink referralLink)
+        {
+            return await _referralLinkRepository.UpdateAsync(referralLink);
         }
     }
 }

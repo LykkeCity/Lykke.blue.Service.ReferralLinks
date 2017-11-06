@@ -17,7 +17,7 @@ namespace Lykke.Service.ReferralLinks.Services.Domain
 
         public string Asset { get; set; }
 
-        public double Amount { get; set; }
+        public decimal Amount { get; set; }
 
         public string SenderTransactionId { get; set; }
 
@@ -25,8 +25,5 @@ namespace Lykke.Service.ReferralLinks.Services.Domain
 
         public ReferralLinkState State { get; set; }
 
-        public bool? IsNewUser { get; set; }
-
-        public string ClaimingClientId { get; set; }
     }
 }

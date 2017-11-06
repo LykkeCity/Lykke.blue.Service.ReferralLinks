@@ -9,13 +9,13 @@ namespace Lykke.Service.ReferralLinks.Core.Domain.ReferralLink
     {
         Task<IReferralLink> Create(IReferralLink referralLink);
         Task<IReferralLink> Get(string id);
-        Task<IReferralLink> Update(IReferralLink referralLink);
+        Task<IReferralLink> UpdateAsync(IReferralLink referralLink);
         Task Delete(string id);
-        Task<IEnumerable<IReferralLink>> Get(string senderClientId, string state);
-        Task UpdateState(string id, string state);
+        Task<IEnumerable<IReferralLink>> Get(string senderClientId, ReferralLinkState? state);
+        Task UpdateState(string id, ReferralLinkState state);
         Task<IReferralLinksStatistics> GetReferralLinksStatisticsBySenderId(string senderClientId);
         Task SetUrl(string id, string url);
-        Task<string> ClaimGiftCoins(string id, bool isNewUser, string claimingUserId);
+        //Task<string> ClaimGiftCoins(string id, bool isNewUser, string claimingUserId);
         Task ReturnCoinsToSender();
         Task<bool> IsReferralLinksNumberLimitReached(string claimingClientId);
         Task<IReferralLink> GetReferalLinkByUrl(string url);

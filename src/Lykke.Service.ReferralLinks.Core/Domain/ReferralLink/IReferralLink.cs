@@ -10,13 +10,13 @@ namespace Lykke.Service.ReferralLinks.Core.Domain.ReferralLink
         string Url { get; }
         string SenderClientId { get; }
         DateTime? ExpirationDate { get; }        
-        string Asset { get; }
-        double Amount { get; }
-        string SenderTransactionId { get; }
+        string Asset { get; set; }
+        decimal Amount { get; set; }
+        string SenderTransactionId { get; set; }
         ReferralLinkType Type { get; }
-        ReferralLinkState State { get; }
+        ReferralLinkState State { get; set; }
 
-        bool? IsNewUser { get; }
-        string ClaimingClientId { get; }
+        //bool? IsNewUser { get; }
+        //string ClaimingClientId { get; }
     }
 }

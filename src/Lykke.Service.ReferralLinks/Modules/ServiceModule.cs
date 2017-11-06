@@ -78,6 +78,8 @@ namespace Lykke.Service.ReferralLinks.Modules
                 .As<IReferralLinksService>()
                 .WithParameter("settings", _settings.CurrentValue)
                 .SingleInstance();
+
+            builder.RegisterType<IReferralLinkClaimsService>().As<ReferralLinkClaimsService>().SingleInstance();            
         }
 
         private void RegisterRepos(ContainerBuilder builder)
