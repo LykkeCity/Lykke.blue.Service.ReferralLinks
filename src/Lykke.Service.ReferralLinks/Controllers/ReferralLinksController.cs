@@ -60,16 +60,16 @@ namespace Lykke.Service.ReferralLinks.Controllers
             IBalancesClient balancesClient)
         {
 
-            _log = log;// ?? throw new ArgumentException(nameof(log));
-            _referralLinksService = referralLinksService;// ?? throw new ArgumentException(nameof(referralLinksService));
-            _clientAccountClient = clientAccountClient;// ?? throw new ArgumentException(nameof(clientAccountClient));
+            _log = log;
+            _referralLinksService = referralLinksService;
+            _clientAccountClient = clientAccountClient;
             //_assetsClient = assetsClient ?? throw new ArgumentException(nameof(assetsClient));
             _assets = assets;
             _srvKycForAsset = srvKycForAsset;
             _exchangeOperationsService = exchangeOperationsService;
             _settings = settings;
             _referralLinkClaimsService = referralLinkClaimsService;
-            _balancesClient = balancesClient;// ?? throw new ArgumentException(nameof(balancesClient));
+            _balancesClient = balancesClient;
         }
 
         /// <summary>
@@ -420,6 +420,10 @@ namespace Lykke.Service.ReferralLinks.Controllers
         }
 
         [HttpPost("claimGiftCoins")]
+        [SwaggerOperation("ClaimGiftCoins")]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest)]
+        [ProducesResponseType((int)HttpStatusCode.NotFound)]
+        [ProducesResponseType(typeof(string), (int)HttpStatusCode.OK)]
         public async Task<IActionResult> ClaimGiftCoins([FromBody] TransferFromLykkeWalletToRecipient request)
         {
             var refLink = await _referralLinksService.GetReferralLinkById(request.ReferalLinkId);

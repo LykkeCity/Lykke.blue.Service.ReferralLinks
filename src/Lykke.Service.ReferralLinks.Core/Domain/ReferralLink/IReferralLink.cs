@@ -15,8 +15,5 @@ namespace Lykke.Service.ReferralLinks.Core.Domain.ReferralLink
         string SenderTransactionId { get; set; }
         ReferralLinkType Type { get; }
         ReferralLinkState State { get; set; }
-
-        //bool? IsNewUser { get; }
-        //string ClaimingClientId { get; }
     }
 }

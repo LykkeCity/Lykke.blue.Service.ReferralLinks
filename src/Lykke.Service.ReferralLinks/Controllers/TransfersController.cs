@@ -14,9 +14,11 @@ using Lykke.Service.ReferralLinks.Core.Settings.ServiceSettings;
 using Lykke.Service.ReferralLinks.Models;
 using Lykke.Service.ReferralLinks.Models.Offchain;
 using Microsoft.AspNetCore.Mvc;
+using Swashbuckle.SwaggerGen.Annotations;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -79,8 +81,7 @@ namespace Lykke.Service.ReferralLinks.Controllers
             });
         }
 
-        //pass in the reg link id and extract amount/asset data from it 
-        [HttpPost("transferToLykkeWallet")]
+        [HttpPost("transferToLykkeWallet")]        
         public async Task<IActionResult> TransferToLykkeWallet([FromBody] TransferToLykkeWallet model)
         {
             var clientId = model.ClientId;
@@ -148,9 +149,6 @@ namespace Lykke.Service.ReferralLinks.Controllers
                 return NotFound(ProcessError(ex));
             }
         }
-
-        //Update Referral Link Entity && Referral Links Claims Entity in a transaction scope if you ever need to update them atomic
-
 
         private async void AttachSenderTransferToRefLink(IReferralLink refLink, IOffchainRequest offchainRequest, string transferId)
         {
@@ -248,28 +246,7 @@ namespace Lykke.Service.ReferralLinks.Controllers
 
         private ErrorResponse ProcessError(OffchainException ex)
         {
-            return new ErrorResponse(ex.OffchainExceptionMessage, ex.OffchainExceptionCode);
-            //switch (ex.Type)
-            //{
-            //    case ErrorCode.LowVolume:
-            //        return new ErrorResponse(ex.Message, ErrorCode.LowVolume.ToString());//( ResponseModel<T>.CreateFail(ResponseModel.ErrorCodeType.InvalidInputField, Phrases.LowTradeVolume);
-            //    case ErrorCode.NoCoinsToRefund: // need to skip this
-            //        return new ErrorResponse(ex.OffchainExceptionMessage, ex.OffchainExceptionCode);
-            //    case ErrorCode.NotEnoughAssetAvailable:
-            //    case ErrorCode.NotEnoughBitcoinAvailable:
-            //        return new ErrorResponse(ex.OffchainExceptionMessage, ex.OffchainExceptionCode);
-            //    case ErrorCode.NotEnoughtClientFunds:
-            //        return new ErrorResponse(ex.OffchainExceptionMessage, ex.OffchainExceptionCode);
-            //    case ErrorCode.ChannelWasBroadcasted:
-            //    case ErrorCode.DuplicateRequest:
-            //        return new ErrorResponse(ex.OffchainExceptionMessage, ex.OffchainExceptionCode);
-            //    case ErrorCode.ChannelNotFinalized:
-            //        return new ErrorResponse(ex.OffchainExceptionMessage, ex.OffchainExceptionCode);
-            //    case ErrorCode.KeyUsedAlready:
-            //        return new ErrorResponse(ex.OffchainExceptionMessage, ex.OffchainExceptionCode);
-            //    default:
-            //        return new ErrorResponse(ex.OffchainExceptionMessage, ex.OffchainExceptionCode);
-            //}
+            return new ErrorResponse(ex.OffchainExceptionMessage, ex.OffchainExceptionCode);          
         }
     }
 }

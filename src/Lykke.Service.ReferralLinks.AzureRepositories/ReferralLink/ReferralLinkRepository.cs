@@ -32,20 +32,6 @@ namespace Lykke.Service.ReferralLinks.AzureRepositories.ReferralLink
         public static string GetPartitionKey() => "ReferallLink";
 
         public static string GetRowKey(string id) => id;
-        //{
-        //    return String.IsNullOrEmpty(id) ? Guid.NewGuid().ToString() : id;
-        //}
-
-        //public async Task<string> ClaimGiftCoins(string referralLinkId, bool newUser, string claimingClientId)
-        //{
-        //    var entity = await _referralLinkTable.GetDataAsync(GetPartitionKey(), GetRowKey(referralLinkId));
-        //    entity.IsNewUser = newUser;
-        //    entity.ClaimingClientId = claimingClientId;            
-
-        //    await _referralLinkTable.InsertOrReplaceAsync(entity);
-
-        //    return entity.State;
-        //}
 
         public async Task<IReferralLink> Create(IReferralLink referralLink)
         {
@@ -125,6 +111,7 @@ namespace Lykke.Service.ReferralLinks.AzureRepositories.ReferralLink
             return numberOfCreatedReflinks >= _settings.ReferralLinksNumberLimit;
         }
 
+        //TODO: Review 
         public async Task ReturnCoinsToSender()
         {
             var entities = await _referralLinkTable.GetDataAsync(
