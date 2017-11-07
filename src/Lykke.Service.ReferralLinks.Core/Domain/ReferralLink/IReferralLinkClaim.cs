@@ -9,7 +9,7 @@ namespace Lykke.Service.ReferralLinks.Core.Domain.ReferralLink
         string Id { get; }
         string ReferralLinkId { get; }
         string RecipientClientId { get; }
-        string RecipientTransactionId { get; }
+        string RecipientTransactionId { get; set; }
         bool ShouldReceiveReward { get; }
         bool IsNewClient { get; }
     }

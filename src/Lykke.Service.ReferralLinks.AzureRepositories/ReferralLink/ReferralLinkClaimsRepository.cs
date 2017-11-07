@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
+using System.Linq;
 
 namespace Lykke.Service.ReferralLinks.AzureRepositories.ReferralLink
 {
@@ -42,11 +43,10 @@ namespace Lykke.Service.ReferralLinks.AzureRepositories.ReferralLink
             await _referralLinkClaimsTable.DeleteAsync(GetPartitionKey(), GetRowKey(id));
         }
 
-        public async Task<IReferralLinkClaim> Get(string id)
+        public async Task<IEnumerable<IReferralLinkClaim>> GetClaimsForRefLink(string refLinkId)
         {
-            var entity = await _referralLinkClaimsTable.GetDataAsync(GetPartitionKey(), GetRowKey(id));
-
-            return Mapper.Map<ReferralLinkClaimsDto>(entity);
+            var claims = await _referralLinkClaimsTable.GetDataAsync(GetPartitionKey(), (link) => link.RowKey == refLinkId);
+            return claims; //claims.Select(c => Mapper.Map<ReferralLinkClaimsDto>(c));
         }
 
         public async Task<IReferralLinkClaim> Update(IReferralLinkClaim referralLinkClaims)

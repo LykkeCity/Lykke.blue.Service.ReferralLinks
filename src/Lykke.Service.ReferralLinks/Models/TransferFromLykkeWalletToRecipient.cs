@@ -4,7 +4,7 @@ using System.Text;
 
 namespace Lykke.Service.ReferralLinks.Models
 {
-    public class TransferFromLykkeWalletToRecipient
+    public class ClaimReferralLinkRequest
     {
         public string RecipientClientId { get; set; }
         public string ReferalLinkId { get; set; }

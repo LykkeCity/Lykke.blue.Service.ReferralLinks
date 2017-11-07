@@ -29,6 +29,8 @@ using Core.BitCoin.BitcoinApi.Models;
 using Lykke.Service.ReferralLinks.Services.Domain;
 using System.Transactions;
 using Lykke.Service.ReferralLinks.Modules.Validation;
+using System.Linq;
+using Lykke.Service.ExchangeOperations.Client.AutorestClient.Models;
 
 namespace Lykke.Service.ReferralLinks.Controllers
 {
@@ -406,9 +408,14 @@ namespace Lykke.Service.ReferralLinks.Controllers
                 return $"Requested amount for RefLink with id {refLink.Id} is 0 (not set). Check transfer's history.";
             }
 
-            if (refLink.State != ReferralLinkState.SentToLykkeSharedWallet || (refLink.ExpirationDate.HasValue && refLink.ExpirationDate.Value.CompareTo(DateTime.Now) > 0))
+            if (refLink.Type == ReferralLinkType.MoneyTransfer && refLink.State != ReferralLinkState.SentToLykkeSharedWallet)
             {
-                return $"RefLink state {refLink.State} is can not be claimed.";
+                return $"RefLink type {refLink.Type} with state {refLink.State} can not be claimed.";
+            }
+
+            if (refLink.Type == ReferralLinkType.Invitation && refLink.State != ReferralLinkState.Created)
+            {
+                return $"RefLink type {refLink.Type} with state {refLink.State} can not be claimed.";
             }
 
             if (refLink.ExpirationDate.HasValue && refLink.ExpirationDate.Value.CompareTo(DateTime.Now) > 0)
@@ -419,12 +426,80 @@ namespace Lykke.Service.ReferralLinks.Controllers
             return null;
         }
 
+        private async Task<ObjectResult> TransferRewardCoinsToRecipient(IReferralLink refLink, string recipientClientId, bool shouldReceiveReward, bool isNewClient)
+        {
+            try
+            {
+                using (TransactionScope scope = new TransactionScope())
+                {
+                    ExchangeOperationResult response = null;
+
+                    if (shouldReceiveReward)
+                    {
+                        response = await _exchangeOperationsService.TransferAsync(
+                           recipientClientId, //request.RecipientClientId,
+                           _settings.LykkeReferralClientId,
+                           (double)refLink.Amount,
+                           refLink.Asset,
+                           TransferType.Common.ToString()
+                           );
+                    }
+
+                    if ((shouldReceiveReward && response != null && response.IsOk()) || !shouldReceiveReward)
+                    {
+                        await _referralLinkClaimsService.CreateAsync(new ReferralLinkClaim
+                        {
+                            IsNewClient = isNewClient, //request.IsNewClient,
+                            RecipientClientId = recipientClientId, //request.RecipientClientId,
+                            RecipientTransactionId = response?.TransactionId,
+                            ReferralLinkId = refLink.Id,
+                            ShouldReceiveReward = shouldReceiveReward
+                        });
+
+                        if (refLink.Type == ReferralLinkType.MoneyTransfer)
+                        {
+                            refLink.State = ReferralLinkState.Claimed;
+                        }
+
+                        await _referralLinksService.UpdateAsync(refLink);
+
+                        scope.Complete();
+
+                        return Ok(new TransferFromLykkeWalletResponseModel
+                        {
+                            TransactionId = response?.TransactionId,
+                            Message = response?.Message
+                        });
+
+                    }
+                    else
+                    {
+                        scope.Dispose();
+                        return NotFound(new ErrorResponse($"Error transfering money from shared lykke wallet to claiming client: {response.Message}", response.Code?.ToString()));
+                    }
+                }
+            }
+            catch (OffchainException ex)
+            {
+                return NotFound(new ErrorResponse(ex.OffchainExceptionMessage, ex.OffchainExceptionCode));
+            }
+            catch (TransactionAbortedException ex)
+            {
+                return NotFound(new ErrorResponse(ex.Message, ""));
+            }
+            catch (ApplicationException ex)
+            {
+                return NotFound(new ErrorResponse(ex.Message, ""));
+            }
+        }
+
+
         [HttpPost("claimGiftCoins")]
         [SwaggerOperation("ClaimGiftCoins")]
         [ProducesResponseType((int)HttpStatusCode.BadRequest)]
         [ProducesResponseType((int)HttpStatusCode.NotFound)]
         [ProducesResponseType(typeof(string), (int)HttpStatusCode.OK)]
-        public async Task<IActionResult> ClaimGiftCoins([FromBody] TransferFromLykkeWalletToRecipient request)
+        public async Task<IActionResult> ClaimGiftCoins([FromBody] ClaimReferralLinkRequest request)
         {
             var refLink = await _referralLinksService.GetReferralLinkById(request.ReferalLinkId);
 
@@ -442,61 +517,123 @@ namespace Lykke.Service.ReferralLinks.Controllers
             }
             
             if (await _srvKycForAsset.IsKycNeeded(request.RecipientClientId, asset.Id))
-                return BadRequest("Kyc for recipient Needed"); 
+                return BadRequest("Kyc for recipient Needed");
 
-            try
-            {
-                using (TransactionScope scope = new TransactionScope())
-                {
-                    var response = await _exchangeOperationsService.TransferAsync(
-                       request.RecipientClientId,
-                       _settings.LykkeReferralClientId, 
-                       (double)refLink.Amount,
-                       asset.Id,
-                       TransferType.Common.ToString()
-                       );
+            return await TransferRewardCoinsToRecipient(refLink, request.RecipientClientId, true, request.IsNewClient);
 
-                    if (response.IsOk())
-                    {
-                        await _referralLinkClaimsService.CreateAsync(new ReferralLinkClaim
-                        {
-                            IsNewClient = request.IsNewClient,
-                            RecipientClientId = request.RecipientClientId,
-                            RecipientTransactionId = response.TransactionId,
-                            ReferralLinkId = refLink.Id,
-                            ShouldReceiveReward = true
-                        });
+            //try
+            //{
+            //    using (TransactionScope scope = new TransactionScope())
+            //    {
+            //        var response = await _exchangeOperationsService.TransferAsync(
+            //           request.RecipientClientId,
+            //           _settings.LykkeReferralClientId, 
+            //           (double)refLink.Amount,
+            //           asset.Id,
+            //           TransferType.Common.ToString()
+            //           );
 
-                        refLink.State = ReferralLinkState.Claimed;
-                        await _referralLinksService.UpdateAsync(refLink);
+            //        if (response.IsOk())
+            //        {
+            //            await _referralLinkClaimsService.CreateAsync(new ReferralLinkClaim
+            //            {
+            //                IsNewClient = request.IsNewClient,
+            //                RecipientClientId = request.RecipientClientId,
+            //                RecipientTransactionId = response.TransactionId,
+            //                ReferralLinkId = refLink.Id,
+            //                ShouldReceiveReward = true
+            //            });
 
-                        scope.Complete();
+            //            refLink.State = ReferralLinkState.Claimed;
+            //            await _referralLinksService.UpdateAsync(refLink);
 
-                        return Ok(new TransferFromLykkeWalletResponseModel
-                        {
-                            TransactionId = response.TransactionId,
-                            Message = response.Message
-                        });
-                    }
-                    else
-                    {
-                        scope.Dispose();
-                        return NotFound(new ErrorResponse($"Error transfering money from shared lykke wallet to claiming client: {response.Message}", response.Code?.ToString()));
-                    }
-                }                
-            }
-            catch (OffchainException ex)
-            {
-                return NotFound(new ErrorResponse(ex.OffchainExceptionMessage, ex.OffchainExceptionCode));
-            }
-            catch (TransactionAbortedException ex)
-            {
-                return NotFound(new ErrorResponse(ex.Message, ""));
-            }
-            catch (ApplicationException ex)
-            {
-                return NotFound(new ErrorResponse(ex.Message, ""));
-            }
+            //            scope.Complete();
+
+            //            return Ok(new TransferFromLykkeWalletResponseModel
+            //            {
+            //                TransactionId = response.TransactionId,
+            //                Message = response.Message
+            //            });
+            //        }
+            //        else
+            //        {
+            //            scope.Dispose();
+            //            return NotFound(new ErrorResponse($"Error transfering money from shared lykke wallet to claiming client: {response.Message}", response.Code?.ToString()));
+            //        }
+            //    }                
+            //}
+            //catch (OffchainException ex)
+            //{
+            //    return NotFound(new ErrorResponse(ex.OffchainExceptionMessage, ex.OffchainExceptionCode));
+            //}
+            //catch (TransactionAbortedException ex)
+            //{
+            //    return NotFound(new ErrorResponse(ex.Message, ""));
+            //}
+            //catch (ApplicationException ex)
+            //{
+            //    return NotFound(new ErrorResponse(ex.Message, ""));
+            //}
         }
+
+        [HttpPost("claimInvitationLink")]
+        [SwaggerOperation("ClaimInvitationLink")]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest)]
+        [ProducesResponseType((int)HttpStatusCode.NotFound)]
+        [ProducesResponseType(typeof(string), (int)HttpStatusCode.OK)]
+        public async Task<IActionResult> ClaimInvitationLink([FromBody] ClaimReferralLinkRequest request)
+        {
+            if (!request.IsNewClient)
+            {
+                return NotFound("Not a new client.");
+            }            
+
+            var refLink = await _referralLinksService.GetReferralLinkById(request.ReferalLinkId);
+
+            var validationError = ValidateClaimGiftCoinsRequest(refLink);
+            if (!String.IsNullOrEmpty(validationError))
+            {
+                return BadRequest(validationError);
+            }
+
+            var claims = await _referralLinkClaimsService.GetRefLinkClaims(refLink.Id);
+            
+            bool shouldReceiveReward = claims.Where(c => c.IsNewClient && c.ShouldReceiveReward && c.RecipientClientId != refLink.SenderClientId).Count() > _settings.InvitationLinkMaxNumOfClientsToReceiveReward;
+            var transferRewardToRecipient = await TransferRewardCoinsToRecipient(refLink, request.RecipientClientId, shouldReceiveReward, true);
+
+            if (shouldReceiveReward)
+            {
+                var transferRewardToSender = await TransferRewardCoinsToRecipient(refLink, refLink.SenderClientId, shouldReceiveReward, false);
+            }
+
+            //return 
+
+
+            return null;
+        }
+
+
+
+
+
+
+
+
+
+        //[HttpPost]
+        //[SwaggerOperation("AssetAdd")]
+        //[ProducesResponseType(typeof(Asset), (int)HttpStatusCode.Created)]
+        //public async Task<IActionResult> Add([FromBody] Asset asset)
+        //{
+        //    asset = Mapper.Map<Asset>(await _assetManager.AddAsync(asset));
+
+        //    return Created
+        //    (
+        //        uri: $"api/v2/assets/{asset.Id}",
+        //        value: asset
+        //    );
+        //}
+
+
     }
 }

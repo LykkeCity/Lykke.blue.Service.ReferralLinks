@@ -7,11 +7,11 @@ using System.Text;
 
 namespace Lykke.Service.ReferralLinks.Modules.Validation
 {
-    public class ClaimGiftCoinsValidationModel : AbstractValidator<TransferFromLykkeWalletToRecipient>
+    public class ClaimReferralLinkRequestValidationModel : AbstractValidator<ClaimReferralLinkRequest>
     {
         //private readonly IReferralLinksService _referralLinksService;
 
-        public ClaimGiftCoinsValidationModel(/*IReferralLinksService referralLinksService*/)
+        public ClaimReferralLinkRequestValidationModel(/*IReferralLinksService referralLinksService*/)
         {
             //_referralLinksService = referralLinksService;
 

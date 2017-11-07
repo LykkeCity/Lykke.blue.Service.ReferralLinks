@@ -11,5 +11,6 @@ namespace Lykke.Service.ReferralLinks.Core.Services
         Task<IReferralLinkClaim> CreateAsync(IReferralLinkClaim referralLink);
         Task<IReferralLinkClaim> GetAsync(string id);
         Task<IReferralLinkClaim> UpdateAsync(IReferralLinkClaim referralLink);
+        Task<IEnumerable<IReferralLinkClaim>> GetRefLinkClaims(string refLinkId);
     }
 }

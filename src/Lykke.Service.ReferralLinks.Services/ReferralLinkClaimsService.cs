@@ -27,6 +27,11 @@ namespace Lykke.Service.ReferralLinks.Services
             throw new NotImplementedException();
         }
 
+        public async Task<IEnumerable<IReferralLinkClaim>> GetRefLinkClaims(string refLinkId)
+        {
+            return await _referralLinkRepository.GetClaimsForRefLink(refLinkId);
+        }
+
         public Task<IReferralLinkClaim> UpdateAsync(IReferralLinkClaim referralLink)
         {
             throw new NotImplementedException();
