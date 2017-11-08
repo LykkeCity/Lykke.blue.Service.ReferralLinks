@@ -31,10 +31,10 @@ namespace Lykke.Service.ReferralLinks.Client
             }
         }
 
-        public async Task<CreateReferralLinkResponse> Create(CreateReferralLinkRequest request)
-        {
-            throw new NotImplementedException();
-        }
+        //public async Task<CreateReferralLinkResponse> Create(CreateReferralLinkRequest request)
+        //{
+        //    throw new NotImplementedException();
+        //}
 
         public void Dispose()
         {

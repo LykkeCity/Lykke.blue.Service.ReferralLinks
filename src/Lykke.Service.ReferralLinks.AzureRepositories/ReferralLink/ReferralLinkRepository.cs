@@ -99,7 +99,7 @@ namespace Lykke.Service.ReferralLinks.AzureRepositories.ReferralLink
             };
         }
 
-        public async Task<bool> IsReferralLinksNumberLimitReached(string senderClientId)
+        public async Task<bool> IsInvitationLinksMaxNumberReachedForSender(string senderClientId)
         {
             var numberOfCreatedReflinks = (await _referralLinkTable.GetDataAsync(
                 GetPartitionKey(),
@@ -108,7 +108,7 @@ namespace Lykke.Service.ReferralLinks.AzureRepositories.ReferralLink
                     && x.Type == ReferralLinkType.Invitation
             )).Count();
 
-            return numberOfCreatedReflinks >= _settings.ReferralLinksNumberLimit;
+            return numberOfCreatedReflinks >= _settings.InvitationLinkSettings.LinksNumberLimitPerSender;
         }
 
         //TODO: Review 

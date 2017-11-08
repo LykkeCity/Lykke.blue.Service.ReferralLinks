@@ -8,6 +8,7 @@ using AutoMapper;
 using Lykke.Service.ReferralLinks.Services.Domain;
 using System;
 using Lykke.Service.ReferralLinks.Core.Settings.ServiceSettings;
+using Lykke.Service.ReferralLinks.Core.Domain.Requests;
 
 namespace Lykke.Service.ReferralLinks.Services
 {
@@ -27,24 +28,37 @@ namespace Lykke.Service.ReferralLinks.Services
             _settings = settings;
         }
 
-        //public async Task<string> ClaimGiftCoins(string id, bool isNewUser, string claimingClientId)
-        //{
-        //    return await _referralLinkRepository.ClaimGiftCoins(id, isNewUser, claimingClientId);
-        //}
-
-        public async Task<IReferralLink> Create(IReferralLink referralLink)
+        public async Task<IReferralLink> CreateInvitationLink(InvitationReferralLinkRequest referralLinkRequest)
         {
-            var entity = Mapper.Map<ReferralLink>(referralLink);
+            var entity = Mapper.Map<InvitationReferralLinkRequest, ReferralLink>(referralLinkRequest);
+            entity.Id = Guid.NewGuid().ToString();
+            entity.ExpirationDate = null;
+            entity.Amount = _settings.InvitationLinkSettings.RewardAmount;
+            entity.Asset = _settings.InvitationLinkSettings.RewardAsset;
+            entity.Url = await _firebaseService.GenerateUrl(entity.Id);
+            entity.State = ReferralLinkState.Created;
 
-            if(String.IsNullOrEmpty(entity.Id))
-            {
-                entity.Id = Guid.NewGuid().ToString();
-            }
+            return await _referralLinkRepository.Create(entity);
 
-            if (entity.Type == ReferralLinkType.MoneyTransfer)
-                entity.ExpirationDate = DateTime.UtcNow.AddDays(_settings.ExpirationDaysLimit);
-            else if (referralLink.Type == ReferralLinkType.Invitation)
-                entity.ExpirationDate = null;
+            //if (entity.Type == ReferralLinkType.MoneyTransfer)
+            //    entity.ExpirationDate = DateTime.UtcNow.AddDays(_settings.ExpirationDaysLimit);
+            //else if (referralLink.Type == ReferralLinkType.Invitation)
+          
+        }
+
+        public async Task<IReferralLink> CreateMoneyTransferLink(MoneyTransferReferralLinkRequest referralLinkRequest)
+        {
+            var entity = Mapper.Map<MoneyTransferReferralLinkRequest, ReferralLink>(referralLinkRequest);//  new ReferralLink();
+            entity.Id = Guid.NewGuid().ToString();
+            entity.ExpirationDate = DateTime.UtcNow.AddDays(_settings.MoneyTransferLinkSettings.ExpirationDaysLimit); ;
+            entity.Url = await _firebaseService.GenerateUrl(entity.Id);
+            entity.State = ReferralLinkState.Created;
+
+            return await _referralLinkRepository.Create(entity);
+
+            //if (entity.Type == ReferralLinkType.MoneyTransfer)
+            //    entity.ExpirationDate = DateTime.UtcNow.AddDays(_settings.ExpirationDaysLimit);
+            //else if (referralLink.Type == ReferralLinkType.Invitation)
 
             if (String.IsNullOrEmpty(entity.Url))
             {
@@ -80,9 +94,9 @@ namespace Lykke.Service.ReferralLinks.Services
             return await _referralLinkRepository.GetReferralLinksStatisticsBySenderId(senderClientId);
         }
 
-        public async Task<bool> IsReferralLinksNumberLimitReached(string senderClientId)
+        public async Task<bool> IsInvitationLinksMaxNumberReachedForSender(string senderClientId)
         {
-            return await _referralLinkRepository.IsReferralLinksNumberLimitReached(senderClientId);
+            return await _referralLinkRepository.IsInvitationLinksMaxNumberReachedForSender(senderClientId);
         }
 
         public async Task ReturnCoinsToSender()

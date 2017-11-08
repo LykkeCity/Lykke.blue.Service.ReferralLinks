@@ -73,7 +73,7 @@ namespace Lykke.Service.ReferralLinks
 
                 var builder = new ContainerBuilder();
                 var appSettings = Configuration.LoadSettings<AppSettings>();
-                Log = builder.BindLog(appSettings.ConnectionString(x => x.ReferralLinksService.Db.LogsConnString), "ReferralLinksService", "ReferralLinks");
+                Log = builder.BindLog(appSettings.ConnectionString(x => x.ReferralLinksService.Db.LogsConnString), "ReferralLinksService", "ReferralLinksLog");
 
                 builder.RegisterModule(new ServiceModule(appSettings.Nested(x => x.ReferralLinksService), Log));
                 builder.Populate(services);

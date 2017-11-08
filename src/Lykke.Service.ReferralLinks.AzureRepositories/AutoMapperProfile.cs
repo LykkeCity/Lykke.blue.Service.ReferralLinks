@@ -12,9 +12,9 @@ namespace Lykke.Service.ReferralLinks.AzureRepositories
         public AutoMapperProfile()
         {
             //To entities
-            CreateMap<IReferralLink, ReferralLinkEntity>()
-                .ForMember(dest => dest.State, opt => opt.MapFrom(src => src.State.ToString()))
-                .ForMember(dest => dest.Type, opt => opt.MapFrom(src => src.Type.ToString()));
+            CreateMap<IReferralLink, ReferralLinkEntity>();
+                //.ForMember(dest => dest.State, opt => opt.MapFrom(src => src.State.ToString()))
+                //.ForMember(dest => dest.Type, opt => opt.MapFrom(src => src.Type.ToString()));
 
             CreateMap<IReferralLinkClaim, ReferralLinkClaimEntity>();
 

@@ -5,13 +5,13 @@ namespace Lykke.Service.ReferralLinks.Core.Settings.ServiceSettings
     public class ReferralLinksSettings
     {
         public DbSettings Db { get; set; }
-        public int ExpirationDaysLimit { get; set; }
-        public int ExpiredLinksCheckTimeout { get; set; }
-        public int ReferralLinksNumberLimit { get; set; }
-        public int InvitationLinkMaxNumOfClientsToReceiveReward { get; set; }        
-        public string LykkeReferralClientId { get; set; }
+        public InvitationLinkSettings InvitationLinkSettings { get; set; }
+        public MoneyTransferLinkSettings MoneyTransferLinkSettings { get; set; }
         public Services ExternalServices { get; set; }
-        public SlackNotificationsSettings SlackNotifications { get; set; }        
+        public SlackNotificationsSettings SlackNotifications { get; set; }
         public FirebaseSettings Firebase { get; set; }
+        public int ExpiredLinksCheckTimeout { get; set; }     
+        public string LykkeReferralClientId { get; set; }
+       
     }
 }

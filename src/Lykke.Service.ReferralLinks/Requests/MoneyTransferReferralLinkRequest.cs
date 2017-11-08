@@ -1,35 +1,42 @@
-﻿using System;
-using Lykke.Service.ReferralLinks.Core.Domain.ReferralLink;
+﻿using Lykke.Service.ReferralLinks.Core.Domain.ReferralLink;
+using System;
+using System.Collections.Generic;
 using System.Runtime.Serialization;
-using System.ComponentModel.DataAnnotations;
+using System.Text;
 
 namespace Lykke.Service.ReferralLinks.Requests
 {
-    //public class CreateReferralLinkRequest : IReferralLink
+    //public class MoneyTransferReferralLinkRequest : IReferralLink
     //{
     //    //REMARK: We do not need to allow someone to set Id. Id is set automatically.
     //    [IgnoreDataMember]
     //    public string Id { get; }
 
-    //    [Required]
+    //    [IgnoreDataMember]
     //    public string Url { get; set; }
 
+    //    [IgnoreDataMember]
     //    public DateTime? ExpirationDate { get; set; }
 
-    //    [Required]
     //    public string SenderClientId { get; set; }
 
-    //    [Required]
     //    public string Asset { get; set; }
 
-    //    [Required]
+    //    [IgnoreDataMember]
+    //    public bool? IsNewUser { get; set; }
+
+    //    [IgnoreDataMember]
     //    public ReferralLinkState State { get; set; }
 
     //    public decimal Amount { get; set; }
 
-    //    [Required]
-    //    public ReferralLinkType Type { get; set; }
+    //    [IgnoreDataMember]
+    //    public string ClaimingClientId { get; set; }
 
+    //    [IgnoreDataMember]
+    //    public ReferralLinkType Type => ReferralLinkType.MoneyTransfer;
+
+    //    [IgnoreDataMember]
     //    public string SenderTransactionId { get; set; }
     //}
 }
