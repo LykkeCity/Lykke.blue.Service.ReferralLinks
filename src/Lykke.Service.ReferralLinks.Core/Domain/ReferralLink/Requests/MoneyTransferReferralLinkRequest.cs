@@ -10,7 +10,7 @@ namespace Lykke.Service.ReferralLinks.Core.Domain.Requests
     {
         public string SenderClientId { get; set; }
         public string Asset { get; set; }     
-        public decimal Amount { get; set; }
+        public double Amount { get; set; }
        
         [IgnoreDataMember]
         public ReferralLinkType Type => ReferralLinkType.MoneyTransfer;     

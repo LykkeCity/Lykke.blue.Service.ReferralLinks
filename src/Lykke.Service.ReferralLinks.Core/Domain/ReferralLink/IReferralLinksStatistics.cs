@@ -8,7 +8,7 @@ namespace Lykke.Service.ReferralLinks.Core.Domain.ReferralLink
     {
         int NumberOfInvitationsSent { get; }
         int NumberOfInvitationAccepted { get; }
-        decimal AmountOfCoinsDistributed { get; }
+        double AmountOfCoinsDistributed { get; }
         int NumberOfNewUsersBroughtIn { get; }
     }
 }

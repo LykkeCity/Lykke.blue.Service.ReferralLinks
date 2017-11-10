@@ -127,6 +127,7 @@ namespace Lykke.Service.ReferralLinks
 
                 //Start timer that will periodically check for expired referral links
                 var appSettings = Configuration.LoadSettings<AppSettings>();
+
                 ConfigureExpiredLinksTimer(app, appSettings);
             }
             catch (Exception ex)
@@ -136,16 +137,17 @@ namespace Lykke.Service.ReferralLinks
             }
         }
 
+        //TODO: review and uncomment
         private void ConfigureExpiredLinksTimer(IApplicationBuilder app, IReloadingManager<AppSettings> settings)
         {
-            var referralLinksService = app.ApplicationServices.GetService<IReferralLinksService>();
+            //var referralLinksService = app.ApplicationServices.GetService<IReferralLinksService>();
 
-            _timer = new Timer(
-                x => { referralLinksService.ReturnCoinsToSender().Wait(); },
-                null,
-                TimeSpan.Zero,
-                TimeSpan.FromMinutes(settings.CurrentValue.ReferralLinksService.ExpiredLinksCheckTimeout)
-            );
+            //_timer = new Timer(
+            //    x => { referralLinksService.ReturnCoinsToSender().Wait(); },
+            //    null,
+            //    TimeSpan.Zero,
+            //    TimeSpan.FromMinutes(settings.CurrentValue.ReferralLinksService.ExpiredLinksCheckTimeout)
+            //);
         }
 
         private async Task StopApplication()

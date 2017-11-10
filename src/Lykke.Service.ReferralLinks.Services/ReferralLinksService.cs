@@ -30,44 +30,33 @@ namespace Lykke.Service.ReferralLinks.Services
 
         public async Task<IReferralLink> CreateInvitationLink(InvitationReferralLinkRequest referralLinkRequest)
         {
-            var entity = Mapper.Map<InvitationReferralLinkRequest, ReferralLink>(referralLinkRequest);
+            var entity = new ReferralLink();
+            entity.SenderClientId = referralLinkRequest.SenderClientId;
+            entity.Type = referralLinkRequest.Type.ToString();
             entity.Id = Guid.NewGuid().ToString();
             entity.ExpirationDate = null;
             entity.Amount = _settings.InvitationLinkSettings.RewardAmount;
             entity.Asset = _settings.InvitationLinkSettings.RewardAsset;
             entity.Url = await _firebaseService.GenerateUrl(entity.Id);
-            entity.State = ReferralLinkState.Created;
+            entity.State = ReferralLinkState.Created.ToString();
 
-            return await _referralLinkRepository.Create(entity);
-
-            //if (entity.Type == ReferralLinkType.MoneyTransfer)
-            //    entity.ExpirationDate = DateTime.UtcNow.AddDays(_settings.ExpirationDaysLimit);
-            //else if (referralLink.Type == ReferralLinkType.Invitation)
-          
+            return await _referralLinkRepository.Create(entity);          
         }
 
         public async Task<IReferralLink> CreateMoneyTransferLink(MoneyTransferReferralLinkRequest referralLinkRequest)
         {
-            var entity = Mapper.Map<MoneyTransferReferralLinkRequest, ReferralLink>(referralLinkRequest);//  new ReferralLink();
+            var entity = new ReferralLink();
             entity.Id = Guid.NewGuid().ToString();
             entity.ExpirationDate = DateTime.UtcNow.AddDays(_settings.MoneyTransferLinkSettings.ExpirationDaysLimit); ;
             entity.Url = await _firebaseService.GenerateUrl(entity.Id);
-            entity.State = ReferralLinkState.Created;
+            entity.SenderClientId = referralLinkRequest.SenderClientId;
+            entity.Asset = referralLinkRequest.Asset;
+            entity.Amount = referralLinkRequest.Amount;
+            entity.Type = referralLinkRequest.Type.ToString();
+            entity.State = ReferralLinkState.Created.ToString();
 
             return await _referralLinkRepository.Create(entity);
-
-            //if (entity.Type == ReferralLinkType.MoneyTransfer)
-            //    entity.ExpirationDate = DateTime.UtcNow.AddDays(_settings.ExpirationDaysLimit);
-            //else if (referralLink.Type == ReferralLinkType.Invitation)
-
-            if (String.IsNullOrEmpty(entity.Url))
-            {
-                entity.Url = await _firebaseService.GenerateUrl(entity.Id);
-            }
-
-            entity.State = ReferralLinkState.Created;
-            return await _referralLinkRepository.Create(entity);
-        }
+    }
 
         public async Task<IReferralLink> Get(string id)
         {

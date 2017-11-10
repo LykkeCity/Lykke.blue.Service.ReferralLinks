@@ -9,7 +9,7 @@ namespace Lykke.Service.ReferralLinks.Extensions
     {
         public static string GetExecutongControllerAndAction(this ControllerContext contContext)
         {
-            return $"api{contContext.RouteData.Values["controller"].ToString()}/{contContext.RouteData.Values["action"].ToString()}";
+            return $"api/{contContext.RouteData.Values["controller"].ToString()}/{contContext.RouteData.Values["action"].ToString()}";
         }
     }
 }

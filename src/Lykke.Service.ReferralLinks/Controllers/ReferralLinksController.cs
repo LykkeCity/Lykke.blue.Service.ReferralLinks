@@ -154,7 +154,7 @@ namespace Lykke.Service.ReferralLinks.Controllers
             }
 
             var result = Mapper.Map<GetReferralLinkResponse>(referralLink);
-
+            
             return Ok(result);
         }
 
@@ -354,14 +354,14 @@ namespace Lykke.Service.ReferralLinks.Controllers
             var clientBalances = await _balancesClient.GetClientBalances(request.SenderClientId);
             var balance = clientBalances.FirstOrDefault(x => x.AssetId == asset.Id)?.Balance;
 
-            if(!balance.HasValue || ((decimal) balance.Value) < request.Amount)
+            if(!balance.HasValue || balance.Value < request.Amount)
             {
                 return BadRequest(Phrases.InvalidTreesAmount);
             }
 
-            var referralLink = Mapper.Map<CreateReferralLinkResponse>(await _referralLinksService.CreateMoneyTransferLink(request));
+            var referralLink = await _referralLinksService.CreateMoneyTransferLink(request);
 
-            return Created(uri: $"api/referralLinks/{referralLink.Id}", value: referralLink.Id);
+            return Created(uri: $"api/referralLinks/{referralLink.Id}", value: referralLink);
         }
         
 
@@ -370,8 +370,8 @@ namespace Lykke.Service.ReferralLinks.Controllers
         /// </summary>
         /// <param name="request"></param>
         /// <returns></returns>
-        [HttpPost("requestInvitationReferralLink")]
-        [SwaggerOperation("RequestInvitationReferralLink")]
+        [HttpPost("invitationLink")]
+        [SwaggerOperation("invitationLink")]
         [ProducesResponseType((int)HttpStatusCode.BadRequest)]
         [ProducesResponseType(typeof(string), (int)HttpStatusCode.OK)]
         public async Task<IActionResult> RequestInvitationReferralLink([FromBody] InvitationReferralLinkRequest request)
@@ -381,22 +381,10 @@ namespace Lykke.Service.ReferralLinks.Controllers
                 return BadRequest(Phrases.InvalidRequest);
             }
 
-            //if (request.Amount <= 0)
-            //{
-            //    return BadRequest(Phrases.InvalidAmount);
-            //}
-
             if (String.IsNullOrEmpty(request.SenderClientId) || await _clientAccountClient.GetClientById(request.SenderClientId) == null)
             {
                 return BadRequest(Phrases.InvalidSenderClientId);
             }
-
-            //var asset = (await _assets.GetDictionaryAsync()).Values.Where(v => v.Symbol == request.Asset).FirstOrDefault();
-
-            //if (String.IsNullOrEmpty(request.Asset) || asset == null)
-            //{
-            //    return BadRequest(Phrases.InvalidAsset);
-            //}
 
             var referralLinksLimitReached = await _referralLinksService.IsInvitationLinksMaxNumberReachedForSender(request.SenderClientId);
 
@@ -405,9 +393,9 @@ namespace Lykke.Service.ReferralLinks.Controllers
                 return BadRequest(Phrases.ReferralLinksLimitReached);
             }
 
-            var referralLink = Mapper.Map<CreateReferralLinkResponse>(await _referralLinksService.CreateInvitationLink(request));
+            var referralLink = await _referralLinksService.CreateInvitationLink(request);
 
-            return Created(uri: $"api/referralLinks/{referralLink.Id}", value: referralLink.Url);
+            return Created(uri: $"api/referralLinks/{referralLink.Id}", value: referralLink);
         }
 
         private string ValidateClaimGiftCoinsRequest(IReferralLink refLink)
@@ -422,17 +410,17 @@ namespace Lykke.Service.ReferralLinks.Controllers
                 return $"Requested amount for RefLink with id {refLink.Id} is 0 (not set). Check transfer's history.";
             }
 
-            if (refLink.Type == ReferralLinkType.MoneyTransfer && refLink.State != ReferralLinkState.SentToLykkeSharedWallet)
+            if (refLink.Type == ReferralLinkType.MoneyTransfer.ToString() && refLink.State != ReferralLinkState.SentToLykkeSharedWallet.ToString())
             {
                 return $"RefLink type {refLink.Type} with state {refLink.State} can not be claimed.";
             }
 
-            if (refLink.Type == ReferralLinkType.Invitation && refLink.State != ReferralLinkState.Created)
+            if (refLink.Type == ReferralLinkType.Invitation.ToString() && refLink.State != ReferralLinkState.Created.ToString())
             {
                 return $"RefLink type {refLink.Type} with state {refLink.State} can not be claimed.";
             }
 
-            if (refLink.ExpirationDate.HasValue && refLink.ExpirationDate.Value.CompareTo(DateTime.Now) > 0)
+            if (refLink.ExpirationDate.HasValue && refLink.ExpirationDate.Value.CompareTo(DateTime.Now) < 0)
             {
                 return $"RefLink is expired at {refLink.ExpirationDate.Value} and can not be claimed.";
             }
@@ -476,10 +464,10 @@ namespace Lykke.Service.ReferralLinks.Controllers
             {
                 if (transactionRewardRecipient.IsOk())
                 {
-                    using (TransactionScope scope = new TransactionScope())
+                    using (TransactionScope scope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
                     {
                         await SetRefLinkClaimTransactionId(transactionRewardRecipient, newRefLinkClaimRecipient);
-                        refLink.State = ReferralLinkState.Claimed;
+                        refLink.State = ReferralLinkState.Claimed.ToString();
                         await _referralLinksService.UpdateAsync(refLink);
                         scope.Complete();
                     }
@@ -523,7 +511,7 @@ namespace Lykke.Service.ReferralLinks.Controllers
                 return NotFound("Not a new client.");
             }            
 
-            var refLink = await _referralLinksService.GetReferralLinkById(request.ReferalLinkId);
+            var refLink = await _referralLinksService.GetReferralLinkById(request.ReferalLinkId) ?? await _referralLinksService.GetReferralLinkByUrl(request.ReferalLinkUrl);
 
             var validationError = ValidateClaimGiftCoinsRequest(refLink);
             if (!String.IsNullOrEmpty(validationError))
@@ -532,6 +520,12 @@ namespace Lykke.Service.ReferralLinks.Controllers
             }
 
             var claims = await _referralLinkClaimsService.GetRefLinkClaims(refLink.Id);
+
+            var alreadyClaimedByThisRecipient = claims.Where(c => c.RecipientClientId == request.RecipientClientId).Count() > 0;
+            if (alreadyClaimedByThisRecipient)
+            {
+                return BadRequest($"Link already claimed by client id {request.RecipientClientId}");
+            }
 
             bool shouldReceiveReward = ShoulReceiveReward(claims, refLink);
 
@@ -574,15 +568,15 @@ namespace Lykke.Service.ReferralLinks.Controllers
                 refLinkClaim.RecipientTransactionId = result.TransactionId;
                 await _referralLinkClaimsService.UpdateAsync(refLinkClaim);
             }
-            else
-            {
-                await _log.WriteErrorAsync(ControllerContext.GetExecutongControllerAndAction(), nameof(SetRefLinkClaimTransactionId), (new { result, refLinkClaim }).ToJson(), new Exception(result.ToJson()), DateTime.Now);
-            }
+            //else
+            //{
+            //    await _log.WriteErrorAsync(ControllerContext.GetExecutongControllerAndAction(), nameof(SetRefLinkClaimTransactionId), (new { result, refLinkClaim }).ToJson(), new Exception(result.ToJson()), DateTime.Now);
+            //}
         }
 
         private bool ShoulReceiveReward(IEnumerable<IReferralLinkClaim> claims, IReferralLink refLink)
         {
-            return claims.Where(c => c.IsNewClient && c.ShouldReceiveReward && c.RecipientClientId != refLink.SenderClientId).Count() > _settings.InvitationLinkSettings.MaxNumOfClientsToReceiveReward;
+            return claims.Where(c => c.IsNewClient && c.ShouldReceiveReward && c.RecipientClientId != refLink.SenderClientId).Count() < _settings.InvitationLinkSettings.MaxNumOfClientsToReceiveReward;
         }
 
         private async Task<IReferralLinkClaim> CreateNewRefLinkClaim(IReferralLink refLink, string recipientClientId, bool shouldReceiveReward, bool isNewClient)
@@ -600,13 +594,27 @@ namespace Lykke.Service.ReferralLinks.Controllers
         {
             try
             {
+                var asset = (await _assets.GetDictionaryAsync()).Values.Where(v => v.Symbol == refLink.Asset).FirstOrDefault();
+                if (asset == null)
+                {
+                    var message = $"Asset with symbol {refLink.Asset} not found";
+                    await _log.WriteErrorAsync(ControllerContext.GetExecutongControllerAndAction(), nameof(TransferRewardCoins), (new { Error = message }).ToJson(), new Exception(message), DateTime.Now);
+                    return new ExchangeOperationResult { Message = message };
+                }
+                    
+
                 var result = await _exchangeOperationsService.TransferAsync(
                          recipientClientId,
                          _settings.LykkeReferralClientId,
                          (double)refLink.Amount,
-                         refLink.Asset,
+                         asset.Id,
                          TransferType.Common.ToString()
                          );
+
+                if (!result.IsOk())
+                {
+                    await _log.WriteErrorAsync(ControllerContext.GetExecutongControllerAndAction(), nameof(TransferRewardCoins), (new { Error = $"TransferAsync from exchangeOperationsService returned error: Message: {result.Message}, Code: {result.Code}" }).ToJson(), new Exception(result.Message), DateTime.Now);
+                }
 
                 return result;
             }

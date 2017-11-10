@@ -13,11 +13,11 @@ namespace Lykke.Service.ReferralLinks
         public AutoMapperProfile()
         {
             //CreateMap<IReferralLink, CreateReferralLinkRequest>();
-            CreateMap<IReferralLink, CreateReferralLinkResponse>();
+            //CreateMap<IReferralLink, CreateReferralLinkResponse>();
             CreateMap<IReferralLink, GetReferralLinkResponse>();            
             CreateMap<IReferralLinksStatistics, GetReferralLinksStatisticsBySenderIdResponse>();
-            CreateMap<MoneyTransferReferralLinkRequest, ReferralLink>();
-            CreateMap<InvitationReferralLinkRequest, ReferralLink>();
+            //CreateMap<MoneyTransferReferralLinkRequest, ReferralLink>();
+            //CreateMap<InvitationReferralLinkRequest, ReferralLink>();
             //CreateMap<IReferralLink, RequestMoneyTransferReferralLink>();
         }
     }

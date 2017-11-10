@@ -92,14 +92,21 @@ namespace Lykke.Service.ReferralLinks.Controllers
                 return BadRequest(new ErrorResponse("Ref link Id not found ot missing", ""));
             }
 
+            var asset = (await _assets.GetDictionaryAsync()).Values.Where(v => v.Symbol == refLink.Asset).FirstOrDefault();
+
+            if(asset == null)
+            {
+                return BadRequest(new ErrorResponse($"Specified asset {refLink.Asset} in reflink id {refLink.Id} not found ", ""));
+            }
+
             await CheckOffchain(clientId);
 
-            if (await _srvKycForAsset.IsKycNeeded(clientId, refLink.Asset))
+            if (await _srvKycForAsset.IsKycNeeded(clientId, asset.Id))
                 return BadRequest(new ErrorResponse("KycNeeded", "")); //ResponseModel<OffchainTradeRespModel>.CreateFail(ResponseModel.ErrorCodeType.InconsistentData, Phrases.KycNeeded);
 
             try
             {
-                var response = await _offchainService.CreateDirectTransfer(clientId, refLink.Asset, refLink.Amount, model.PrevTempPrivateKey);
+                var response = await _offchainService.CreateDirectTransfer(clientId, asset.Id, (decimal) refLink.Amount, model.PrevTempPrivateKey);
 
                 await _exchangeOperationsService.StartTransferAsync(
                     response.TransferId,
@@ -150,14 +157,14 @@ namespace Lykke.Service.ReferralLinks.Controllers
             }
         }
 
-        private async void AttachSenderTransferToRefLink(IReferralLink refLink, IOffchainRequest offchainRequest, string transferId)
+        private async void AttachSenderTransferToRefLink(IReferralLink refLink, string transferId)
         {
-            var transfer = await _offchainTransferRepository.GetTransfer(offchainRequest.TransferId);
+            var transfer = await _offchainTransferRepository.GetTransfer(transferId);
 
-            refLink.Amount = transfer.Amount;
+            refLink.Amount = (double)transfer.Amount;
             refLink.Asset = (await _assets.GetItemAsync(transfer.AssetId)).Symbol;
             refLink.SenderTransactionId = transferId;
-            refLink.State = ReferralLinkState.SentToLykkeSharedWallet;
+            refLink.State = ReferralLinkState.SentToLykkeSharedWallet.ToString();
 
             await _referralLinksService.UpdateAsync(refLink);
         }
@@ -187,13 +194,16 @@ namespace Lykke.Service.ReferralLinks.Controllers
             try
             {
                 var response = await _offchainService.Finalize(clientId, model.TransferId, model.ClientRevokePubKey,
-                    model.ClientRevokeEncryptedPrivateKey, model.SignedTransferTransaction);                
+                    model.ClientRevokeEncryptedPrivateKey, model.SignedTransferTransaction);
+                
+                if(response!= null && response.OperationResult == OffchainOperationResult.ClientCommitment)
+                {
+                    AttachSenderTransferToRefLink(refLinkEntity, response.TransferId);
+                }                
 
                 var request =
                     (await _offchainRequestRepository.GetRequestsForClient(clientId)).FirstOrDefault(
-                        x => x.TransferId == model.TransferId);
-
-                AttachSenderTransferToRefLink(refLinkEntity, request, response.TransferId);
+                        x => x.TransferId == model.TransferId);                
 
                 if (request != null)
                     await _offchainRequestRepository.Complete(request.RequestId);

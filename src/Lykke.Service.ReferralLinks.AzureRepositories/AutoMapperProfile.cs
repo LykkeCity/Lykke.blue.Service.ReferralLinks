@@ -14,7 +14,7 @@ namespace Lykke.Service.ReferralLinks.AzureRepositories
             //To entities
             CreateMap<IReferralLink, ReferralLinkEntity>();
                 //.ForMember(dest => dest.State, opt => opt.MapFrom(src => src.State.ToString()))
-                //.ForMember(dest => dest.Type, opt => opt.MapFrom(src => src.Type.ToString()));
+                //.ForMember(dest => dest.Type, opt => opt.MapFrom(src => src.Type));
 
             CreateMap<IReferralLinkClaim, ReferralLinkClaimEntity>();
 

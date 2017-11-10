@@ -13,8 +13,6 @@ namespace Lykke.Service.ReferralLinks.AzureRepositories.DTOs
 
         public bool ShouldReceiveReward { get; set; }
 
-        public bool HasReceivedReward { get; set; }
-
         public bool IsNewClient { get; set; }
 
         public string Id { get; set; }

@@ -24,6 +24,8 @@ using Lykke.Service.ExchangeOperations.Client;
 using Lykke.Service.ReferralLinks.Core.Domain.Offchain;
 using Lykke.Service.ClientAccount.Client;
 using Lykke.Service.Balances.Client;
+using Lykke.MatchingEngine.Connector.Abstractions.Services;
+using System.Net;
 
 namespace Lykke.Service.ReferralLinks.Modules
 {
@@ -61,6 +63,26 @@ namespace Lykke.Service.ReferralLinks.Modules
             
         }
 
+        public static IPEndPoint GetIPEndPointFromHostName(string hostName, int port, bool throwIfMoreThanOneIP)
+        {
+            var addresses = System.Net.Dns.GetHostAddresses(hostName);
+            if (addresses.Length == 0)
+            {
+                throw new ArgumentException(
+                    "Unable to retrieve address from specified host name.",
+                    "hostName"
+                );
+            }
+            else if (throwIfMoreThanOneIP && addresses.Length > 1)
+            {
+                throw new ArgumentException(
+                    "There is more that one IP address to the specified host.",
+                    "hostName"
+                );
+            }
+            return new IPEndPoint(addresses[0], port); // Port gets validated here.
+        }
+
         private void RegisterLocalServices(ContainerBuilder builder)
         {
             builder.RegisterType<HealthService>().As<IHealthService>().SingleInstance();
@@ -74,12 +96,14 @@ namespace Lykke.Service.ReferralLinks.Modules
             builder.RegisterType<OffchainRequestService>().As<IOffchainRequestService>();
             builder.RegisterType<OffchainService>().As<IOffchainService>().SingleInstance();
 
+            builder.BindMeClient(GetIPEndPointFromHostName("me.lykke-me.svc.cluster.local", 8888, true));
+
             builder.RegisterType<ReferralLinksService>()
                 .As<IReferralLinksService>()
-                .WithParameter("settings", _settings.CurrentValue)
+                //.WithParameter("settings", _settings.CurrentValue)
                 .SingleInstance();
 
-            builder.RegisterType<IReferralLinkClaimsService>().As<ReferralLinkClaimsService>().SingleInstance();            
+            builder.RegisterType<ReferralLinkClaimsService>().As<IReferralLinkClaimsService>().SingleInstance();            
         }
 
         private void RegisterRepos(ContainerBuilder builder)

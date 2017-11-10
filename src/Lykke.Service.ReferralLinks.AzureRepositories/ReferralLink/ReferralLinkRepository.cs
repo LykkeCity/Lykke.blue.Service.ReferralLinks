@@ -61,7 +61,7 @@ namespace Lykke.Service.ReferralLinks.AzureRepositories.ReferralLink
         {
             var entities = await _referralLinkTable.GetDataAsync(
                 GetPartitionKey(),
-                x => (String.IsNullOrEmpty(senderClientId) || x.SenderClientId == senderClientId) && (!state.HasValue || x.State == state.Value)
+                x => (String.IsNullOrEmpty(senderClientId) || x.SenderClientId == senderClientId) && (!state.HasValue || x.State == state.Value.ToString())
             );
 
             return Mapper.Map<IEnumerable<ReferralLinkDto>>(entities);
@@ -83,11 +83,11 @@ namespace Lykke.Service.ReferralLinks.AzureRepositories.ReferralLink
                 x => x.SenderClientId == senderClientId
             );
 
-            var numberOfInvitationSent = referralLinks.Count(x => x.State == ReferralLinkState.SentToLykkeSharedWallet);
-            var numberOfInvitationAccepted = referralLinks.Count(x => x.State == ReferralLinkState.Claimed);
+            var numberOfInvitationSent = referralLinks.Count(x => x.State == ReferralLinkState.SentToLykkeSharedWallet.ToString());
+            var numberOfInvitationAccepted = referralLinks.Count(x => x.State == ReferralLinkState.Claimed.ToString());
             //var numberOfNewUsersBroughtIn = referralLinks.Count(x => x.IsNewUser.HasValue && x.IsNewUser.Value); //this should come from ReferralLinkClaimsRepository
             var amountOfCoinsDistributed = referralLinks
-                .Where(x => x.State == ReferralLinkState.Claimed)
+                .Where(x => x.State == ReferralLinkState.Claimed.ToString())
                 .Sum(x => x.Amount);
 
             return new ReferralLinksStatisticsDto
@@ -101,14 +101,19 @@ namespace Lykke.Service.ReferralLinks.AzureRepositories.ReferralLink
 
         public async Task<bool> IsInvitationLinksMaxNumberReachedForSender(string senderClientId)
         {
+            var b =_referralLinkTable.ToList();
+
+            var a = await _referralLinkTable.GetDataAsync();
+
+
             var numberOfCreatedReflinks = (await _referralLinkTable.GetDataAsync(
                 GetPartitionKey(),
-                x => x.SenderClientId == senderClientId 
-                    && x.State == ReferralLinkState.Created
-                    && x.Type == ReferralLinkType.Invitation
-            )).Count();
+                x => x.SenderClientId == senderClientId
+                    && x.State == ReferralLinkState.Created.ToString()
+                    && x.Type == ReferralLinkType.Invitation.ToString()
+            )); //.Count();
 
-            return numberOfCreatedReflinks >= _settings.InvitationLinkSettings.LinksNumberLimitPerSender;
+            return numberOfCreatedReflinks.Count() >= _settings.InvitationLinkSettings.LinksNumberLimitPerSender;
         }
 
         //TODO: Review 
@@ -116,7 +121,7 @@ namespace Lykke.Service.ReferralLinks.AzureRepositories.ReferralLink
         {
             var entities = await _referralLinkTable.GetDataAsync(
                 GetPartitionKey(), 
-                x => x.ExpirationDate < DateTime.UtcNow && x.State != ReferralLinkState.CoinsReturnedToSender
+                x => x.ExpirationDate < DateTime.UtcNow && x.State != ReferralLinkState.CoinsReturnedToSender.ToString()
             );
 
             foreach (var entity in entities)
@@ -149,7 +154,7 @@ namespace Lykke.Service.ReferralLinks.AzureRepositories.ReferralLink
         public async Task UpdateState(string id, ReferralLinkState state)
         {
             var entity = await _referralLinkTable.GetDataAsync(GetPartitionKey(), GetRowKey(id));
-            entity.State = state;
+            entity.State = state.ToString();
 
             await _referralLinkTable.InsertOrReplaceAsync(entity);
         }

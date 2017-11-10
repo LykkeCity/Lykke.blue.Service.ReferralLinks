@@ -77,6 +77,8 @@ namespace Core.BitCoin.BitcoinApi.Models
         WrongTransferId = 33,
         AddressUsedInOffchain = 34,
         ChannelWasBroadcasted = 35,
-        AssetSettingNotFound = 36
+        AssetSettingNotFound = 36,
+        OffchainTransferAlreadyCompleted = 37,
+        RequestedClientDoesNotMatchTransferClient = 38
     }
 }

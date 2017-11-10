@@ -11,7 +11,7 @@ namespace Lykke.Service.ReferralLinks.AzureRepositories.DTOs
 
         public int NumberOfInvitationAccepted { get; set; }
 
-        public decimal AmountOfCoinsDistributed { get; set; }
+        public double AmountOfCoinsDistributed { get; set; }
 
         public int NumberOfNewUsersBroughtIn { get; set; }
     }

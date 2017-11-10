@@ -62,6 +62,9 @@ namespace Lykke.Service.ReferralLinks.AzureRepositories
             container.RegisterInstance<IReferralLinkRepository>(
                new ReferralLinkRepository(AzureTableStorage<ReferralLinkEntity>.Create(settings.ConnectionString(n => n.Db.ReferralLinksConnString), "ReferralLinks", log), settings.CurrentValue));
 
+            container.RegisterInstance<IReferralLinkClaimsRepository>(
+               new ReferralLinkClaimsRepository(AzureTableStorage<ReferralLinkClaimEntity>.Create(settings.ConnectionString(n => n.Db.ReferralLinksConnString), "ReferralLinkClaims", log)));
+
             container.RegisterInstance<IOffchainFinalizeCommandProducer>(new OffchainFinalizeCommandProducer(AzureQueueExt.Create(settings.ConnectionString(x => x.Db.BitCoinQueueConnectionString), "offchain-finalization")));
         }
 

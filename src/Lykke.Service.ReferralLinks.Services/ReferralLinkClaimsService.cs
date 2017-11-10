@@ -9,17 +9,17 @@ namespace Lykke.Service.ReferralLinks.Services
 {
     public class ReferralLinkClaimsService : IReferralLinkClaimsService
     {
-        private readonly IReferralLinkClaimsRepository _referralLinkRepository;
+        private readonly IReferralLinkClaimsRepository _referralLinkClaimsRepository;
 
         public ReferralLinkClaimsService(
             IReferralLinkClaimsRepository referralLinkRepository)
         {
-            _referralLinkRepository = referralLinkRepository;
+            _referralLinkClaimsRepository = referralLinkRepository;
         }
 
         public async Task<IReferralLinkClaim> CreateAsync(IReferralLinkClaim referralLink)
         {
-            return await _referralLinkRepository.Create(referralLink);
+            return await _referralLinkClaimsRepository.Create(referralLink);
         }
 
         public Task<IReferralLinkClaim> GetAsync(string id)
@@ -29,12 +29,12 @@ namespace Lykke.Service.ReferralLinks.Services
 
         public async Task<IEnumerable<IReferralLinkClaim>> GetRefLinkClaims(string refLinkId)
         {
-            return await _referralLinkRepository.GetClaimsForRefLink(refLinkId);
+            return await _referralLinkClaimsRepository.GetClaimsForRefLink(refLinkId);
         }
 
-        public Task<IReferralLinkClaim> UpdateAsync(IReferralLinkClaim referralLink)
+        public async Task<IReferralLinkClaim> UpdateAsync(IReferralLinkClaim referralLink)
         {
-            throw new NotImplementedException();
+            return await _referralLinkClaimsRepository.Update(referralLink);
         }
     }
 }

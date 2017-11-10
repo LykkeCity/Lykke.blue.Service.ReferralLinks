@@ -15,11 +15,11 @@ namespace Lykke.Service.ReferralLinks.AzureRepositories.DTOs
 
         public string Asset { get; set; }
 
-        public ReferralLinkState State { get; set; }
+        public string State { get; set; }
 
-        public decimal Amount { get; set; }
+        public double Amount { get; set; }
 
-        public ReferralLinkType Type { get; set; }
+        public string Type { get; set; }
 
         public string SenderTransactionId { get; set; }
     }

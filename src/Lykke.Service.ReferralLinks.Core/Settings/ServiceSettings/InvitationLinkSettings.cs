@@ -7,7 +7,7 @@ namespace Lykke.Service.ReferralLinks.Core.Settings.ServiceSettings
     public class InvitationLinkSettings
     {
         public int MaxNumOfClientsToReceiveReward { get; set; }
-        public decimal RewardAmount { get; set; }
+        public double RewardAmount { get; set; }
         public string RewardAsset { get; set; }
         public int LinksNumberLimitPerSender { get; set; }
     }

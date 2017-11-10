@@ -61,20 +61,20 @@ namespace Lykke.Service.ReferralLinks.Services.Offchain
             _assets = assets;
         }
 
-        public async Task<OffchainResult> CreateDirectTransfer(string clientId, string asset, decimal amount, string prevTempPrivateKey)
+        public async Task<OffchainResult> CreateDirectTransfer(string clientId, string assetId, decimal amount, string prevTempPrivateKey)
         {
             var credentials = await _walletCredentialsRepository.GetAsync(clientId);
 
             var result = await _bitcoinApiClient.OffchainTransferAsync(new OffchainTransferData
             {
                 Amount = -amount,
-                AssetId = asset,
+                AssetId = assetId,
                 ClientPrevPrivateKey = prevTempPrivateKey,
                 ClientPubKey = credentials.PublicKey,
                 Required = false
             });
 
-            var offchainTransfer = await _offchainTransferRepository.CreateTransfer(Guid.NewGuid().ToString(), clientId, asset, amount, OffchainTransferType.DirectTransferFromClient, result.TransferId?.ToString(), null);
+            var offchainTransfer = await _offchainTransferRepository.CreateTransfer(Guid.NewGuid().ToString(), clientId, assetId, amount, OffchainTransferType.DirectTransferFromClient, result.TransferId?.ToString(), null);
 
             if (result.HasError)
                 return await InternalErrorProcessing("CreateTransfer", result.Error, credentials, offchainTransfer, false);
@@ -185,8 +185,11 @@ namespace Lykke.Service.ReferralLinks.Services.Offchain
             var credentials = await _walletCredentialsRepository.GetAsync(clientId);
             var offchainTransfer = await _offchainTransferRepository.GetTransfer(transferId);
 
-            if (offchainTransfer.Completed || offchainTransfer.ClientId != clientId)
-                throw new OffchainException(ErrorCode.Exception, offchainTransfer.AssetId);
+            //if (offchainTransfer.Completed)
+            //    throw new OffchainException(ErrorCode.OffchainTransferAlreadyCompleted, offchainTransfer.AssetId);
+
+            if (offchainTransfer.ClientId != clientId)
+                throw new OffchainException(ErrorCode.RequestedClientDoesNotMatchTransferClient, offchainTransfer.AssetId);
 
             switch (offchainTransfer.Type)
             {
