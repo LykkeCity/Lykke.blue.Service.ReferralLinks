@@ -14,7 +14,7 @@ namespace Lykke.Service.ReferralLinks.AzureRepositories.ReferralLink
         public DateTime? ExpirationDate { get; set; }        
         public string Asset { get; set; }
         public double Amount { get; set; }
-        public string SenderTransactionId { get; set; }
+        public string SenderOffchainTransferId { get; set; }
         public string Type { get; set; }
         public string State { get; set; }
 

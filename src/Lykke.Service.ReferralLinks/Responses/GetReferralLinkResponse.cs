@@ -23,6 +23,6 @@ namespace Lykke.Service.ReferralLinks.Responses
 
         public string Type { get; set; }
 
-        public string SenderTransactionId { get; set; }
+        public string SenderOffchainTransferId { get; set; }
     }
 }

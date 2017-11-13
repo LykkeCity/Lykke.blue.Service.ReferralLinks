@@ -21,6 +21,6 @@ namespace Lykke.Service.ReferralLinks.AzureRepositories.DTOs
 
         public string Type { get; set; }
 
-        public string SenderTransactionId { get; set; }
+        public string SenderOffchainTransferId { get; set; }
     }
 }

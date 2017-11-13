@@ -163,7 +163,7 @@ namespace Lykke.Service.ReferralLinks.Controllers
 
             refLink.Amount = (double)transfer.Amount;
             refLink.Asset = (await _assets.GetItemAsync(transfer.AssetId)).Symbol;
-            refLink.SenderTransactionId = transferId;
+            refLink.SenderOffchainTransferId = transferId;
             refLink.State = ReferralLinkState.SentToLykkeSharedWallet.ToString();
 
             await _referralLinksService.UpdateAsync(refLink);
