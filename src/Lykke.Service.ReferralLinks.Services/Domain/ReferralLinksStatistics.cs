@@ -3,9 +3,9 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace Lykke.Service.ReferralLinks.Responses
+namespace Lykke.Service.ReferralLinks.Services.Domain
 {
-    public class GetReferralLinksStatisticsBySenderIdResponse : IReferralLinksStatistics
+    public class ReferralLinksStatistics : IReferralLinksStatistics
     {
         public int NumberOfInvitationLinksSent { get; set; }
 

@@ -43,11 +43,11 @@ namespace Lykke.Service.ReferralLinks.Services
             return await _referralLinkRepository.Create(entity);          
         }
 
-        public async Task<IReferralLink> CreateMoneyTransferLink(MoneyTransferReferralLinkRequest referralLinkRequest)
+        public async Task<IReferralLink> CreateGiftCoinsLink(GiftCoinsReferralLinkRequest referralLinkRequest)
         {
             var entity = new ReferralLink();
             entity.Id = Guid.NewGuid().ToString();
-            entity.ExpirationDate = DateTime.UtcNow.AddDays(_settings.MoneyTransferLinkSettings.ExpirationDaysLimit); ;
+            entity.ExpirationDate = DateTime.UtcNow.AddDays(_settings.GiftCoinsLinkSettings.ExpirationDaysLimit); ;
             entity.Url = await _firebaseService.GenerateUrl(entity.Id);
             entity.SenderClientId = referralLinkRequest.SenderClientId;
             entity.Asset = referralLinkRequest.Asset;
@@ -78,9 +78,9 @@ namespace Lykke.Service.ReferralLinks.Services
             return await _referralLinkRepository.Get(clientId, state);
         }
 
-        public async Task<IReferralLinksStatistics> GetReferralLinksStatisticsBySenderId(string senderClientId)
+        public async Task<IEnumerable<IReferralLink>> GetReferralLinksBySenderId(string senderClientId)
         {
-            return await _referralLinkRepository.GetReferralLinksStatisticsBySenderId(senderClientId);
+            return await _referralLinkRepository.GetReferralLinksBySenderId(senderClientId);
         }
 
         public async Task<bool> IsInvitationLinksMaxNumberReachedForSender(string senderClientId)

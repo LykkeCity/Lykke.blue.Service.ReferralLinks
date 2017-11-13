@@ -6,13 +6,13 @@ using System.Text;
 
 namespace Lykke.Service.ReferralLinks.Core.Domain.Requests
 {
-    public class MoneyTransferReferralLinkRequest
+    public class GiftCoinsReferralLinkRequest
     {
         public string SenderClientId { get; set; }
         public string Asset { get; set; }     
         public double Amount { get; set; }
        
         [IgnoreDataMember]
-        public ReferralLinkType Type => ReferralLinkType.MoneyTransfer;     
+        public ReferralLinkType Type => ReferralLinkType.GiftCoins;     
     }
 }

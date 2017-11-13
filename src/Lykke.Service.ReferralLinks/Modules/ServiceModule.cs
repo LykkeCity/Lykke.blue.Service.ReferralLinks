@@ -98,12 +98,9 @@ namespace Lykke.Service.ReferralLinks.Modules
 
             builder.BindMeClient(GetIPEndPointFromHostName("me.lykke-me.svc.cluster.local", 8888, true));
 
-            builder.RegisterType<ReferralLinksService>()
-                .As<IReferralLinksService>()
-                //.WithParameter("settings", _settings.CurrentValue)
-                .SingleInstance();
-
-            builder.RegisterType<ReferralLinkClaimsService>().As<IReferralLinkClaimsService>().SingleInstance();            
+            builder.RegisterType<ReferralLinksService>().As<IReferralLinksService>().SingleInstance();
+            builder.RegisterType<ReferralLinkClaimsService>().As<IReferralLinkClaimsService>().SingleInstance();
+            builder.RegisterType<StatisticsService>().As<IStatisticsService>().SingleInstance();
         }
 
         private void RegisterRepos(ContainerBuilder builder)

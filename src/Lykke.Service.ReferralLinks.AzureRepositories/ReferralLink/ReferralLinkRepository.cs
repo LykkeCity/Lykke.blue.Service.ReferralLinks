@@ -76,42 +76,22 @@ namespace Lykke.Service.ReferralLinks.AzureRepositories.ReferralLink
             return Mapper.Map<ReferralLinkDto>(entities.FirstOrDefault());
         }
 
-        public async Task<IReferralLinksStatistics> GetReferralLinksStatisticsBySenderId(string senderClientId)
+        public async Task<IEnumerable<IReferralLink>> GetReferralLinksBySenderId(string senderClientId)
         {
-            var referralLinks = await _referralLinkTable.GetDataAsync(
+            return await _referralLinkTable.GetDataAsync(
                 GetPartitionKey(),
                 x => x.SenderClientId == senderClientId
-            );
-
-            var numberOfInvitationSent = referralLinks.Count(x => x.State == ReferralLinkState.SentToLykkeSharedWallet.ToString());
-            var numberOfInvitationAccepted = referralLinks.Count(x => x.State == ReferralLinkState.Claimed.ToString());
-            //var numberOfNewUsersBroughtIn = referralLinks.Count(x => x.IsNewUser.HasValue && x.IsNewUser.Value); //this should come from ReferralLinkClaimsRepository
-            var amountOfCoinsDistributed = referralLinks
-                .Where(x => x.State == ReferralLinkState.Claimed.ToString())
-                .Sum(x => x.Amount);
-
-            return new ReferralLinksStatisticsDto
-            {
-                AmountOfCoinsDistributed = amountOfCoinsDistributed,
-                NumberOfInvitationAccepted = numberOfInvitationAccepted,
-                NumberOfInvitationsSent = numberOfInvitationSent,
-                //NumberOfNewUsersBroughtIn = numberOfNewUsersBroughtIn //this should come from ReferralLinkClaimsRepository
-            };
+            );            
         }
 
         public async Task<bool> IsInvitationLinksMaxNumberReachedForSender(string senderClientId)
         {
-            var b =_referralLinkTable.ToList();
-
-            var a = await _referralLinkTable.GetDataAsync();
-
-
             var numberOfCreatedReflinks = (await _referralLinkTable.GetDataAsync(
                 GetPartitionKey(),
                 x => x.SenderClientId == senderClientId
                     && x.State == ReferralLinkState.Created.ToString()
                     && x.Type == ReferralLinkType.Invitation.ToString()
-            )); //.Count();
+            ));
 
             return numberOfCreatedReflinks.Count() >= _settings.InvitationLinkSettings.LinksNumberLimitPerSender;
         }

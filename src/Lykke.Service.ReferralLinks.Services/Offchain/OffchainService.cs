@@ -65,7 +65,11 @@ namespace Lykke.Service.ReferralLinks.Services.Offchain
         {
             var credentials = await _walletCredentialsRepository.GetAsync(clientId);
 
-            var result = await _bitcoinApiClient.OffchainTransferAsync(new OffchainTransferData
+            var request = new { clientId, assetId, amount, prevTempPrivateKey };
+
+            await _logger.WriteInfoAsync("CreateDirectTransfer", request.ToJson(), "Transfer requested");
+
+            var offchainTransferResult = await _bitcoinApiClient.OffchainTransferAsync(new OffchainTransferData
             {
                 Amount = -amount,
                 AssetId = assetId,
@@ -74,26 +78,30 @@ namespace Lykke.Service.ReferralLinks.Services.Offchain
                 Required = false
             });
 
-            var offchainTransfer = await _offchainTransferRepository.CreateTransfer(Guid.NewGuid().ToString(), clientId, assetId, amount, OffchainTransferType.DirectTransferFromClient, result.TransferId?.ToString(), null);
+            var createTransferResult = await _offchainTransferRepository.CreateTransfer(Guid.NewGuid().ToString(), clientId, assetId, amount, OffchainTransferType.DirectTransferFromClient, offchainTransferResult.TransferId?.ToString(), null);
 
-            if (result.HasError)
-                return await InternalErrorProcessing("CreateTransfer", result.Error, credentials, offchainTransfer, false);
+            if (offchainTransferResult.HasError)
+                return await InternalErrorProcessing("CreateTransfer", offchainTransferResult.Error, credentials, createTransferResult, false);
 
-            return new OffchainResult
+            var result = new OffchainResult
             {
-                TransferId = offchainTransfer.Id,
-                TransactionHex = result.Transaction,
+                TransferId = createTransferResult.Id,
+                TransactionHex = offchainTransferResult.Transaction,
                 OperationResult = OffchainOperationResult.Transfer
             };
 
+            await _logger.WriteInfoAsync("CreateDirectTransfer", request.ToJson(), new { result.TransferId, result.OperationResult }.ToJson());
+
+            return result;
+
         }
 
-        private async Task<OffchainResult> InternalErrorProcessing(string component, ErrorResponse error, IWalletCredentials credentials, IOffchainTransfer offchainTransfer, bool required)
+        private async Task<OffchainResult> InternalErrorProcessing(string process, ErrorResponse error, IWalletCredentials credentials, IOffchainTransfer offchainTransfer, bool required)
         {
             if (error.ErrorCode == ErrorCode.ShouldOpenNewChannel)
                 return await CreateChannel(credentials, offchainTransfer, required);
 
-            await _logger.WriteErrorAsync("OffchainService", component, $"Client: [{credentials.ClientId}], error: [{error.ErrorCode}], transfer: [{offchainTransfer.Id}]", new Exception(error.Message));
+            await _logger.WriteErrorAsync(process, $"Client: [{credentials.ClientId}], error: [{error.ErrorCode}], transfer: [{offchainTransfer.Id}]", new Exception(error.Message));
 
             throw new OffchainException(error.ErrorCode, error.Message, error.Code, offchainTransfer.AssetId);
         }

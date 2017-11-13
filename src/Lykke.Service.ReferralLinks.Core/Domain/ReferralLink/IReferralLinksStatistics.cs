@@ -6,9 +6,10 @@ namespace Lykke.Service.ReferralLinks.Core.Domain.ReferralLink
 {
     public interface IReferralLinksStatistics
     {
-        int NumberOfInvitationsSent { get; }
-        int NumberOfInvitationAccepted { get; }
-        double AmountOfCoinsDistributed { get; }
-        int NumberOfNewUsersBroughtIn { get; }
+        int NumberOfInvitationLinksSent { get; set; }
+        int NumberOfInvitationLinksAccepted { get; set; }
+        int NumberOfGiftLinksSent { get; set; }
+        double AmountOfGiftCoinsDistributed { get; set; }
+        int NumberOfNewUsersBroughtIn { get; set; }
     }
 }

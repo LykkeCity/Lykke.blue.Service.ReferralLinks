@@ -25,7 +25,7 @@ using System.Threading.Tasks;
 namespace Lykke.Service.ReferralLinks.Controllers
 {
     [Route("api/transfers")]
-    public class TransfersController : Controller
+    public class TransfersController : RefLinksBaseController
     {
         private readonly ISrvKycForAsset _srvKycForAsset;
         private readonly IClientSettingsRepository _clientSettingsRepository;
@@ -49,7 +49,7 @@ namespace Lykke.Service.ReferralLinks.Controllers
             IOffchainRequestRepository offchainRequestRepository, 
             IReferralLinksService referralLinksService,
             IOffchainTransferRepository offchainTransferRepository,
-            CachedDataDictionary<string, Lykke.Service.Assets.Client.Models.Asset> assets)
+            CachedDataDictionary<string, Lykke.Service.Assets.Client.Models.Asset> assets) : base (log)
         {
             _srvKycForAsset = srvKycForAsset;
             _clientSettingsRepository = clientSettingsRepository;
@@ -75,6 +75,8 @@ namespace Lykke.Service.ReferralLinks.Controllers
         {
             var data = await _offchainEncryptedKeysRepository.GetKey(clientId, asset);
 
+            await LogInfo(new { asset, clientId }, ControllerContext, $"Channel key: {data?.Key}");
+
             return Ok(new OffchainEncryptedKeyRespModel
             {
                 Key = data?.Key
@@ -89,31 +91,35 @@ namespace Lykke.Service.ReferralLinks.Controllers
 
             if(refLink == null)
             {
-                return BadRequest(new ErrorResponse("Ref link Id not found ot missing", ""));
+                await LogAndReturnBadRequest(model, ControllerContext, "Ref link Id not found ot missing");
             }
 
             var asset = (await _assets.GetDictionaryAsync()).Values.Where(v => v.Symbol == refLink.Asset).FirstOrDefault();
 
             if(asset == null)
             {
-                return BadRequest(new ErrorResponse($"Specified asset {refLink.Asset} in reflink id {refLink.Id} not found ", ""));
+                await LogAndReturnBadRequest(model, ControllerContext, $"Specified asset {refLink.Asset} in reflink id {refLink.Id} not found ");
             }
 
             await CheckOffchain(clientId);
 
             if (await _srvKycForAsset.IsKycNeeded(clientId, asset.Id))
-                return BadRequest(new ErrorResponse("KycNeeded", "")); //ResponseModel<OffchainTradeRespModel>.CreateFail(ResponseModel.ErrorCodeType.InconsistentData, Phrases.KycNeeded);
+            {
+                return await LogAndReturnBadRequest(model, ControllerContext, $"KYC needed for sender client id {model.ClientId} before claiming asset {refLink.Asset}");
+            }               
 
             try
             {
                 var response = await _offchainService.CreateDirectTransfer(clientId, asset.Id, (decimal) refLink.Amount, model.PrevTempPrivateKey);
 
-                await _exchangeOperationsService.StartTransferAsync(
+                var exchangeOpResult = await _exchangeOperationsService.StartTransferAsync(
                     response.TransferId,
                     _settings.LykkeReferralClientId, //send to shared lykke wallet where coins will be temporary stored until claimed by the recipient
                     clientId,
                     TransferType.Common.ToString()
                     );
+
+                await LogInfo(new { Method = "StartTransferAsync", TransferId = response.TransferId, SourceClientId = clientId }, ControllerContext, exchangeOpResult.ToJson());
 
                 return Ok(new OffchainTradeRespModel
                 {
@@ -124,7 +130,11 @@ namespace Lykke.Service.ReferralLinks.Controllers
             }
             catch (OffchainException ex)
             {
-                return NotFound(ProcessError(ex)); 
+                return await LogOffchainExceptionAndReturn(model, ControllerContext, ex);                
+            }
+            catch (Exception ex)
+            {
+                return await LogAndReturnInternalServerError(model, ControllerContext, ex);
             }
         }
 
@@ -151,9 +161,11 @@ namespace Lykke.Service.ReferralLinks.Controllers
                     OperationResult = response.OperationResult
                 });
             }
+            //TODO
             catch (OffchainException ex)
             {
-                return NotFound(ProcessError(ex));
+                return NotFound();
+                //return NotFound(ProcessError(ex));
             }
         }
 
@@ -218,9 +230,11 @@ namespace Lykke.Service.ReferralLinks.Controllers
                     Order = offchainOrder != null ? ConvertToApi(offchainOrder) : null
                 });
             }
+            //TODO
             catch (OffchainException ex)
             {
-                return NotFound(ProcessError(ex));
+                return NotFound();
+                //return NotFound(ProcessError(ex));
             }
             catch (TradeException ex)
             {
@@ -254,9 +268,9 @@ namespace Lykke.Service.ReferralLinks.Controllers
         }
 
 
-        private ErrorResponse ProcessError(OffchainException ex)
-        {
-            return new ErrorResponse(ex.OffchainExceptionMessage, ex.OffchainExceptionCode);          
-        }
+        //private ErrorResponse ProcessError(OffchainException ex)
+        //{
+        //    return new ErrorResponse(ex.OffchainExceptionMessage, ex.OffchainExceptionCode);
+        //}
     }
 }

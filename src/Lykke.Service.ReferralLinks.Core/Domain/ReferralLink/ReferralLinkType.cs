@@ -3,6 +3,6 @@
     public enum ReferralLinkType
     {
         Invitation,
-        MoneyTransfer
+        GiftCoins
     }
 }

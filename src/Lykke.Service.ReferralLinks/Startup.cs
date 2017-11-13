@@ -146,7 +146,7 @@ namespace Lykke.Service.ReferralLinks
             //    x => { referralLinksService.ReturnCoinsToSender().Wait(); },
             //    null,
             //    TimeSpan.Zero,
-            //    TimeSpan.FromMinutes(settings.CurrentValue.ReferralLinksService.ExpiredLinksCheckTimeout)
+            //    TimeSpan.FromMinutes(settings.CurrentValue.ReferralLinksService.ExpiredLinksCheckTimeoutMinutes)
             //);
         }
 

@@ -29,7 +29,7 @@ namespace Lykke.Service.ReferralLinks.Services
 
         public async Task<IEnumerable<IReferralLinkClaim>> GetRefLinkClaims(string refLinkId)
         {
-            return await _referralLinkClaimsRepository.GetClaimsForRefLink(refLinkId);
+            return await _referralLinkClaimsRepository.GetClaimsForRefLinks(new[] { refLinkId });
         }
 
         public async Task<IReferralLinkClaim> UpdateAsync(IReferralLinkClaim referralLink)

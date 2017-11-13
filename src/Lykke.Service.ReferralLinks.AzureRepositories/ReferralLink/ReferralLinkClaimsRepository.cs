@@ -43,10 +43,11 @@ namespace Lykke.Service.ReferralLinks.AzureRepositories.ReferralLink
             await _referralLinkClaimsTable.DeleteAsync(GetPartitionKey(), GetRowKey(id));
         }
 
-        public async Task<IEnumerable<IReferralLinkClaim>> GetClaimsForRefLink(string refLinkId)
+        public async Task<IEnumerable<IReferralLinkClaim>> GetClaimsForRefLinks(IEnumerable<string> refLinkIds)
         {
-            var claims = await _referralLinkClaimsTable.GetDataAsync(GetPartitionKey(), (link) => link.ReferralLinkId == refLinkId);
-            return claims; //claims.Select(c => Mapper.Map<ReferralLinkClaimsDto>(c));
+            //var claims = await _referralLinkClaimsTable.GetDataAsync(GetPartitionKey(), (link) => link.ReferralLinkId == refLinkId);
+            var claims = await _referralLinkClaimsTable.GetDataAsync((link) => refLinkIds.Contains(link.ReferralLinkId));
+            return claims; 
         }
 
         public async Task<IReferralLinkClaim> Update(IReferralLinkClaim referralLinkClaims)

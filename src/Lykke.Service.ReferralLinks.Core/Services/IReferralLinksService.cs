@@ -11,12 +11,11 @@ namespace Lykke.Service.ReferralLinks.Core.Services
     {
         //Task<IReferralLink> Create(InvitationReferralLinkRequest referralLinkRequest);
         Task<IReferralLink> CreateInvitationLink(InvitationReferralLinkRequest referralLinkRequest);
-        Task<IReferralLink> CreateMoneyTransferLink(MoneyTransferReferralLinkRequest referralLinkRequest);
+        Task<IReferralLink> CreateGiftCoinsLink(GiftCoinsReferralLinkRequest referralLinkRequest);
         Task<IReferralLink> Get(string id);
         Task<IReferralLink> UpdateAsync(IReferralLink referralLink);
-        Task<IEnumerable<IReferralLink>> GetReferralLinksBySenderClientIdAndOrStatus(string clientId, ReferralLinkState state);
-        Task UpdateState(string id, ReferralLinkState state);
-        Task<IReferralLinksStatistics> GetReferralLinksStatisticsBySenderId(string senderClientId);
+        //Task<IEnumerable<IReferralLink>> GetReferralLinksBySenderClientIdAndOrStatus(string clientId, ReferralLinkState state);
+        Task UpdateState(string id, ReferralLinkState state);        
         Task SetUrl(string id, string url);
         Task ReturnCoinsToSender();
         Task<IReferralLink> GetReferralLinkById(string id);
