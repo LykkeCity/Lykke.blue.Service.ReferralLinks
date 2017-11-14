@@ -13,6 +13,8 @@
     <RepositoryUrl>https://github.com/LykkeCity/Lykke.Service.ReferralLinks.git</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
     <PackageTags>Lykke</PackageTags>
+    <AssemblyName>Lykke.blue.Service.ReferralLinks.Client</AssemblyName>
+    <RootNamespace>Lykke.blue.Service.ReferralLinks.Client</RootNamespace>
   </PropertyGroup>
 
   <ItemGroup>

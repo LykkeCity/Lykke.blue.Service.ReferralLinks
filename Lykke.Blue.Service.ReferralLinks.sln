@@ -21,9 +21,9 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution items", "Solution 
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "3. Client", "3. Client", "{C9A2CFDE-EA32-4946-B679-7CE6EFA816B8}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Lykke.Blue.Service.ReferralLinks.Client", "client\Lykke.Blue.Service.ReferralLinks.Client\Lykke.Blue.Service.ReferralLinks.Client.csproj", "{3C300C31-97D3-41E8-A627-C53491BDA28B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Lykke.blue.Service.ReferralLinks.Client", "client\Lykke.Blue.Service.ReferralLinks.Client\Lykke.blue.Service.ReferralLinks.Client.csproj", "{3C300C31-97D3-41E8-A627-C53491BDA28B}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Lykke.Blue.Service.ReferralLinks.Tests", "tests\Lykke.Service.ReferralLinks.Tests\Lykke.Blue.Service.ReferralLinks.Tests.csproj", "{A61FFDEE-5725-4650-A788-6E55EE5EFD5B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Lykke.blue.Service.ReferralLinks.Tests", "tests\Lykke.blue.Service.ReferralLinks.Tests\Lykke.blue.Service.ReferralLinks.Tests.csproj", "{A61FFDEE-5725-4650-A788-6E55EE5EFD5B}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "4. Tests", "4. Tests", "{8F9036B1-5106-4C69-B2D2-B78EE52687A0}"
 EndProject
