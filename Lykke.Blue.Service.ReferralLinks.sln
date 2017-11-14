@@ -9,7 +9,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Lykke.blue.Service.Referral
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "2. Repositories", "2. Repositories", "{BF745453-B940-470E-81BC-43FB67703D4E}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Lykke.Blue.Service.ReferralLinks.AzureRepositories", "src\Lykke.Service.ReferralLinks.AzureRepositories\Lykke.Blue.Service.ReferralLinks.AzureRepositories.csproj", "{4BE49E02-AAAD-460B-8D00-57F412A3D181}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Lykke.blue.Service.ReferralLinks.AzureRepositories", "src\Lykke.blue.Service.ReferralLinks.AzureRepositories\Lykke.blue.Service.ReferralLinks.AzureRepositories.csproj", "{4BE49E02-AAAD-460B-8D00-57F412A3D181}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Lykke.blue.Service.ReferralLinks.Services", "src\Lykke.blue.Service.ReferralLinks.Services\Lykke.blue.Service.ReferralLinks.Services.csproj", "{2D5F52EC-2A27-4045-81ED-72355E2A6325}"
 EndProject

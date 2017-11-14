@@ -2,8 +2,8 @@
 
   <PropertyGroup>
     <TargetFramework>netcoreapp2.0</TargetFramework>
-    <AssemblyName>Lykke.Blue.Service.ReferralLinks.AzureRepositories</AssemblyName>
-    <RootNamespace>Lykke.Blue.Service.ReferralLinks.AzureRepositories</RootNamespace>
+    <AssemblyName>Lykke.blue.Service.ReferralLinks.AzureRepositories</AssemblyName>
+    <RootNamespace>Lykke.blue.Service.ReferralLinks.AzureRepositories</RootNamespace>
     <Version>1.0.0</Version>
   </PropertyGroup>
 
