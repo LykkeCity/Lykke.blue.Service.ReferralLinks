@@ -4,8 +4,8 @@
     <TargetFramework>netcoreapp2.0</TargetFramework>
     <OutputType>Exe</OutputType>
     <Version>1.0.1</Version>
-    <AssemblyName>Lykke.Blue.Service.ReferralLinks</AssemblyName>
-    <RootNamespace>Lykke.Blue.Service.ReferralLinks</RootNamespace>
+    <AssemblyName>Lykke.blue.Service.ReferralLinks</AssemblyName>
+    <RootNamespace>Lykke.blue.Service.ReferralLinks</RootNamespace>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
@@ -14,7 +14,7 @@
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-    <DocumentationFile>bin\Debug\netcoreapp2.0\Lykke.Blue.Service.ReferralLinks.xml</DocumentationFile>
+    <DocumentationFile>bin\Debug\netcoreapp2.0\Lykke.blue.Service.ReferralLinks.xml</DocumentationFile>
     <NoWarn>1701;1702;1705;1591</NoWarn>
   </PropertyGroup>
 
