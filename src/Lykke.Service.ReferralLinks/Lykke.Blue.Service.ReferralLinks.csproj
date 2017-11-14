@@ -58,9 +58,9 @@
   </ItemGroup>
   
   <ItemGroup>
+    <ProjectReference Include="..\Lykke.blue.Service.ReferralLinks.Services\Lykke.blue.Service.ReferralLinks.Services.csproj" />
     <ProjectReference Include="..\Lykke.Service.ReferralLinks.AzureRepositories\Lykke.Blue.Service.ReferralLinks.AzureRepositories.csproj" />
     <ProjectReference Include="..\Lykke.blue.Service.ReferralLinks.Core\Lykke.blue.Service.ReferralLinks.Core.csproj" />
-    <ProjectReference Include="..\Lykke.Service.ReferralLinks.Services\Lykke.Blue.Service.ReferralLinks.Services.csproj" />
   </ItemGroup>
   
   <ItemGroup>
