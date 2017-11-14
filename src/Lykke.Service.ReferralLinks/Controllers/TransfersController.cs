@@ -145,10 +145,14 @@ namespace Lykke.Service.ReferralLinks.Controllers
             var clientId = request.ClientId;
 
             if (string.IsNullOrEmpty(request.SignedChannelTransaction))
-                return BadRequest(new ErrorResponse("SignedChannelTransaction must not be empty", ""));
+            {
+                await LogAndReturnBadRequest(request, ControllerContext, "SignedChannelTransaction must not be empty");
+            }
 
             if (string.IsNullOrEmpty(request.TransferId))
-                return BadRequest(new ErrorResponse("TransferId must not be empty", ""));
+            {
+                await LogAndReturnBadRequest(request, ControllerContext, "TransferId must not be empty");
+            }
 
             try
             {
