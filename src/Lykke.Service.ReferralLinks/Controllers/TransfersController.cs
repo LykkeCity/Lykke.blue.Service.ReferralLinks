@@ -140,19 +140,19 @@ namespace Lykke.Service.ReferralLinks.Controllers
 
         
         [HttpPost("processChannel")]
-        public async Task<IActionResult> ProcessChannel([FromBody] OffchainChannelProcessModel model)
+        public async Task<IActionResult> ProcessChannel([FromBody] OffchainChannelProcessModel request)
         {
-            var clientId = model.ClientId;
+            var clientId = request.ClientId;
 
-            if (string.IsNullOrEmpty(model.SignedChannelTransaction))
+            if (string.IsNullOrEmpty(request.SignedChannelTransaction))
                 return BadRequest(new ErrorResponse("SignedChannelTransaction must not be empty", ""));
 
-            if (string.IsNullOrEmpty(model.TransferId))
+            if (string.IsNullOrEmpty(request.TransferId))
                 return BadRequest(new ErrorResponse("TransferId must not be empty", ""));
 
             try
             {
-                var response = await _offchainService.CreateHubCommitment(clientId, model.TransferId, model.SignedChannelTransaction);
+                var response = await _offchainService.CreateHubCommitment(clientId, request.TransferId, request.SignedChannelTransaction);
 
                 return Ok(new OffchainTradeRespModel
                 {
@@ -161,11 +161,13 @@ namespace Lykke.Service.ReferralLinks.Controllers
                     OperationResult = response.OperationResult
                 });
             }
-            //TODO
             catch (OffchainException ex)
             {
-                return NotFound();
-                //return NotFound(ProcessError(ex));
+                return await LogOffchainExceptionAndReturn(request, ControllerContext, ex);
+            }
+            catch (Exception ex)
+            {
+                return await LogAndReturnInternalServerError(request, ControllerContext, ex);
             }
         }
 
@@ -179,48 +181,62 @@ namespace Lykke.Service.ReferralLinks.Controllers
             refLink.State = ReferralLinkState.SentToLykkeSharedWallet.ToString();
 
             await _referralLinksService.UpdateAsync(refLink);
+
+            await LogInfo(new { RefLink = refLink, TransferId = transferId }, ControllerContext, $"Transfer complete for ref link id {refLink.Id} with amount {transfer.Amount} and asset {refLink.Asset}. Offchain transfer Id {transferId} attached with ref link. ");
         }
 
         [HttpPost("finalizeRefLinkTransfer")]
-        public async Task<IActionResult> Finalize([FromBody] OffchainFinalizeModel model)
+        public async Task<IActionResult> Finalize([FromBody] OffchainFinalizeModel request)
         {
-            var clientId = model.ClientId;
+            var clientId = request.ClientId;
 
             await CheckOffchain(clientId);            
 
-            if (string.IsNullOrEmpty(model.ClientRevokePubKey))
-                return BadRequest(new ErrorResponse("ClientRevokePubKey must not be empty", ""));
+            if (string.IsNullOrEmpty(request.ClientRevokePubKey))
+            {
+                await LogAndReturnBadRequest(request, ControllerContext, "ClientRevokePubKey must not be empty");
+            }
 
-            if (string.IsNullOrEmpty(model.SignedTransferTransaction))
-                return BadRequest(new ErrorResponse("SignedTransferTransaction must not be empty", ""));
+            if (string.IsNullOrEmpty(request.SignedTransferTransaction))
+            {
+                await LogAndReturnBadRequest(request, ControllerContext, "SignedTransferTransaction must not be empty");
+            }
 
-            if (string.IsNullOrEmpty(model.TransferId))
-                return BadRequest(new ErrorResponse("TransferId must not be empty", ""));
+            if (string.IsNullOrEmpty(request.TransferId))
+            {
+                await LogAndReturnBadRequest(request, ControllerContext, "TransferId must not be empty");
+            }
 
-            var refLinkEntity = await _referralLinksService.GetReferralLinkById(model.RefLinkId);
+            var refLinkEntity = await _referralLinksService.GetReferralLinkById(request.RefLinkId);
             if (refLinkEntity == null)
             {
-                return BadRequest(new ErrorResponse("RefLinkId not found", ""));
+                await LogAndReturnBadRequest(request, ControllerContext, "RefLinkId not found");
             }
 
             try
             {
-                var response = await _offchainService.Finalize(clientId, model.TransferId, model.ClientRevokePubKey,
-                    model.ClientRevokeEncryptedPrivateKey, model.SignedTransferTransaction);
+                var response = await _offchainService.Finalize(clientId, request.TransferId, request.ClientRevokePubKey, request.ClientRevokeEncryptedPrivateKey, request.SignedTransferTransaction);
                 
                 if(response!= null && response.OperationResult == OffchainOperationResult.ClientCommitment)
                 {
                     AttachSenderTransferToRefLink(refLinkEntity, response.TransferId);
-                }                
+                }
+                else
+                {
+                    await LogWarn(request, ControllerContext, $"_offchainService.Finalize returned unexpected result:  {response?.ToJson()}");                    
+                }
 
-                var request =
+                var offchainRequest =
                     (await _offchainRequestRepository.GetRequestsForClient(clientId)).FirstOrDefault(
-                        x => x.TransferId == model.TransferId);                
+                        x => x.TransferId == request.TransferId);                
 
-                if (request != null)
-                    await _offchainRequestRepository.Complete(request.RequestId);
+                if (offchainRequest != null)
+                {
+                    await _offchainRequestRepository.Complete(offchainRequest.RequestId);
+                    await LogInfo(request, ControllerContext, $"Offchain request set to complete: {offchainRequest.ToJson()}");
+                }                    
 
-                var offchainOrder = await _offchainService.GetResultOrderFromTransfer(model.TransferId);
+                var offchainOrder = await _offchainService.GetResultOrderFromTransfer(request.TransferId);
 
                 return Ok(new OffchainSuccessTradeRespModel
                 {
@@ -230,25 +246,17 @@ namespace Lykke.Service.ReferralLinks.Controllers
                     Order = offchainOrder != null ? ConvertToApi(offchainOrder) : null
                 });
             }
-            //TODO
             catch (OffchainException ex)
             {
-                return NotFound();
-                //return NotFound(ProcessError(ex));
+                return await LogOffchainExceptionAndReturn(request, ControllerContext, ex);
             }
             catch (TradeException ex)
             {
-                var msg = "";
-                switch (ex.Type)
-                {
-                    case TradeExceptionType.LeadToNegativeSpread:
-                        msg = "LimitOrderLeadToNegativeSpread";
-                        break;
-                    default:
-                        msg = "TechnicalProblems";
-                        break;
-                }
-                return NotFound(new ErrorResponse(msg, ""));
+               return await LogTraderExceptionAndReturn(request, ControllerContext, ex);
+            }
+            catch (Exception ex)
+            {
+                return await LogAndReturnInternalServerError(request, ControllerContext, ex);
             }
         }
 
@@ -266,11 +274,5 @@ namespace Lykke.Service.ReferralLinks.Controllers
                 TotalCost = Math.Abs(order.TotalCost)
             };
         }
-
-
-        //private ErrorResponse ProcessError(OffchainException ex)
-        //{
-        //    return new ErrorResponse(ex.OffchainExceptionMessage, ex.OffchainExceptionCode);
-        //}
     }
 }

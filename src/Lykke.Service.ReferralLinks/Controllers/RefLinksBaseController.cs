@@ -1,5 +1,6 @@
 ﻿using Common;
 using Common.Log;
+using Lykke.Service.ReferralLinks.Core.Domain.Exceptions;
 using Lykke.Service.ReferralLinks.Core.Domain.Offchain;
 using Lykke.Service.ReferralLinks.Extensions;
 using Microsoft.AspNetCore.Mvc;
@@ -28,8 +29,14 @@ namespace Lykke.Service.ReferralLinks.Controllers
 
         protected async Task<ObjectResult> LogOffchainExceptionAndReturn<T>(T request, ControllerContext controllerCtx, OffchainException ex)
         {
-            await LogError(request, controllerCtx, ex);
+            await LogError(request, controllerCtx, new Exception($"OffchainException: {ex.ToJson()}"));
             return StatusCode((int)HttpStatusCode.InternalServerError, new { ex.OffchainExceptionMessage, ex.OffchainExceptionCode, ex.Message } );
+        }
+
+        protected async Task<ObjectResult> LogTraderExceptionAndReturn<T>(T request, ControllerContext controllerCtx, TradeException ex)
+        {
+            await LogError(request, controllerCtx, new Exception($"TradeException: {ex.ToJson()}"));
+            return StatusCode((int)HttpStatusCode.InternalServerError, new { TradeExceptionType = ex.Type.ToString(), ex.Message });
         }
 
         protected async Task<ObjectResult> LogAndReturnBadRequest<T>(T request, ControllerContext controllerCtx, string info)

@@ -101,7 +101,9 @@ namespace Lykke.Service.ReferralLinks.Services.Offchain
             if (error.ErrorCode == ErrorCode.ShouldOpenNewChannel)
                 return await CreateChannel(credentials, offchainTransfer, required);
 
-            await _logger.WriteErrorAsync(process, $"Client: [{credentials.ClientId}], error: [{error.ErrorCode}], transfer: [{offchainTransfer.Id}]", new Exception(error.Message));
+            var offchainTransferInfo = (new { ClientId = offchainTransfer.ClientId, Asset = offchainTransfer.AssetId, Amount = offchainTransfer.Amount, Type = offchainTransfer.Type }).ToJson();
+
+            await _logger.WriteErrorAsync(process, offchainTransferInfo, new Exception($"{error.Message}, Code: {error.Code}, ErrorCode: {error.ErrorCodeString}"));
 
             throw new OffchainException(error.ErrorCode, error.Message, error.Code, offchainTransfer.AssetId);
         }
@@ -109,7 +111,7 @@ namespace Lykke.Service.ReferralLinks.Services.Offchain
         public async Task<OffchainResult> CreateChannel(IWalletCredentials credentials, IOffchainTransfer offchainTransfer, bool required)
         {
             if (offchainTransfer == null || offchainTransfer.ClientId != credentials.ClientId || offchainTransfer.Completed)
-                throw new OffchainException(ErrorCode.Exception, offchainTransfer?.AssetId);
+                throw new OffchainException(ErrorCode.Exception, offchainTransfer?.AssetId);            
 
             var fromClient = offchainTransfer.Type == OffchainTransferType.FromClient ||
                              offchainTransfer.Type == OffchainTransferType.DirectTransferFromClient ||
@@ -128,21 +130,27 @@ namespace Lykke.Service.ReferralLinks.Services.Offchain
                 ExternalTransferId = offchainTransfer.ExternalTransferId
             });
 
+            var offchainTransferInfo = (new { ClientId = offchainTransfer.ClientId, Asset = offchainTransfer.AssetId, Amount = offchainTransfer.Amount, Type = offchainTransfer.Type }).ToJson();
+
             if (!result.HasError)
             {
                 await _offchainTransferRepository.UpdateTransfer(offchainTransfer.Id, result.TransferId?.ToString(), closing: result.ChannelClosing, onchain: true);
 
-                return new OffchainResult
+                var offchainResult = new OffchainResult
                 {
                     TransferId = offchainTransfer.Id,
                     TransactionHex = result.Transaction,
                     OperationResult = result.ChannelClosing ? OffchainOperationResult.Transfer : OffchainOperationResult.CreateChannel
                 };
+
+                await _logger.WriteInfoAsync("CreateChannel", offchainTransferInfo, $"Offchain channel successfully created: {(new { offchainResult.TransferId, offchainResult.OperationResult }).ToJson()}");
+
+                return offchainResult;               
             }
 
-            await _logger.WriteErrorAsync("OffchainService", "CreateChannel", $"Client: [{credentials.ClientId}], error: [{result.Error.ErrorCode}], transfer: [{offchainTransfer.Id}]", new Exception(result.Error.Message));
+            await _logger.WriteErrorAsync("CreateChannel", offchainTransferInfo, new Exception($"{result.Error.Message}, Code: {result.Error.Code} "));
 
-            throw new OffchainException(result.Error.ErrorCode, offchainTransfer.AssetId);
+            throw new OffchainException(result.Error.ErrorCode, result.Error.Message, result.Error.Code.ToString(), offchainTransfer.AssetId);
         }
 
         public async Task<OffchainResult> CreateHubCommitment(string clientId, string transferId, string signedChannel)
@@ -150,8 +158,18 @@ namespace Lykke.Service.ReferralLinks.Services.Offchain
             var credentials = await _walletCredentialsRepository.GetAsync(clientId);
             var offchainTransfer = await _offchainTransferRepository.GetTransfer(transferId);
 
-            if (offchainTransfer.Completed || offchainTransfer.ClientId != clientId)
-                throw new OffchainException(ErrorCode.Exception, offchainTransfer.AssetId);
+            if (offchainTransfer.Completed)
+            {
+                await _logger.WriteErrorAsync("CreateHubCommitment", (new { ClientId = clientId, TransferId = transferId }).ToJson(), new OffchainException(ErrorCode.OffchainTransferAlreadyCompleted, offchainTransfer.AssetId));
+                throw new OffchainException(ErrorCode.OffchainTransferAlreadyCompleted, offchainTransfer.AssetId);
+            }
+
+
+            if (offchainTransfer.ClientId != clientId)
+            {
+                await _logger.WriteErrorAsync("CreateHubCommitment", (new { ClientId = clientId, TransferId = transferId }).ToJson(), new OffchainException(ErrorCode.RequestedClientDoesNotMatchTransferClient, offchainTransfer.AssetId));
+                throw new OffchainException(ErrorCode.RequestedClientDoesNotMatchTransferClient, offchainTransfer.AssetId);
+            }                
 
             var amount = 0.0M;
             var required = false;
@@ -193,11 +211,18 @@ namespace Lykke.Service.ReferralLinks.Services.Offchain
             var credentials = await _walletCredentialsRepository.GetAsync(clientId);
             var offchainTransfer = await _offchainTransferRepository.GetTransfer(transferId);
 
-            //if (offchainTransfer.Completed)
-            //    throw new OffchainException(ErrorCode.OffchainTransferAlreadyCompleted, offchainTransfer.AssetId);
+            if (offchainTransfer.Completed)
+            {
+                await _logger.WriteErrorAsync("CreateHubCommitment", (new { ClientId = clientId, TransferId = transferId }).ToJson(), new OffchainException(ErrorCode.OffchainTransferAlreadyCompleted, offchainTransfer.AssetId));
+                throw new OffchainException(ErrorCode.OffchainTransferAlreadyCompleted, offchainTransfer.AssetId);
+            }
+
 
             if (offchainTransfer.ClientId != clientId)
+            {
+                await _logger.WriteErrorAsync("CreateHubCommitment", (new { ClientId = clientId, TransferId = transferId }).ToJson(), new OffchainException(ErrorCode.RequestedClientDoesNotMatchTransferClient, offchainTransfer.AssetId));
                 throw new OffchainException(ErrorCode.RequestedClientDoesNotMatchTransferClient, offchainTransfer.AssetId);
+            }
 
             switch (offchainTransfer.Type)
             {
@@ -446,13 +471,13 @@ namespace Lykke.Service.ReferralLinks.Services.Offchain
             }
             catch (Exception ex)
             {
-                await _logger.WriteErrorAsync("OffchainService", "Finalize", $"Client: [{credentials.ClientId}], error: ME failed, order: [{order.Id}], transfer: [{offchainTransfer.Id}]", ex);
+                await _logger.WriteErrorAsync("ProcessClientTransfer", $"Client: [{credentials.ClientId}], error: ME failed, order: [{order.Id}], transfer: [{offchainTransfer.Id}]", ex);
             }
 
             // reverse client transaction if ME returns error
             await _offchainRequestService.CreateOffchainRequest(Guid.NewGuid().ToString(), credentials.ClientId, offchainTransfer.AssetId, offchainTransfer.Amount, order.Id, OffchainTransferType.FromHub);
 
-            await _logger.WriteErrorAsync("OffchainService", "Finalize", $"Client: [{credentials.ClientId}], error: ME failed, order: [{order.Id}], transfer: [{offchainTransfer.Id}]", new Exception($"ME failed, order status: {status}"));
+            await _logger.WriteErrorAsync("ProcessClientTransfer", $"Client: [{credentials.ClientId}], error: ME failed, order: [{order.Id}], transfer: [{offchainTransfer.Id}]", new Exception($"ME failed, order status: {status}"));
 
             if (status != null)
             {
