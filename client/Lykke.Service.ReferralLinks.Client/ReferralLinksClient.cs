@@ -18,7 +18,7 @@ namespace Lykke.Blue.Service.ReferralLinks.Client
             _service = new LykkeReferralLinksService(new Uri(serviceUrl));
         }
 
-        public async Task<string> ClaimGiftCoins(ClaimGiftCoinsRequest request)
+        public async Task<string> ClaimGiftCoins(ClaimReferralLinkRequest request)
         {
             try
             {
@@ -26,10 +26,25 @@ namespace Lykke.Blue.Service.ReferralLinks.Client
             }
             catch (Exception ex)
             {
-                await _log.WriteErrorAsync(nameof(ReferralLinksClient), nameof(ClaimGiftCoins), ex);
+                await _log.WriteErrorAsync(nameof(ReferralLinksClient), nameof(GetReferralLinksStatisticsBySenderId), ex);
                 throw;
             }
         }
+
+        public async Task<string> ClaimInvitationLink(ClaimReferralLinkRequest request)
+        {
+            try
+            {
+                return await _service.ClaimInvitationLinkAsync(request);
+            }
+            catch (Exception ex)
+            {
+                await _log.WriteErrorAsync(nameof(ReferralLinksClient), nameof(ClaimInvitationLink), ex);
+                throw;
+            }
+        }
+
+
 
         //public async Task<CreateReferralLinkResponse> Create(CreateReferralLinkRequest request)
         //{
@@ -44,7 +59,33 @@ namespace Lykke.Blue.Service.ReferralLinks.Client
             _service = null;
         }
 
-        public async Task<GetReferralLinkResponse> Get(string id)
+        public async Task<string> FinalizeRefLinkTransfer(OffchainFinalizeModel request)
+        {
+            try
+            {
+                return await _service.FinalizeRefLinkTransferAsync(request);
+            }
+            catch (Exception ex)
+            {
+                await _log.WriteErrorAsync(nameof(ReferralLinksClient), nameof(GetChannelKey), ex);
+                throw;
+            }
+        }
+
+        public async Task<string> GetChannelKey(string asset, string clientId)
+        {
+            try
+            {
+                return await _service.GetChannelKeyAsync(asset, clientId);
+            }
+            catch (Exception ex)
+            {
+                await _log.WriteErrorAsync(nameof(ReferralLinksClient), nameof(GetChannelKey), ex);
+                throw;
+            }
+        }
+
+        public async Task<GetReferralLinkResponse> GetReferralLink(string id)
         {
             try
             {
@@ -52,23 +93,10 @@ namespace Lykke.Blue.Service.ReferralLinks.Client
             }
             catch (Exception ex)
             {
-                await _log.WriteErrorAsync(nameof(ReferralLinksClient), nameof(Get), ex);
+                await _log.WriteErrorAsync(nameof(ReferralLinksClient), nameof(GetReferralLink), ex);
                 throw;
             }
-        }
-
-        public async Task<IEnumerable<GetReferralLinkResponse>> GetReferralLinksBySenderIdAndOrStatus(string senderClientId, string state)
-        {
-            try
-            {
-                return await _service.GetReferralLinksBySenderIdAndOrStatusAsync(senderClientId, state);
-            }
-            catch (Exception ex)
-            {
-                await _log.WriteErrorAsync(nameof(ReferralLinksClient), nameof(GetReferralLinksBySenderIdAndOrStatus), ex);
-                throw;
-            }
-        }
+        }       
 
         public async Task<GetReferralLinksStatisticsBySenderIdResponse> GetReferralLinksStatisticsBySenderId(string senderClientId)
         {
@@ -83,43 +111,59 @@ namespace Lykke.Blue.Service.ReferralLinks.Client
             }
         }
 
-        public async Task<string> RequestReferralLink(RequestReferralLinkRequest request)
+        public async Task<string> ProcessChannel(OffchainChannelProcessModel request)
         {
             try
             {
-                return await _service.RequestReferralLinkAsync(request);
+                return await _service.ProcessChannelAsync(request);
             }
             catch (Exception ex)
             {
-                await _log.WriteErrorAsync(nameof(ReferralLinksClient), nameof(RequestReferralLink), ex);
+                await _log.WriteErrorAsync(nameof(ReferralLinksClient), nameof(ProcessChannel), ex);
                 throw;
             }
         }
 
-        public async Task SetUrl(string id, string url)
+        public async Task<string> RequestGiftCoinsReferralLink(GiftCoinsReferralLinkRequest request)
         {
             try
             {
-                await _service.SetReferralLinkUrlAsync(id, url);
+                return await _service.RequestGiftCoinsReferralLinkAsync(request);
             }
             catch (Exception ex)
             {
-                await _log.WriteErrorAsync(nameof(ReferralLinksClient), nameof(SetUrl), ex);
+                await _log.WriteErrorAsync(nameof(ReferralLinksClient), nameof(RequestGiftCoinsReferralLink), ex);
                 throw;
             }
         }
 
-        public async Task UpdateState(string id, string state)
+        public async Task<string> RequestInvitationReferralLink(InvitationReferralLinkRequest request)
         {
             try
             {
-                await _service.UpdateReferralLinkStateAsync(id, state);
+                return await _service.RequestInvitationReferralLinkAsync(request);
             }
             catch (Exception ex)
             {
-                await _log.WriteErrorAsync(nameof(ReferralLinksClient), nameof(UpdateState), ex);
+                await _log.WriteErrorAsync(nameof(ReferralLinksClient), nameof(RequestInvitationReferralLink), ex);
                 throw;
             }
         }
+
+       
+
+        public async Task<string> TransferToLykkeWallet(TransferToLykkeWallet request)
+        {
+            try
+            {
+                return await _service.TransferToLykkeWalletMethodAsync(request);
+            }
+            catch (Exception ex)
+            {
+                await _log.WriteErrorAsync(nameof(ReferralLinksClient), nameof(TransferToLykkeWallet), ex);
+                throw;
+            }
+        }
+
     }
 }
