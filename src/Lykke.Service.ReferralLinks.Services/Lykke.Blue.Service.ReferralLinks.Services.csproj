@@ -24,7 +24,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Lykke.Service.ReferralLinks.Core\Lykke.Blue.Service.ReferralLinks.Core.csproj" />
+    <ProjectReference Include="..\Lykke.blue.Service.ReferralLinks.Core\Lykke.blue.Service.ReferralLinks.Core.csproj" />
   </ItemGroup>
 
 </Project>

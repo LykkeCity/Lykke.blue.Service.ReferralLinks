@@ -5,7 +5,7 @@ VisualStudioVersion = 15.0.26730.8
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "1. Instrastructure", "1. Instrastructure", "{CC2067D7-1971-47BB-B491-5649EA3C18B2}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Lykke.Blue.Service.ReferralLinks.Core", "src\Lykke.Service.ReferralLinks.Core\Lykke.Blue.Service.ReferralLinks.Core.csproj", "{F5B2F6B8-A8CC-4612-8F1D-C063EB8C8955}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Lykke.blue.Service.ReferralLinks.Core", "src\Lykke.blue.Service.ReferralLinks.Core\Lykke.blue.Service.ReferralLinks.Core.csproj", "{F5B2F6B8-A8CC-4612-8F1D-C063EB8C8955}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "2. Repositories", "2. Repositories", "{BF745453-B940-470E-81BC-43FB67703D4E}"
 EndProject
@@ -21,7 +21,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution items", "Solution 
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "3. Client", "3. Client", "{C9A2CFDE-EA32-4946-B679-7CE6EFA816B8}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Lykke.Blue.Service.ReferralLinks.Client", "client\Lykke.Service.ReferralLinks.Client\Lykke.Blue.Service.ReferralLinks.Client.csproj", "{3C300C31-97D3-41E8-A627-C53491BDA28B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Lykke.Blue.Service.ReferralLinks.Client", "client\Lykke.Blue.Service.ReferralLinks.Client\Lykke.Blue.Service.ReferralLinks.Client.csproj", "{3C300C31-97D3-41E8-A627-C53491BDA28B}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Lykke.Blue.Service.ReferralLinks.Tests", "tests\Lykke.Service.ReferralLinks.Tests\Lykke.Blue.Service.ReferralLinks.Tests.csproj", "{A61FFDEE-5725-4650-A788-6E55EE5EFD5B}"
 EndProject
