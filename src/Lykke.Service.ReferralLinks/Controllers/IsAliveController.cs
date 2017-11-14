@@ -1,12 +1,12 @@
 ﻿using System;
 using System.Linq;
 using System.Net;
-using Lykke.Service.ReferralLinks.Core.Services;
-using Lykke.Service.ReferralLinks.Models;
+using Lykke.Blue.Service.ReferralLinks.Core.Services;
+using Lykke.Blue.Service.ReferralLinks.Models;
 using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.SwaggerGen.Annotations;
 
-namespace Lykke.Service.ReferralLinks.Controllers
+namespace Lykke.Blue.Service.ReferralLinks.Controllers
 {
     // NOTE: See https://lykkex.atlassian.net/wiki/spaces/LKEWALLET/pages/35755585/Add+your+app+to+Monitoring
     [Route("api/[controller]")]

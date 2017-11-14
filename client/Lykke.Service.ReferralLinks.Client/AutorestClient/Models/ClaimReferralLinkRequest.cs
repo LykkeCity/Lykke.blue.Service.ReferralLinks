@@ -10,30 +10,27 @@ namespace Lykke.Blue.Service.ReferralLinks.Client.AutorestClient.Models
     using Lykke.Blue.Service.ReferralLinks.Client;
     using Lykke.Blue.Service.ReferralLinks.Client.AutorestClient;
     using Newtonsoft.Json;
-    using System.Collections;
-    using System.Collections.Generic;
     using System.Linq;
 
-    public partial class IsAliveResponse
+    public partial class ClaimReferralLinkRequest
     {
         /// <summary>
-        /// Initializes a new instance of the IsAliveResponse class.
+        /// Initializes a new instance of the ClaimReferralLinkRequest class.
         /// </summary>
-        public IsAliveResponse()
+        public ClaimReferralLinkRequest()
         {
           CustomInit();
         }
 
         /// <summary>
-        /// Initializes a new instance of the IsAliveResponse class.
+        /// Initializes a new instance of the ClaimReferralLinkRequest class.
         /// </summary>
-        public IsAliveResponse(bool isDebug, string name = default(string), string version = default(string), string env = default(string), IList<IssueIndicator> issueIndicators = default(IList<IssueIndicator>))
+        public ClaimReferralLinkRequest(bool isNewClient, string recipientClientId = default(string), string referalLinkId = default(string), string referalLinkUrl = default(string))
         {
-            Name = name;
-            Version = version;
-            Env = env;
-            IsDebug = isDebug;
-            IssueIndicators = issueIndicators;
+            RecipientClientId = recipientClientId;
+            ReferalLinkId = referalLinkId;
+            ReferalLinkUrl = referalLinkUrl;
+            IsNewClient = isNewClient;
             CustomInit();
         }
 
@@ -44,28 +41,23 @@ namespace Lykke.Blue.Service.ReferralLinks.Client.AutorestClient.Models
 
         /// <summary>
         /// </summary>
-        [JsonProperty(PropertyName = "Name")]
-        public string Name { get; set; }
+        [JsonProperty(PropertyName = "RecipientClientId")]
+        public string RecipientClientId { get; set; }
 
         /// <summary>
         /// </summary>
-        [JsonProperty(PropertyName = "Version")]
-        public string Version { get; set; }
+        [JsonProperty(PropertyName = "ReferalLinkId")]
+        public string ReferalLinkId { get; set; }
 
         /// <summary>
         /// </summary>
-        [JsonProperty(PropertyName = "Env")]
-        public string Env { get; set; }
+        [JsonProperty(PropertyName = "ReferalLinkUrl")]
+        public string ReferalLinkUrl { get; set; }
 
         /// <summary>
         /// </summary>
-        [JsonProperty(PropertyName = "IsDebug")]
-        public bool IsDebug { get; set; }
-
-        /// <summary>
-        /// </summary>
-        [JsonProperty(PropertyName = "IssueIndicators")]
-        public IList<IssueIndicator> IssueIndicators { get; set; }
+        [JsonProperty(PropertyName = "IsNewClient")]
+        public bool IsNewClient { get; set; }
 
         /// <summary>
         /// Validate the object.
@@ -75,6 +67,7 @@ namespace Lykke.Blue.Service.ReferralLinks.Client.AutorestClient.Models
         /// </exception>
         public virtual void Validate()
         {
+            //Nothing to validate
         }
     }
 }

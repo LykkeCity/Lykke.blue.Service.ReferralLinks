@@ -1,7 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 
-namespace Lykke.Service.ReferralLinks.Core.Domain.Health
+namespace Lykke.Blue.Service.ReferralLinks.Core.Domain.Health
 {
     public class HealthIssuesCollection : IReadOnlyCollection<HealthIssue>
     {

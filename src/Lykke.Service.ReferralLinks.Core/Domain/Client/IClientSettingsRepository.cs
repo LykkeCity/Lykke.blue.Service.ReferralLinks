@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Lykke.Service.ReferralLinks.Core.Domain.Client
+namespace Lykke.Blue.Service.ReferralLinks.Core.Domain.Client
 {
     public abstract class TraderSettingsBase
     {

@@ -1,9 +1,9 @@
-﻿using Lykke.Service.ReferralLinks.Core.Assets;
+﻿using Lykke.Blue.Service.ReferralLinks.Core.Assets;
 using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace Lykke.Service.ReferralLinks.Models
+namespace Lykke.Blue.Service.ReferralLinks.Models
 {
     public static class ModelConverter
     {

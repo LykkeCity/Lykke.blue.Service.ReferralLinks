@@ -7,9 +7,9 @@ using Common.Log;
 using Lykke.Common.ApiLibrary.Middleware;
 using Lykke.Common.ApiLibrary.Swagger;
 using Lykke.Logs;
-using Lykke.Service.ReferralLinks.Core.Services;
-using Lykke.Service.ReferralLinks.Core.Settings;
-using Lykke.Service.ReferralLinks.Modules;
+using Lykke.Blue.Service.ReferralLinks.Core.Services;
+using Lykke.Blue.Service.ReferralLinks.Core.Settings;
+using Lykke.Blue.Service.ReferralLinks.Modules;
 using Lykke.SettingsReader;
 using Lykke.SlackNotification.AzureQueue;
 using Microsoft.AspNetCore.Builder;
@@ -19,10 +19,10 @@ using Microsoft.Extensions.DependencyInjection;
 using AutoMapper;
 using Newtonsoft.Json.Converters;
 using System.Threading;
-using Lykke.Service.ReferralLinks.AzureRepositories;
-using Lykke.Service.ReferralLinks.Controllers;
+using Lykke.Blue.Service.ReferralLinks.AzureRepositories;
+using Lykke.Blue.Service.ReferralLinks.Controllers;
 
-namespace Lykke.Service.ReferralLinks
+namespace Lykke.Blue.Service.ReferralLinks
 {
     public class Startup
     {

@@ -1,7 +1,7 @@
-﻿using Lykke.Service.ReferralLinks.Core.Settings.ServiceSettings;
-using Lykke.Service.ReferralLinks.Core.Settings.SlackNotifications;
+﻿using Lykke.Blue.Service.ReferralLinks.Core.Settings.ServiceSettings;
+using Lykke.Blue.Service.ReferralLinks.Core.Settings.SlackNotifications;
 
-namespace Lykke.Service.ReferralLinks.Core.Settings
+namespace Lykke.Blue.Service.ReferralLinks.Core.Settings
 {
     public class AppSettings
     {

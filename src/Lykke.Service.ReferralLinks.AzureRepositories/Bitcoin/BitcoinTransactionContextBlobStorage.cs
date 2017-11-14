@@ -1,11 +1,11 @@
 ﻿using AzureStorage;
-using Lykke.Service.ReferralLinks.Core.BitCoinApi;
+using Lykke.Blue.Service.ReferralLinks.Core.BitCoinApi;
 using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Lykke.Service.ReferralLinks.AzureRepositories.Bitcoin
+namespace Lykke.Blue.Service.ReferralLinks.AzureRepositories.Bitcoin
 {
     public class BitcoinTransactionContextBlobStorage : IBitcoinTransactionContextBlobStorage
     {

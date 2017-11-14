@@ -1,15 +1,15 @@
 ﻿using Common;
 using Lykke.Service.Kyc.Abstractions.Domain.Verification;
 using Lykke.Service.Kyc.Abstractions.Services;
-using Lykke.Service.ReferralLinks.Core.Assets;
-using Lykke.Service.ReferralLinks.Core.Kyc;
+using Lykke.Blue.Service.ReferralLinks.Core.Assets;
+using Lykke.Blue.Service.ReferralLinks.Core.Kyc;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Lykke.Service.ReferralLinks.Services.Kyc
+namespace Lykke.Blue.Service.ReferralLinks.Services.Kyc
 {
     public class SrvKycForAsset : ISrvKycForAsset
     {

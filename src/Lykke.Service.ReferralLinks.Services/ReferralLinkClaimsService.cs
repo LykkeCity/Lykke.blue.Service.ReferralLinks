@@ -1,11 +1,11 @@
-﻿using Lykke.Service.ReferralLinks.Core.Services;
+﻿using Lykke.Blue.Service.ReferralLinks.Core.Services;
 using System;
 using System.Collections.Generic;
 using System.Text;
-using Lykke.Service.ReferralLinks.Core.Domain.ReferralLink;
+using Lykke.Blue.Service.ReferralLinks.Core.Domain.ReferralLink;
 using System.Threading.Tasks;
 
-namespace Lykke.Service.ReferralLinks.Services
+namespace Lykke.Blue.Service.ReferralLinks.Services
 {
     public class ReferralLinkClaimsService : IReferralLinkClaimsService
     {

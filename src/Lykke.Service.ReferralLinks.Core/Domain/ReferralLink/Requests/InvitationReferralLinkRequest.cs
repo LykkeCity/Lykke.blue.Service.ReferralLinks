@@ -1,10 +1,10 @@
-﻿using Lykke.Service.ReferralLinks.Core.Domain.ReferralLink;
+﻿using Lykke.Blue.Service.ReferralLinks.Core.Domain.ReferralLink;
 using System;
 using System.Collections.Generic;
 using System.Runtime.Serialization;
 using System.Text;
 
-namespace Lykke.Service.ReferralLinks.Core.Domain.Requests
+namespace Lykke.Blue.Service.ReferralLinks.Core.Domain.Requests
 {
     public class InvitationReferralLinkRequest 
     {

@@ -1,8 +1,8 @@
 ﻿using System.Threading.Tasks;
 using Common.Log;
-using Lykke.Service.ReferralLinks.Core.Services;
+using Lykke.Blue.Service.ReferralLinks.Core.Services;
 
-namespace Lykke.Service.ReferralLinks.Services
+namespace Lykke.Blue.Service.ReferralLinks.Services
 {
     // NOTE: Sometimes, shutdown process should be expressed explicitly. 
     // If this is your case, use this class to manage shutdown.

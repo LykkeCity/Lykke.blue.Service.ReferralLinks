@@ -1,11 +1,11 @@
 ﻿using AutoMapper;
-using Lykke.Service.ReferralLinks.AzureRepositories.DTOs;
-using Lykke.Service.ReferralLinks.AzureRepositories.ReferralLink;
-using Lykke.Service.ReferralLinks.Core.Domain.ReferralLink;
+using Lykke.Blue.Service.ReferralLinks.AzureRepositories.DTOs;
+using Lykke.Blue.Service.ReferralLinks.AzureRepositories.ReferralLink;
+using Lykke.Blue.Service.ReferralLinks.Core.Domain.ReferralLink;
 using Microsoft.WindowsAzure.Storage.Table;
 using System;
 
-namespace Lykke.Service.ReferralLinks.AzureRepositories
+namespace Lykke.Blue.Service.ReferralLinks.AzureRepositories
 {
     public class AutoMapperProfile : Profile
     {

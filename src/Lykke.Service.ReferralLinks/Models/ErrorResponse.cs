@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 
-namespace Lykke.Service.ReferralLinks.Models
+namespace Lykke.Blue.Service.ReferralLinks.Models
 {
     public class ErrorResponseModel
     {

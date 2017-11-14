@@ -1,9 +1,9 @@
-﻿using Lykke.Service.ReferralLinks.Core.Domain.Offchain;
+﻿using Lykke.Blue.Service.ReferralLinks.Core.Domain.Offchain;
 using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace Lykke.Service.ReferralLinks.Models.Offchain
+namespace Lykke.Blue.Service.ReferralLinks.Models.Offchain
 {
     public class OffchainSuccessTradeRespModel
     {

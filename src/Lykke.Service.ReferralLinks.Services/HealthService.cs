@@ -1,8 +1,8 @@
 ﻿using System.Collections.Generic;
-using Lykke.Service.ReferralLinks.Core.Domain.Health;
-using Lykke.Service.ReferralLinks.Core.Services;
+using Lykke.Blue.Service.ReferralLinks.Core.Domain.Health;
+using Lykke.Blue.Service.ReferralLinks.Core.Services;
 
-namespace Lykke.Service.ReferralLinks.Services
+namespace Lykke.Blue.Service.ReferralLinks.Services
 {
     // NOTE: See https://lykkex.atlassian.net/wiki/spaces/LKEWALLET/pages/35755585/Add+your+app+to+Monitoring
     public class HealthService : IHealthService

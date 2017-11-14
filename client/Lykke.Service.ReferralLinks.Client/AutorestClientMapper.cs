@@ -1,4 +1,4 @@
-﻿namespace Lykke.Service.ReferralLinks.Client
+﻿namespace Lykke.Blue.Service.ReferralLinks.Client
 {
     public static class AutorestClientMapper
     {

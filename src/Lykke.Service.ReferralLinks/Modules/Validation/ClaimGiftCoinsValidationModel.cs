@@ -1,11 +1,11 @@
 ﻿using FluentValidation;
-using Lykke.Service.ReferralLinks.Core.Services;
-using Lykke.Service.ReferralLinks.Models;
+using Lykke.Blue.Service.ReferralLinks.Core.Services;
+using Lykke.Blue.Service.ReferralLinks.Models;
 using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace Lykke.Service.ReferralLinks.Modules.Validation
+namespace Lykke.Blue.Service.ReferralLinks.Modules.Validation
 {
     public class ClaimReferralLinkRequestValidationModel : AbstractValidator<ClaimReferralLinkRequest>
     {

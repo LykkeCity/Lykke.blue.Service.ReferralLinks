@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace Lykke.Service.ReferralLinks.Core.Domain.ReferralLink
+namespace Lykke.Blue.Service.ReferralLinks.Core.Domain.ReferralLink
 {
     public interface IReferralLink
     {

@@ -3,16 +3,16 @@ using Common.Log;
 using Core.BitCoin.BitcoinApi.Models;
 using Lykke.Service.ExchangeOperations.Client;
 using Lykke.Service.Kyc.Client;
-using Lykke.Service.ReferralLinks.Core.BitCoinApi.Models;
-using Lykke.Service.ReferralLinks.Core.Domain.Client;
-using Lykke.Service.ReferralLinks.Core.Domain.Exceptions;
-using Lykke.Service.ReferralLinks.Core.Domain.Offchain;
-using Lykke.Service.ReferralLinks.Core.Domain.ReferralLink;
-using Lykke.Service.ReferralLinks.Core.Kyc;
-using Lykke.Service.ReferralLinks.Core.Services;
-using Lykke.Service.ReferralLinks.Core.Settings.ServiceSettings;
-using Lykke.Service.ReferralLinks.Models;
-using Lykke.Service.ReferralLinks.Models.Offchain;
+using Lykke.Blue.Service.ReferralLinks.Core.BitCoinApi.Models;
+using Lykke.Blue.Service.ReferralLinks.Core.Domain.Client;
+using Lykke.Blue.Service.ReferralLinks.Core.Domain.Exceptions;
+using Lykke.Blue.Service.ReferralLinks.Core.Domain.Offchain;
+using Lykke.Blue.Service.ReferralLinks.Core.Domain.ReferralLink;
+using Lykke.Blue.Service.ReferralLinks.Core.Kyc;
+using Lykke.Blue.Service.ReferralLinks.Core.Services;
+using Lykke.Blue.Service.ReferralLinks.Core.Settings.ServiceSettings;
+using Lykke.Blue.Service.ReferralLinks.Models;
+using Lykke.Blue.Service.ReferralLinks.Models.Offchain;
 using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.SwaggerGen.Annotations;
 using System;
@@ -22,7 +22,7 @@ using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Lykke.Service.ReferralLinks.Controllers
+namespace Lykke.Blue.Service.ReferralLinks.Controllers
 {
     [Route("api/transfers")]
     public class TransfersController : RefLinksBaseController
@@ -70,8 +70,16 @@ namespace Lykke.Service.ReferralLinks.Controllers
                 throw new Exception("Offchain is not supported");
         }
 
+
+
+        /// <summary>
+        /// Get offchain ChannelKey.
+        /// </summary>
+        /// <returns></returns>
         [HttpGet("channelKey")]
-        public async Task<IActionResult> GetEncryptedKey([FromQuery] string asset, [FromQuery] string clientId)
+        [SwaggerOperation("GetChannelKey")]
+        [ProducesResponseType(typeof(string), (int)HttpStatusCode.OK)]
+        public async Task<IActionResult> GetChannelKey([FromQuery] string asset, [FromQuery] string clientId)
         {
             var data = await _offchainEncryptedKeysRepository.GetKey(clientId, asset);
 
@@ -83,7 +91,16 @@ namespace Lykke.Service.ReferralLinks.Controllers
             });
         }
 
-        [HttpPost("transferToLykkeWallet")]        
+
+        /// <summary>
+        /// Create offchain transfer to Lykke wallet
+        /// </summary>
+        /// <returns></returns>
+        [HttpPost("transferToLykkeWallet")]
+        [SwaggerOperation("TransferToLykkeWallet")]
+        [ProducesResponseType(typeof(string), (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(string), (int)HttpStatusCode.BadRequest)]
+        [ProducesResponseType(typeof(string), (int)HttpStatusCode.InternalServerError)]
         public async Task<IActionResult> TransferToLykkeWallet([FromBody] TransferToLykkeWallet model)
         {
             var clientId = model.ClientId;
@@ -138,8 +155,18 @@ namespace Lykke.Service.ReferralLinks.Controllers
             }
         }
 
-        
+
+
+
+        /// <summary>
+        /// Process offchain channel
+        /// </summary>
+        /// <returns></returns>
         [HttpPost("processChannel")]
+        [SwaggerOperation("ProcessChannel")]
+        [ProducesResponseType(typeof(string), (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(string), (int)HttpStatusCode.BadRequest)]
+        [ProducesResponseType(typeof(string), (int)HttpStatusCode.InternalServerError)]
         public async Task<IActionResult> ProcessChannel([FromBody] OffchainChannelProcessModel request)
         {
             var clientId = request.ClientId;
@@ -189,7 +216,15 @@ namespace Lykke.Service.ReferralLinks.Controllers
             await LogInfo(new { RefLink = refLink, TransferId = transferId }, ControllerContext, $"Transfer complete for ref link id {refLink.Id} with amount {transfer.Amount} and asset {refLink.Asset}. Offchain transfer Id {transferId} attached with ref link. ");
         }
 
+        /// <summary>
+        /// Process offchain channel
+        /// </summary>
+        /// <returns></returns>
         [HttpPost("finalizeRefLinkTransfer")]
+        [SwaggerOperation("FinalizeRefLinkTransfer")]
+        [ProducesResponseType(typeof(string), (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(string), (int)HttpStatusCode.BadRequest)]
+        [ProducesResponseType(typeof(string), (int)HttpStatusCode.InternalServerError)]
         public async Task<IActionResult> Finalize([FromBody] OffchainFinalizeModel request)
         {
             var clientId = request.ClientId;

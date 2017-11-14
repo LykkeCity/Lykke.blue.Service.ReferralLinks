@@ -3,31 +3,31 @@ using Autofac.Extensions.DependencyInjection;
 using Common.Log;
 using Lykke.Service.Kyc.Abstractions.Services;
 using Lykke.Service.Kyc.Client;
-using Lykke.Service.ReferralLinks.Core.Services;
-using Lykke.Service.ReferralLinks.Core.Settings.ServiceSettings;
-using Lykke.Service.ReferralLinks.Services;
+using Lykke.Blue.Service.ReferralLinks.Core.Services;
+using Lykke.Blue.Service.ReferralLinks.Core.Settings.ServiceSettings;
+using Lykke.Blue.Service.ReferralLinks.Services;
 using Lykke.SettingsReader;
 using Microsoft.Extensions.DependencyInjection;
 using Common;
-using Lykke.Service.ReferralLinks.Core.Assets;
+using Lykke.Blue.Service.ReferralLinks.Core.Assets;
 using System.Linq;
 using Lykke.Service.Assets.Client;
 using System;
-using Lykke.Service.ReferralLinks.Models;
-using Lykke.Service.ReferralLinks.AzureRepositories;
-using Lykke.Service.ReferralLinks.Services.Kyc;
-using Lykke.Service.ReferralLinks.Core.Kyc;
-using Lykke.Service.ReferralLinks.Core.BitCoinApi;
-using Lykke.Service.ReferralLinks.Services.Bitcoin;
-using Lykke.Service.ReferralLinks.Services.Offchain;
+using Lykke.Blue.Service.ReferralLinks.Models;
+using Lykke.Blue.Service.ReferralLinks.AzureRepositories;
+using Lykke.Blue.Service.ReferralLinks.Services.Kyc;
+using Lykke.Blue.Service.ReferralLinks.Core.Kyc;
+using Lykke.Blue.Service.ReferralLinks.Core.BitCoinApi;
+using Lykke.Blue.Service.ReferralLinks.Services.Bitcoin;
+using Lykke.Blue.Service.ReferralLinks.Services.Offchain;
 using Lykke.Service.ExchangeOperations.Client;
-using Lykke.Service.ReferralLinks.Core.Domain.Offchain;
+using Lykke.Blue.Service.ReferralLinks.Core.Domain.Offchain;
 using Lykke.Service.ClientAccount.Client;
 using Lykke.Service.Balances.Client;
 using Lykke.MatchingEngine.Connector.Abstractions.Services;
 using System.Net;
 
-namespace Lykke.Service.ReferralLinks.Modules
+namespace Lykke.Blue.Service.ReferralLinks.Modules
 {
     public class ServiceModule : Module
     {
@@ -145,7 +145,7 @@ namespace Lykke.Service.ReferralLinks.Modules
             builder.Register(c =>
             {
                 var ctx = c.Resolve<IComponentContext>();
-                return new CachedDataDictionary<string, Assets.Client.Models.Asset>(
+                return new CachedDataDictionary<string, Lykke.Service.Assets.Client.Models.Asset>(
                     async () =>
                         (await ctx.Resolve<Lykke.Service.Assets.Client.IAssetsService>().AssetGetAllWithHttpMessagesAsync()).Body.ToDictionary(itm => itm.Id)); //.Select(a => a.ConvertToServiceModel())
             }).SingleInstance();
@@ -155,7 +155,7 @@ namespace Lykke.Service.ReferralLinks.Modules
 
                 var ctx = x.Resolve<IComponentContext>();
 
-                return new CachedDataDictionary<string, Assets.Client.Models.AssetPair>
+                return new CachedDataDictionary<string, Lykke.Service.Assets.Client.Models.AssetPair>
                 (
                     async () => (await ctx.Resolve<IAssetsService>().AssetPairGetAllAsync()).ToDictionary(itm => itm.Id)
                 );

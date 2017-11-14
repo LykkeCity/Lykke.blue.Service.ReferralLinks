@@ -1,9 +1,9 @@
-﻿using Lykke.Service.ReferralLinks.Core.Domain.ReferralLink;
+﻿using Lykke.Blue.Service.ReferralLinks.Core.Domain.ReferralLink;
 using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace Lykke.Service.ReferralLinks.Responses
+namespace Lykke.Blue.Service.ReferralLinks.Responses
 {
     public class GetReferralLinkResponse : IReferralLink
     {

@@ -10,27 +10,26 @@ namespace Lykke.Blue.Service.ReferralLinks.Client.AutorestClient.Models
     using Lykke.Blue.Service.ReferralLinks.Client;
     using Lykke.Blue.Service.ReferralLinks.Client.AutorestClient;
     using Newtonsoft.Json;
-    using System.Collections;
-    using System.Collections.Generic;
     using System.Linq;
 
-    public partial class ErrorResponseModel
+    public partial class InvitationReferralLinkRequest
     {
         /// <summary>
-        /// Initializes a new instance of the ErrorResponseModel class.
+        /// Initializes a new instance of the InvitationReferralLinkRequest
+        /// class.
         /// </summary>
-        public ErrorResponseModel()
+        public InvitationReferralLinkRequest()
         {
           CustomInit();
         }
 
         /// <summary>
-        /// Initializes a new instance of the ErrorResponseModel class.
+        /// Initializes a new instance of the InvitationReferralLinkRequest
+        /// class.
         /// </summary>
-        public ErrorResponseModel(string errorMessage = default(string), IDictionary<string, IList<string>> modelErrors = default(IDictionary<string, IList<string>>))
+        public InvitationReferralLinkRequest(string senderClientId = default(string))
         {
-            ErrorMessage = errorMessage;
-            ModelErrors = modelErrors;
+            SenderClientId = senderClientId;
             CustomInit();
         }
 
@@ -41,13 +40,8 @@ namespace Lykke.Blue.Service.ReferralLinks.Client.AutorestClient.Models
 
         /// <summary>
         /// </summary>
-        [JsonProperty(PropertyName = "ErrorMessage")]
-        public string ErrorMessage { get; private set; }
-
-        /// <summary>
-        /// </summary>
-        [JsonProperty(PropertyName = "ModelErrors")]
-        public IDictionary<string, IList<string>> ModelErrors { get; private set; }
+        [JsonProperty(PropertyName = "SenderClientId")]
+        public string SenderClientId { get; set; }
 
     }
 }

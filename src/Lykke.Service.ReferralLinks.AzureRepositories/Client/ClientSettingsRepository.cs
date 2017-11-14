@@ -1,12 +1,12 @@
 ﻿using AzureStorage;
-using Lykke.Service.ReferralLinks.Core.Domain.Client;
+using Lykke.Blue.Service.ReferralLinks.Core.Domain.Client;
 using Microsoft.WindowsAzure.Storage.Table;
 using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Lykke.Service.ReferralLinks.AzureRepositories.Client
+namespace Lykke.Blue.Service.ReferralLinks.AzureRepositories.Client
 {
     public class ClientSettingsEntity : TableEntity
     {

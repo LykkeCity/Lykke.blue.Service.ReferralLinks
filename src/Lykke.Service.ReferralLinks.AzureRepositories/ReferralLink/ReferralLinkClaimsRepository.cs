@@ -1,14 +1,14 @@
 ﻿using AutoMapper;
 using AzureStorage;
-using Lykke.Service.ReferralLinks.AzureRepositories.DTOs;
-using Lykke.Service.ReferralLinks.Core.Domain.ReferralLink;
+using Lykke.Blue.Service.ReferralLinks.AzureRepositories.DTOs;
+using Lykke.Blue.Service.ReferralLinks.Core.Domain.ReferralLink;
 using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
 using System.Linq;
 
-namespace Lykke.Service.ReferralLinks.AzureRepositories.ReferralLink
+namespace Lykke.Blue.Service.ReferralLinks.AzureRepositories.ReferralLink
 {
     public class ReferralLinkClaimsRepository : IReferralLinkClaimsRepository
     {

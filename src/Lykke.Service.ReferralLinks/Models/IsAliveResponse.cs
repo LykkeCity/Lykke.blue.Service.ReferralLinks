@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace Lykke.Service.ReferralLinks.Models
+namespace Lykke.Blue.Service.ReferralLinks.Models
 {
     public class IsAliveResponse
     {

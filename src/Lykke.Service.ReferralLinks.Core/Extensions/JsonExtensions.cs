@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace Lykke.Service.ReferralLinks.Core.Extensions
+namespace Lykke.Blue.Service.ReferralLinks.Core.Extensions
 {
     public static class JsonExtensions
     {

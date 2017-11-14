@@ -1,16 +1,16 @@
 ﻿using System.Threading.Tasks;
-using Lykke.Service.ReferralLinks.Core.Domain.ReferralLink;
-using Lykke.Service.ReferralLinks.Core.Services;
+using Lykke.Blue.Service.ReferralLinks.Core.Domain.ReferralLink;
+using Lykke.Blue.Service.ReferralLinks.Core.Services;
 using System.ComponentModel.DataAnnotations;
 using System.Collections.Generic;
-using Lykke.Service.ReferralLinks.Core.Settings;
+using Lykke.Blue.Service.ReferralLinks.Core.Settings;
 using AutoMapper;
-using Lykke.Service.ReferralLinks.Services.Domain;
+using Lykke.Blue.Service.ReferralLinks.Services.Domain;
 using System;
-using Lykke.Service.ReferralLinks.Core.Settings.ServiceSettings;
-using Lykke.Service.ReferralLinks.Core.Domain.Requests;
+using Lykke.Blue.Service.ReferralLinks.Core.Settings.ServiceSettings;
+using Lykke.Blue.Service.ReferralLinks.Core.Domain.Requests;
 
-namespace Lykke.Service.ReferralLinks.Services
+namespace Lykke.Blue.Service.ReferralLinks.Services
 {
     public class ReferralLinksService : IReferralLinksService
     {
@@ -103,7 +103,7 @@ namespace Lykke.Service.ReferralLinks.Services
             await _referralLinkRepository.UpdateState(id, state);
         }
 
-        private async Task Validate(IReferralLink referralLink)
+        private Task Validate(IReferralLink referralLink)
         {
             //TODO: Add validation here and throw ValidationException with detailed message what is not valid
             throw new ValidationException("Not implemented, yet");

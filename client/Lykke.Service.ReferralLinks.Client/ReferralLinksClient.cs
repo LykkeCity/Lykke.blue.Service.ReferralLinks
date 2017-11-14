@@ -2,10 +2,10 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Common.Log;
-using Lykke.Service.ReferralLinks.Client.AutorestClient;
-using Lykke.Service.ReferralLinks.Client.AutorestClient.Models;
+using Lykke.Blue.Service.ReferralLinks.Client.AutorestClient;
+using Lykke.Blue.Service.ReferralLinks.Client.AutorestClient.Models;
 
-namespace Lykke.Service.ReferralLinks.Client
+namespace Lykke.Blue.Service.ReferralLinks.Client
 {
     public class ReferralLinksClient : IReferralLinksClient, IDisposable
     {

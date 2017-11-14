@@ -4,9 +4,9 @@ using System.Collections.Generic;
 using System.Text;
 using Microsoft.WindowsAzure.Storage.Table;
 using System.Threading.Tasks;
-using Lykke.Service.ReferralLinks.Core.Domain.Offchain;
+using Lykke.Blue.Service.ReferralLinks.Core.Domain.Offchain;
 
-namespace Lykke.Service.ReferralLinks.AzureRepositories.Offchain
+namespace Lykke.Blue.Service.ReferralLinks.AzureRepositories.Offchain
 {
     public class OffchainTransferEntity : BaseEntity, IOffchainTransfer
     {

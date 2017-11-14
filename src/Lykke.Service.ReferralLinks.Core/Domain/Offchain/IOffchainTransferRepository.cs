@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Lykke.Service.ReferralLinks.Core.Domain.Offchain
+namespace Lykke.Blue.Service.ReferralLinks.Core.Domain.Offchain
 {
     public enum OffchainTransferType
     {

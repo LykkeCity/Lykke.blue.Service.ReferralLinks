@@ -1,10 +1,10 @@
-﻿using Lykke.Service.ReferralLinks.Core.Domain.Offchain;
+﻿using Lykke.Blue.Service.ReferralLinks.Core.Domain.Offchain;
 using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Lykke.Service.ReferralLinks.Core.Services
+namespace Lykke.Blue.Service.ReferralLinks.Core.Services
 {
     public interface IOffchainService
     {

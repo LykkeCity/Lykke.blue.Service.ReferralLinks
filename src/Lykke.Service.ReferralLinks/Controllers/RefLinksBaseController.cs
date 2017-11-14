@@ -1,8 +1,8 @@
 ﻿using Common;
 using Common.Log;
-using Lykke.Service.ReferralLinks.Core.Domain.Exceptions;
-using Lykke.Service.ReferralLinks.Core.Domain.Offchain;
-using Lykke.Service.ReferralLinks.Extensions;
+using Lykke.Blue.Service.ReferralLinks.Core.Domain.Exceptions;
+using Lykke.Blue.Service.ReferralLinks.Core.Domain.Offchain;
+using Lykke.Blue.Service.ReferralLinks.Extensions;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
@@ -10,7 +10,7 @@ using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Lykke.Service.ReferralLinks.Controllers
+namespace Lykke.Blue.Service.ReferralLinks.Controllers
 {
     public class RefLinksBaseController : Controller
     {

@@ -1,5 +1,5 @@
 ﻿using System.Threading.Tasks;
-using Lykke.Service.ReferralLinks.Core.Services;
+using Lykke.Blue.Service.ReferralLinks.Core.Services;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Dynamic;
@@ -7,9 +7,9 @@ using Newtonsoft.Json;
 using System.Text;
 using Newtonsoft.Json.Linq;
 using System;
-using Lykke.Service.ReferralLinks.Core.Settings.ServiceSettings;
+using Lykke.Blue.Service.ReferralLinks.Core.Settings.ServiceSettings;
 
-namespace Lykke.Service.ReferralLinks.Services
+namespace Lykke.Blue.Service.ReferralLinks.Services
 {
     public class FirebaseService : IFirebaseService
     {

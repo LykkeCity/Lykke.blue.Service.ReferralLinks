@@ -1,12 +1,12 @@
 ﻿using AzureStorage.Queue;
-using Lykke.Service.ReferralLinks.Core.Domain.Offchain;
-using Lykke.Service.ReferralLinks.Core.Extensions;
+using Lykke.Blue.Service.ReferralLinks.Core.Domain.Offchain;
+using Lykke.Blue.Service.ReferralLinks.Core.Extensions;
 using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Lykke.Service.ReferralLinks.AzureRepositories.Offchain
+namespace Lykke.Blue.Service.ReferralLinks.AzureRepositories.Offchain
 {
     public class OffchainFinalizeCommandProducer : IOffchainFinalizeCommandProducer
     {

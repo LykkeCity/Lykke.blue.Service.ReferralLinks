@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace Lykke.Service.ReferralLinks.Models.Offchain
+namespace Lykke.Blue.Service.ReferralLinks.Models.Offchain
 {
     public class OffchainFinalizeModel
     {

@@ -5,9 +5,9 @@ using System.Threading.Tasks;
 using AzureStorage;
 
 using Microsoft.WindowsAzure.Storage.Table;
-using Lykke.Service.ReferralLinks.Core.Kyc;
+using Lykke.Blue.Service.ReferralLinks.Core.Kyc;
 
-namespace Lykke.Service.ReferralLinks.AzureRepositories.Kyc
+namespace Lykke.Blue.Service.ReferralLinks.AzureRepositories.Kyc
 {
     public class SkipKycClientEntity : TableEntity
     {

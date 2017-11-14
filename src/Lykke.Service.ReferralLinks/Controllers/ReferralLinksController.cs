@@ -5,19 +5,19 @@ using Lykke.Service.Balances.Client;
 using Lykke.Service.ClientAccount.Client;
 using Lykke.Service.ExchangeOperations.Client;
 using Lykke.Service.ExchangeOperations.Client.AutorestClient.Models;
-using Lykke.Service.ReferralLinks.Core.BitCoinApi.Models;
-using Lykke.Service.ReferralLinks.Core.Domain.Offchain;
-using Lykke.Service.ReferralLinks.Core.Domain.ReferralLink;
-using Lykke.Service.ReferralLinks.Core.Domain.Requests;
-using Lykke.Service.ReferralLinks.Core.Kyc;
-using Lykke.Service.ReferralLinks.Core.Services;
-using Lykke.Service.ReferralLinks.Core.Settings.ServiceSettings;
-using Lykke.Service.ReferralLinks.Extensions;
-using Lykke.Service.ReferralLinks.Models;
-using Lykke.Service.ReferralLinks.Modules.Validation;
-using Lykke.Service.ReferralLinks.Responses;
-using Lykke.Service.ReferralLinks.Services.Domain;
-using Lykke.Service.ReferralLinks.Strings;
+using Lykke.Blue.Service.ReferralLinks.Core.BitCoinApi.Models;
+using Lykke.Blue.Service.ReferralLinks.Core.Domain.Offchain;
+using Lykke.Blue.Service.ReferralLinks.Core.Domain.ReferralLink;
+using Lykke.Blue.Service.ReferralLinks.Core.Domain.Requests;
+using Lykke.Blue.Service.ReferralLinks.Core.Kyc;
+using Lykke.Blue.Service.ReferralLinks.Core.Services;
+using Lykke.Blue.Service.ReferralLinks.Core.Settings.ServiceSettings;
+using Lykke.Blue.Service.ReferralLinks.Extensions;
+using Lykke.Blue.Service.ReferralLinks.Models;
+using Lykke.Blue.Service.ReferralLinks.Modules.Validation;
+using Lykke.Blue.Service.ReferralLinks.Responses;
+using Lykke.Blue.Service.ReferralLinks.Services.Domain;
+using Lykke.Blue.Service.ReferralLinks.Strings;
 using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.SwaggerGen.Annotations;
 using System;
@@ -27,7 +27,7 @@ using System.Net;
 using System.Threading.Tasks;
 using System.Transactions;
 
-namespace Lykke.Service.ReferralLinks.Controllers
+namespace Lykke.Blue.Service.ReferralLinks.Controllers
 {
     [Route("api/referralLinks")]
     [ValidateModel]
@@ -176,7 +176,7 @@ namespace Lykke.Service.ReferralLinks.Controllers
         /// <param name="request"></param>
         /// <returns></returns>
         [HttpPost("request/invitationLink")]
-        [SwaggerOperation("invitationLink")]
+        [SwaggerOperation("RequestInvitationReferralLink")]
         [ProducesResponseType((int)HttpStatusCode.BadRequest)]
         [ProducesResponseType(typeof(string), (int)HttpStatusCode.OK)]
         public async Task<IActionResult> RequestInvitationReferralLink([FromBody] InvitationReferralLinkRequest request)
@@ -306,8 +306,8 @@ namespace Lykke.Service.ReferralLinks.Controllers
 
         [HttpPost("claimInvitationLink")]
         [SwaggerOperation("ClaimInvitationLink")]
-        [ProducesResponseType((int)HttpStatusCode.BadRequest)]
-        [ProducesResponseType((int)HttpStatusCode.NotFound)]
+        [ProducesResponseType(typeof(string), (int)HttpStatusCode.BadRequest)]
+        [ProducesResponseType(typeof(string), (int)HttpStatusCode.InternalServerError)]
         [ProducesResponseType(typeof(string), (int)HttpStatusCode.OK)]
         [ProducesResponseType(typeof(string), (int)HttpStatusCode.NoContent)]
         public async Task<IActionResult> ClaimInvitationLink([FromBody] ClaimReferralLinkRequest request)
@@ -360,7 +360,7 @@ namespace Lykke.Service.ReferralLinks.Controllers
                 }
                 else
                 {
-                    return StatusCode((int)HttpStatusCode.InternalServerError, new { TransactionRewardSenderError = $"Code: {transactionRewardSender.Code}, Message: {transactionRewardSender.Message}" , TransactionRewardRecipientError = $"Code: {transactionRewardRecipient.Code}, Message: {transactionRewardRecipient.Message}" });
+                    return StatusCode((int)HttpStatusCode.InternalServerError, (new { TransactionRewardSenderError = $"Code: {transactionRewardSender.Code}, Message: {transactionRewardSender.Message}" , TransactionRewardRecipientError = $"Code: {transactionRewardRecipient.Code}, Message: {transactionRewardRecipient.Message}" }).ToJson());
                 }
             }
 

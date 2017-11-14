@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace Lykke.Service.ReferralLinks.Core.BitCoinApi.Models
+namespace Lykke.Blue.Service.ReferralLinks.Core.BitCoinApi.Models
 {
     public enum TransferType
     {

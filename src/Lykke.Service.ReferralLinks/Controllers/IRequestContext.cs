@@ -1,4 +1,4 @@
-﻿namespace Lykke.Service.ReferralLinks.Controllers
+﻿namespace Lykke.Blue.Service.ReferralLinks.Controllers
 {
     internal interface IRequestContext
     {

@@ -4,7 +4,7 @@
 // regenerated.
 // </auto-generated>
 
-namespace Lykke.Service.ReferralLinks.Client.AutorestClient.Models
+namespace Lykke.Blue.Service.ReferralLinks.Client.AutorestClient.Models
 {
     using Newtonsoft.Json;
     using Newtonsoft.Json.Converters;
