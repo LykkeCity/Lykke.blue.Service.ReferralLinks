@@ -73,7 +73,7 @@ namespace Lykke.blue.Service.ReferralLinks.Controllers
 
 
         /// <summary>
-        /// Get offchain ChannelKey.  
+        /// Get offchain ChannelKey for transfer.  
         /// </summary>
         /// <returns></returns>
         [HttpGet("channelKey")]
