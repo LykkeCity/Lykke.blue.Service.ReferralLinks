@@ -1,4 +1,4 @@
-﻿namespace Lykke.Blue.Service.ReferralLinks.Core.Domain.ReferralLink
+﻿namespace Lykke.blue.Service.ReferralLinks.Core.Domain.ReferralLink
 {
     public enum ReferralLinkType
     {

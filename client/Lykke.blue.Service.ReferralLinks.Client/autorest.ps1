@@ -7,4 +7,4 @@
 # Autorest version >= 1.2.2 - https://www.npmjs.com/package/autorest
 
 # Run this file if you use PowerShell directly
-autorest -Input http://localhost:5000/swagger/v1/swagger.json -CodeGenerator CSharp -OutputDirectory ./AutorestClient -Namespace Lykke.Blue.Service.ReferralLinks.Client.AutorestClient
+autorest -Input http://localhost:5000/swagger/v1/swagger.json -CodeGenerator CSharp -OutputDirectory ./AutorestClient -Namespace Lykke.blue.Service.ReferralLinks.Client.AutorestClient

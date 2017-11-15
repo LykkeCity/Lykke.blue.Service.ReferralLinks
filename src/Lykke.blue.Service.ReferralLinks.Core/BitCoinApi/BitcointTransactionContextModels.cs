@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace Lykke.Blue.Service.ReferralLinks.Core.BitCoinApi
+namespace Lykke.blue.Service.ReferralLinks.Core.BitCoinApi
 {
     public class BaseContextData
     {

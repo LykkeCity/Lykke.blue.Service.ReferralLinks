@@ -5,19 +5,19 @@ using Lykke.Service.Balances.Client;
 using Lykke.Service.ClientAccount.Client;
 using Lykke.Service.ExchangeOperations.Client;
 using Lykke.Service.ExchangeOperations.Client.AutorestClient.Models;
-using Lykke.Blue.Service.ReferralLinks.Core.BitCoinApi.Models;
-using Lykke.Blue.Service.ReferralLinks.Core.Domain.Offchain;
-using Lykke.Blue.Service.ReferralLinks.Core.Domain.ReferralLink;
-using Lykke.Blue.Service.ReferralLinks.Core.Domain.Requests;
-using Lykke.Blue.Service.ReferralLinks.Core.Kyc;
-using Lykke.Blue.Service.ReferralLinks.Core.Services;
-using Lykke.Blue.Service.ReferralLinks.Core.Settings.ServiceSettings;
-using Lykke.Blue.Service.ReferralLinks.Extensions;
-using Lykke.Blue.Service.ReferralLinks.Models;
-using Lykke.Blue.Service.ReferralLinks.Modules.Validation;
-using Lykke.Blue.Service.ReferralLinks.Responses;
-using Lykke.Blue.Service.ReferralLinks.Services.Domain;
-using Lykke.Blue.Service.ReferralLinks.Strings;
+using Lykke.blue.Service.ReferralLinks.Core.BitCoinApi.Models;
+using Lykke.blue.Service.ReferralLinks.Core.Domain.Offchain;
+using Lykke.blue.Service.ReferralLinks.Core.Domain.ReferralLink;
+using Lykke.blue.Service.ReferralLinks.Core.Domain.Requests;
+using Lykke.blue.Service.ReferralLinks.Core.Kyc;
+using Lykke.blue.Service.ReferralLinks.Core.Services;
+using Lykke.blue.Service.ReferralLinks.Core.Settings.ServiceSettings;
+using Lykke.blue.Service.ReferralLinks.Extensions;
+using Lykke.blue.Service.ReferralLinks.Models;
+using Lykke.blue.Service.ReferralLinks.Modules.Validation;
+using Lykke.blue.Service.ReferralLinks.Responses;
+using Lykke.blue.Service.ReferralLinks.Services.Domain;
+using Lykke.blue.Service.ReferralLinks.Strings;
 using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.SwaggerGen.Annotations;
 using System;
@@ -27,7 +27,7 @@ using System.Net;
 using System.Threading.Tasks;
 using System.Transactions;
 
-namespace Lykke.Blue.Service.ReferralLinks.Controllers
+namespace Lykke.blue.Service.ReferralLinks.Controllers
 {
     [Route("api/referralLinks")]
     [ValidateModel]

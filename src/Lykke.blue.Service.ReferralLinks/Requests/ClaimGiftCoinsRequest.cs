@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Text;
 
-namespace Lykke.Blue.Service.ReferralLinks.Requests
+namespace Lykke.blue.Service.ReferralLinks.Requests
 {
     //public class ClaimGiftCoinsRequest
     //{

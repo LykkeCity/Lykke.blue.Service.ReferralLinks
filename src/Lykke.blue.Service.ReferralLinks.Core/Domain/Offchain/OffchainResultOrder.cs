@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace Lykke.Blue.Service.ReferralLinks.Core.Domain.Offchain
+namespace Lykke.blue.Service.ReferralLinks.Core.Domain.Offchain
 {
     public class OffchainResultOrder
     {

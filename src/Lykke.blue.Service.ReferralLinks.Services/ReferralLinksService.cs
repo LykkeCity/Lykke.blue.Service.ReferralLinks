@@ -1,16 +1,16 @@
 ﻿using System.Threading.Tasks;
-using Lykke.Blue.Service.ReferralLinks.Core.Domain.ReferralLink;
-using Lykke.Blue.Service.ReferralLinks.Core.Services;
+using Lykke.blue.Service.ReferralLinks.Core.Domain.ReferralLink;
+using Lykke.blue.Service.ReferralLinks.Core.Services;
 using System.ComponentModel.DataAnnotations;
 using System.Collections.Generic;
-using Lykke.Blue.Service.ReferralLinks.Core.Settings;
+using Lykke.blue.Service.ReferralLinks.Core.Settings;
 using AutoMapper;
-using Lykke.Blue.Service.ReferralLinks.Services.Domain;
+using Lykke.blue.Service.ReferralLinks.Services.Domain;
 using System;
-using Lykke.Blue.Service.ReferralLinks.Core.Settings.ServiceSettings;
-using Lykke.Blue.Service.ReferralLinks.Core.Domain.Requests;
+using Lykke.blue.Service.ReferralLinks.Core.Settings.ServiceSettings;
+using Lykke.blue.Service.ReferralLinks.Core.Domain.Requests;
 
-namespace Lykke.Blue.Service.ReferralLinks.Services
+namespace Lykke.blue.Service.ReferralLinks.Services
 {
     public class ReferralLinksService : IReferralLinksService
     {

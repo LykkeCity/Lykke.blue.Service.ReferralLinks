@@ -1,4 +1,4 @@
-﻿namespace Lykke.Blue.Service.ReferralLinks.Core.Settings.ServiceSettings
+﻿namespace Lykke.blue.Service.ReferralLinks.Core.Settings.ServiceSettings
 {
     public class DbSettings
     {

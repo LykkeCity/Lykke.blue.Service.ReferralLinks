@@ -1,9 +1,9 @@
 ﻿
-using Lykke.Blue.Service.ReferralLinks.Client.AutorestClient.Models;
+using Lykke.blue.Service.ReferralLinks.Client.AutorestClient.Models;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace Lykke.Blue.Service.ReferralLinks.Client
+namespace Lykke.blue.Service.ReferralLinks.Client
 {
     public interface IReferralLinksClient
     {

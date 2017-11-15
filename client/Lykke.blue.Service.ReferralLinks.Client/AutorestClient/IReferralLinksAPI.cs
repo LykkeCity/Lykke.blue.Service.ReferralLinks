@@ -2,7 +2,7 @@
 // Changes may cause incorrect behavior and will be lost if the code is
 // regenerated.
 
-namespace Lykke.Blue.Service.ReferralLinks.Client.AutorestClient
+namespace Lykke.blue.Service.ReferralLinks.Client.AutorestClient
 {
     using Microsoft.Rest;
     using Newtonsoft.Json;

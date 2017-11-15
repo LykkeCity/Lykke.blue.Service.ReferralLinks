@@ -3,31 +3,31 @@ using Autofac.Extensions.DependencyInjection;
 using Common.Log;
 using Lykke.Service.Kyc.Abstractions.Services;
 using Lykke.Service.Kyc.Client;
-using Lykke.Blue.Service.ReferralLinks.Core.Services;
-using Lykke.Blue.Service.ReferralLinks.Core.Settings.ServiceSettings;
-using Lykke.Blue.Service.ReferralLinks.Services;
+using Lykke.blue.Service.ReferralLinks.Core.Services;
+using Lykke.blue.Service.ReferralLinks.Core.Settings.ServiceSettings;
+using Lykke.blue.Service.ReferralLinks.Services;
 using Lykke.SettingsReader;
 using Microsoft.Extensions.DependencyInjection;
 using Common;
-using Lykke.Blue.Service.ReferralLinks.Core.Assets;
+using Lykke.blue.Service.ReferralLinks.Core.Assets;
 using System.Linq;
 using Lykke.Service.Assets.Client;
 using System;
-using Lykke.Blue.Service.ReferralLinks.Models;
-using Lykke.Blue.Service.ReferralLinks.AzureRepositories;
-using Lykke.Blue.Service.ReferralLinks.Services.Kyc;
-using Lykke.Blue.Service.ReferralLinks.Core.Kyc;
-using Lykke.Blue.Service.ReferralLinks.Core.BitCoinApi;
-using Lykke.Blue.Service.ReferralLinks.Services.Bitcoin;
-using Lykke.Blue.Service.ReferralLinks.Services.Offchain;
+using Lykke.blue.Service.ReferralLinks.Models;
+using Lykke.blue.Service.ReferralLinks.AzureRepositories;
+using Lykke.blue.Service.ReferralLinks.Services.Kyc;
+using Lykke.blue.Service.ReferralLinks.Core.Kyc;
+using Lykke.blue.Service.ReferralLinks.Core.BitCoinApi;
+using Lykke.blue.Service.ReferralLinks.Services.Bitcoin;
+using Lykke.blue.Service.ReferralLinks.Services.Offchain;
 using Lykke.Service.ExchangeOperations.Client;
-using Lykke.Blue.Service.ReferralLinks.Core.Domain.Offchain;
+using Lykke.blue.Service.ReferralLinks.Core.Domain.Offchain;
 using Lykke.Service.ClientAccount.Client;
 using Lykke.Service.Balances.Client;
 using Lykke.MatchingEngine.Connector.Abstractions.Services;
 using System.Net;
 
-namespace Lykke.Blue.Service.ReferralLinks.Modules
+namespace Lykke.blue.Service.ReferralLinks.Modules
 {
     public class ServiceModule : Module
     {

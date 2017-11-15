@@ -1,4 +1,4 @@
-namespace Lykke.Blue.Service.ReferralLinks.Core.Settings.SlackNotifications
+namespace Lykke.blue.Service.ReferralLinks.Core.Settings.SlackNotifications
 {
     public class AzureQueuePublicationSettings
     {

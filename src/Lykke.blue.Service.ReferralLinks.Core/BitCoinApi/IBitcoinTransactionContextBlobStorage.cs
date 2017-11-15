@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Lykke.Blue.Service.ReferralLinks.Core.BitCoinApi
+namespace Lykke.blue.Service.ReferralLinks.Core.BitCoinApi
 {
     public interface IBitcoinTransactionContextBlobStorage
     {

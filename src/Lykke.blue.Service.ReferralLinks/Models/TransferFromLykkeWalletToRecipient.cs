@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace Lykke.Blue.Service.ReferralLinks.Models
+namespace Lykke.blue.Service.ReferralLinks.Models
 {
     public class ClaimReferralLinkRequest
     {

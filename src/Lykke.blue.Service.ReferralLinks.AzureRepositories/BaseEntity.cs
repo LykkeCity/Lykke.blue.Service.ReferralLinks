@@ -5,7 +5,7 @@ using System.Linq;
 using Microsoft.WindowsAzure.Storage;
 using Microsoft.WindowsAzure.Storage.Table;
 using System.Reflection;
-namespace Lykke.Blue.Service.ReferralLinks.AzureRepositories
+namespace Lykke.blue.Service.ReferralLinks.AzureRepositories
 {
     public class BaseEntity : TableEntity
     {

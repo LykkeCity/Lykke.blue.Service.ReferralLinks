@@ -1,4 +1,4 @@
-﻿namespace Lykke.Blue.Service.ReferralLinks.Core.Domain.Health
+﻿namespace Lykke.blue.Service.ReferralLinks.Core.Domain.Health
 {
     public class HealthIssue
     {

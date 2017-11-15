@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace Lykke.Blue.Service.ReferralLinks.Extensions
+namespace Lykke.blue.Service.ReferralLinks.Extensions
 {
     public static class ControllerExtensions
     {

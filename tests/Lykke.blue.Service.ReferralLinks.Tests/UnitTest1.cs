@@ -1,6 +1,6 @@
 ﻿using Xunit;
 
-namespace Lykke.Blue.Service.ReferralLinks.Tests
+namespace Lykke.blue.Service.ReferralLinks.Tests
 {
     public class UnitTest1
     {

@@ -3,16 +3,16 @@ using Common.Log;
 using Core.BitCoin.BitcoinApi.Models;
 using Lykke.Service.ExchangeOperations.Client;
 using Lykke.Service.Kyc.Client;
-using Lykke.Blue.Service.ReferralLinks.Core.BitCoinApi.Models;
-using Lykke.Blue.Service.ReferralLinks.Core.Domain.Client;
-using Lykke.Blue.Service.ReferralLinks.Core.Domain.Exceptions;
-using Lykke.Blue.Service.ReferralLinks.Core.Domain.Offchain;
-using Lykke.Blue.Service.ReferralLinks.Core.Domain.ReferralLink;
-using Lykke.Blue.Service.ReferralLinks.Core.Kyc;
-using Lykke.Blue.Service.ReferralLinks.Core.Services;
-using Lykke.Blue.Service.ReferralLinks.Core.Settings.ServiceSettings;
-using Lykke.Blue.Service.ReferralLinks.Models;
-using Lykke.Blue.Service.ReferralLinks.Models.Offchain;
+using Lykke.blue.Service.ReferralLinks.Core.BitCoinApi.Models;
+using Lykke.blue.Service.ReferralLinks.Core.Domain.Client;
+using Lykke.blue.Service.ReferralLinks.Core.Domain.Exceptions;
+using Lykke.blue.Service.ReferralLinks.Core.Domain.Offchain;
+using Lykke.blue.Service.ReferralLinks.Core.Domain.ReferralLink;
+using Lykke.blue.Service.ReferralLinks.Core.Kyc;
+using Lykke.blue.Service.ReferralLinks.Core.Services;
+using Lykke.blue.Service.ReferralLinks.Core.Settings.ServiceSettings;
+using Lykke.blue.Service.ReferralLinks.Models;
+using Lykke.blue.Service.ReferralLinks.Models.Offchain;
 using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.SwaggerGen.Annotations;
 using System;
@@ -22,7 +22,7 @@ using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Lykke.Blue.Service.ReferralLinks.Controllers
+namespace Lykke.blue.Service.ReferralLinks.Controllers
 {
     [Route("api/transfers")]
     public class TransfersController : RefLinksBaseController

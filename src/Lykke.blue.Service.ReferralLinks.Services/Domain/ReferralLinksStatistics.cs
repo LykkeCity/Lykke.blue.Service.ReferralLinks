@@ -1,9 +1,9 @@
-﻿using Lykke.Blue.Service.ReferralLinks.Core.Domain.ReferralLink;
+﻿using Lykke.blue.Service.ReferralLinks.Core.Domain.ReferralLink;
 using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace Lykke.Blue.Service.ReferralLinks.Services.Domain
+namespace Lykke.blue.Service.ReferralLinks.Services.Domain
 {
     public class ReferralLinksStatistics : IReferralLinksStatistics
     {

@@ -1,5 +1,5 @@
-﻿using Lykke.Blue.Service.ReferralLinks.Core.BitCoinApi;
-using Lykke.Blue.Service.ReferralLinks.Core.Settings.ServiceSettings;
+﻿using Lykke.blue.Service.ReferralLinks.Core.BitCoinApi;
+using Lykke.blue.Service.ReferralLinks.Core.Settings.ServiceSettings;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 using Lykke.Service.BitcoinApi.Client.Models;
 using Lykke.Service.BitcoinApi.Client;
 
-namespace Lykke.Blue.Service.ReferralLinks.Services.Bitcoin
+namespace Lykke.blue.Service.ReferralLinks.Services.Bitcoin
 {
     public class BitcoinApiClient : IBitcoinApiClient
     {

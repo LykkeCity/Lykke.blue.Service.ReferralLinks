@@ -3,7 +3,7 @@ using System.IO;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Hosting;
 
-namespace Lykke.Blue.Service.ReferralLinks
+namespace Lykke.blue.Service.ReferralLinks
 {
     public class Program
     {

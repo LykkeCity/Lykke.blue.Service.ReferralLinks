@@ -1,11 +1,11 @@
-﻿using Lykke.Blue.Service.ReferralLinks.Core.BitCoinApi;
-using Lykke.Blue.Service.ReferralLinks.Core.Extensions;
+﻿using Lykke.blue.Service.ReferralLinks.Core.BitCoinApi;
+using Lykke.blue.Service.ReferralLinks.Core.Extensions;
 using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Lykke.Blue.Service.ReferralLinks.Services.Bitcoin
+namespace Lykke.blue.Service.ReferralLinks.Services.Bitcoin
 {
     public class BitcoinTransactionService : IBitcoinTransactionService
     {

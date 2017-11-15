@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace Lykke.Blue.Service.ReferralLinks.Core.Assets
+namespace Lykke.blue.Service.ReferralLinks.Core.Assets
 {
     public interface IAssetPair
     {

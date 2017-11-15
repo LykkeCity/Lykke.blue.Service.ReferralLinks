@@ -2,7 +2,7 @@
 using Autofac;
 using Common.Log;
 
-namespace Lykke.Blue.Service.ReferralLinks.Client
+namespace Lykke.blue.Service.ReferralLinks.Client
 {
     public static class AutofacExtension
     {

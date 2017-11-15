@@ -1,1 +1,1 @@
-# Lykke.Blue.Service.ReferralLinks
+# Lykke.blue.Service.ReferralLinks

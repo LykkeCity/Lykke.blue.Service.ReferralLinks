@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace Lykke.Blue.Service.ReferralLinks.Core.Domain
+namespace Lykke.blue.Service.ReferralLinks.Core.Domain
 {
     public enum NetworkType
     {

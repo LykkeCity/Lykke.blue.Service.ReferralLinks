@@ -1,12 +1,12 @@
 ﻿using AutoMapper;
-using Lykke.Blue.Service.ReferralLinks.AzureRepositories.ReferralLink;
-using Lykke.Blue.Service.ReferralLinks.Core.Domain.ReferralLink;
-using Lykke.Blue.Service.ReferralLinks.Core.Domain.Requests;
-using Lykke.Blue.Service.ReferralLinks.Requests;
-using Lykke.Blue.Service.ReferralLinks.Responses;
-using Lykke.Blue.Service.ReferralLinks.Services.Domain;
+using Lykke.blue.Service.ReferralLinks.AzureRepositories.ReferralLink;
+using Lykke.blue.Service.ReferralLinks.Core.Domain.ReferralLink;
+using Lykke.blue.Service.ReferralLinks.Core.Domain.Requests;
+using Lykke.blue.Service.ReferralLinks.Requests;
+using Lykke.blue.Service.ReferralLinks.Responses;
+using Lykke.blue.Service.ReferralLinks.Services.Domain;
 
-namespace Lykke.Blue.Service.ReferralLinks
+namespace Lykke.blue.Service.ReferralLinks
 {
     public class AutoMapperProfile : Profile
     {

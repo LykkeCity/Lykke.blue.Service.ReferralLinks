@@ -1,10 +1,10 @@
-﻿using Lykke.Blue.Service.ReferralLinks.Core.Assets;
+﻿using Lykke.blue.Service.ReferralLinks.Core.Assets;
 using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Lykke.Blue.Service.ReferralLinks.Core.Kyc
+namespace Lykke.blue.Service.ReferralLinks.Core.Kyc
 {
     public interface ISrvKycForAsset
     {

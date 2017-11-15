@@ -4,7 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace Lykke.Blue.Service.ReferralLinks.Modules.Validation
+namespace Lykke.blue.Service.ReferralLinks.Modules.Validation
 {
     public class ValidateModelAttribute : ActionFilterAttribute
     {
