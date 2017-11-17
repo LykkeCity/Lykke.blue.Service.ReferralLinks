@@ -262,7 +262,7 @@ namespace Lykke.blue.Service.ReferralLinks.Controllers
                 }
                 else
                 {
-                    await LogWarn(request, ControllerContext, $"_offchainService.Finalize returned unexpected result:  {response?.ToJson()}");                    
+                    await LogWarn(request, ControllerContext, $"_offchainService.Finalize returned unexpected result :  {response?.ToJson()}");                    
                 }
 
                 var offchainRequest =
