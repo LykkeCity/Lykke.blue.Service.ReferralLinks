@@ -12,23 +12,22 @@ namespace Lykke.blue.Service.ReferralLinks.Client.AutorestClient.Models
     using Newtonsoft.Json;
     using System.Linq;
 
-    public partial class IssueIndicator
+    public partial class RequestRefLinkResponse
     {
         /// <summary>
-        /// Initializes a new instance of the IssueIndicator class.
+        /// Initializes a new instance of the RequestRefLinkResponse class.
         /// </summary>
-        public IssueIndicator()
+        public RequestRefLinkResponse()
         {
           CustomInit();
         }
 
         /// <summary>
-        /// Initializes a new instance of the IssueIndicator class.
+        /// Initializes a new instance of the RequestRefLinkResponse class.
         /// </summary>
-        public IssueIndicator(string type = default(string), string value = default(string))
+        public RequestRefLinkResponse(string refLinkId = default(string))
         {
-            Type = type;
-            Value = value;
+            RefLinkId = refLinkId;
             CustomInit();
         }
 
@@ -39,13 +38,8 @@ namespace Lykke.blue.Service.ReferralLinks.Client.AutorestClient.Models
 
         /// <summary>
         /// </summary>
-        [JsonProperty(PropertyName = "Type")]
-        public string Type { get; set; }
-
-        /// <summary>
-        /// </summary>
-        [JsonProperty(PropertyName = "Value")]
-        public string Value { get; set; }
+        [JsonProperty(PropertyName = "RefLinkId")]
+        public string RefLinkId { get; set; }
 
     }
 }

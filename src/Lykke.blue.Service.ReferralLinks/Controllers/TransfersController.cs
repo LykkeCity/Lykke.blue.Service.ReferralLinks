@@ -76,14 +76,14 @@ namespace Lykke.blue.Service.ReferralLinks.Controllers
         /// Get offchain ChannelKey for transfer.  
         /// </summary>
         /// <returns></returns>
-        [HttpGet("channelKey")]
+        [HttpPost("channelKey")]
         [SwaggerOperation("GetChannelKey")]
         [ProducesResponseType(typeof(string), (int)HttpStatusCode.OK)]
-        public async Task<IActionResult> GetChannelKey([FromQuery] string asset, [FromQuery] string clientId)
+        public async Task<IActionResult> GetChannelKey([FromBody] OffchainGetChannelKeyRequest request)
         {
-            var data = await _offchainEncryptedKeysRepository.GetKey(clientId, asset);
+            var data = await _offchainEncryptedKeysRepository.GetKey(request.ClientId, request.Asset);
 
-            await LogInfo(new { asset, clientId }, ControllerContext, $"Channel key: {data?.Key}");
+            await LogInfo(new { request.Asset, request.ClientId }, ControllerContext, $"Channel key: {data?.Key}");
 
             return Ok(new OffchainEncryptedKeyRespModel
             {
@@ -98,9 +98,9 @@ namespace Lykke.blue.Service.ReferralLinks.Controllers
         /// <returns></returns>
         [HttpPost("transferToLykkeWallet")]
         [SwaggerOperation("TransferToLykkeWallet")]
-        [ProducesResponseType(typeof(string), (int)HttpStatusCode.OK)]
-        [ProducesResponseType(typeof(string), (int)HttpStatusCode.BadRequest)]
-        [ProducesResponseType(typeof(string), (int)HttpStatusCode.InternalServerError)]
+        [ProducesResponseType(typeof(OffchainTradeRespModel), (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(ErrorResponseModel), (int)HttpStatusCode.BadRequest)]
+        [ProducesResponseType(typeof(ErrorResponseModel), (int)HttpStatusCode.NotFound)]
         public async Task<IActionResult> TransferToLykkeWallet([FromBody] TransferToLykkeWallet model)
         {
             var clientId = model.ClientId;
@@ -151,7 +151,7 @@ namespace Lykke.blue.Service.ReferralLinks.Controllers
             }
             catch (Exception ex)
             {
-                return await LogAndReturnInternalServerError(model, ControllerContext, ex);
+                return await LogAndReturnNotFound(model, ControllerContext, ex.Message);
             }
         }
 
@@ -164,9 +164,9 @@ namespace Lykke.blue.Service.ReferralLinks.Controllers
         /// <returns></returns>
         [HttpPost("processChannel")]
         [SwaggerOperation("ProcessChannel")]
-        [ProducesResponseType(typeof(string), (int)HttpStatusCode.OK)]
-        [ProducesResponseType(typeof(string), (int)HttpStatusCode.BadRequest)]
-        [ProducesResponseType(typeof(string), (int)HttpStatusCode.InternalServerError)]
+        [ProducesResponseType(typeof(OffchainTradeRespModel), (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(ErrorResponseModel), (int)HttpStatusCode.BadRequest)]
+        [ProducesResponseType(typeof(ErrorResponseModel), (int)HttpStatusCode.NotFound)]
         public async Task<IActionResult> ProcessChannel([FromBody] OffchainChannelProcessModel request)
         {
             var clientId = request.ClientId;
@@ -198,7 +198,7 @@ namespace Lykke.blue.Service.ReferralLinks.Controllers
             }
             catch (Exception ex)
             {
-                return await LogAndReturnInternalServerError(request, ControllerContext, ex);
+                return await LogAndReturnNotFound(request, ControllerContext, ex.Message);
             }
         }
 
@@ -222,9 +222,9 @@ namespace Lykke.blue.Service.ReferralLinks.Controllers
         /// <returns></returns>
         [HttpPost("finalizeRefLinkTransfer")]
         [SwaggerOperation("FinalizeRefLinkTransfer")]
-        [ProducesResponseType(typeof(string), (int)HttpStatusCode.OK)]
-        [ProducesResponseType(typeof(string), (int)HttpStatusCode.BadRequest)]
-        [ProducesResponseType(typeof(string), (int)HttpStatusCode.InternalServerError)]
+        [ProducesResponseType(typeof(OffchainSuccessTradeRespModel), (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(ErrorResponseModel), (int)HttpStatusCode.BadRequest)]
+        [ProducesResponseType(typeof(ErrorResponseModel), (int)HttpStatusCode.NotFound)]
         public async Task<IActionResult> Finalize([FromBody] OffchainFinalizeModel request)
         {
             var clientId = request.ClientId;
@@ -295,7 +295,7 @@ namespace Lykke.blue.Service.ReferralLinks.Controllers
             }
             catch (Exception ex)
             {
-                return await LogAndReturnInternalServerError(request, ControllerContext, ex);
+                return await LogAndReturnNotFound(request, ControllerContext, ex.Message);
             }
         }
 

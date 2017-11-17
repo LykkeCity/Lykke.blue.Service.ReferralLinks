@@ -18,7 +18,7 @@ namespace Lykke.blue.Service.ReferralLinks.Client
             _service = new LykkeReferralLinksService(new Uri(serviceUrl));
         }
 
-        public async Task<string> ClaimGiftCoins(ClaimReferralLinkRequest request)
+        public async Task<object> ClaimGiftCoins(ClaimReferralLinkRequest request)
         {
             try
             {
@@ -31,7 +31,7 @@ namespace Lykke.blue.Service.ReferralLinks.Client
             }
         }
 
-        public async Task<string> ClaimInvitationLink(ClaimReferralLinkRequest request)
+        public async Task<object> ClaimInvitationLink(ClaimReferralLinkRequest request)
         {
             try
             {
@@ -59,7 +59,7 @@ namespace Lykke.blue.Service.ReferralLinks.Client
             _service = null;
         }
 
-        public async Task<string> FinalizeRefLinkTransfer(OffchainFinalizeModel request)
+        public async Task<object> FinalizeRefLinkTransfer(OffchainFinalizeModel request)
         {
             try
             {
@@ -72,11 +72,11 @@ namespace Lykke.blue.Service.ReferralLinks.Client
             }
         }
 
-        public async Task<string> GetChannelKey(string asset, string clientId)
+        public async Task<string> GetChannelKey(OffchainGetChannelKeyRequest request)
         {
             try
             {
-                return await _service.GetChannelKeyAsync(asset, clientId);
+                return await _service.GetChannelKeyAsync(request);
             }
             catch (Exception ex)
             {
@@ -98,11 +98,11 @@ namespace Lykke.blue.Service.ReferralLinks.Client
             }
         }       
 
-        public async Task<GetReferralLinksStatisticsBySenderIdResponse> GetReferralLinksStatisticsBySenderId(string senderClientId)
+        public async Task<object> GetReferralLinksStatisticsBySenderId(RefLinkStatisticsRequest request)
         {
             try
             {
-                return await _service.GetReferralLinksStatisticsBySenderIdAsync(senderClientId);
+                return await _service.GetReferralLinksStatisticsBySenderIdAsync(request);
             }
             catch (Exception ex)
             {
@@ -111,7 +111,7 @@ namespace Lykke.blue.Service.ReferralLinks.Client
             }
         }
 
-        public async Task<string> ProcessChannel(OffchainChannelProcessModel request)
+        public async Task<object> ProcessChannel(OffchainChannelProcessModel request)
         {
             try
             {
@@ -124,7 +124,7 @@ namespace Lykke.blue.Service.ReferralLinks.Client
             }
         }
 
-        public async Task<string> RequestGiftCoinsReferralLink(GiftCoinsReferralLinkRequest request)
+        public async Task<object> RequestGiftCoinsReferralLink(GiftCoinsReferralLinkRequest request)
         {
             try
             {
@@ -137,7 +137,7 @@ namespace Lykke.blue.Service.ReferralLinks.Client
             }
         }
 
-        public async Task<string> RequestInvitationReferralLink(InvitationReferralLinkRequest request)
+        public async Task<object> RequestInvitationReferralLink(InvitationReferralLinkRequest request)
         {
             try
             {
@@ -152,7 +152,7 @@ namespace Lykke.blue.Service.ReferralLinks.Client
 
        
 
-        public async Task<string> TransferToLykkeWallet(TransferToLykkeWallet request)
+        public async Task<object> TransferToLykkeWallet(TransferToLykkeWallet request)
         {
             try
             {

@@ -12,23 +12,25 @@ namespace Lykke.blue.Service.ReferralLinks.Client.AutorestClient.Models
     using Newtonsoft.Json;
     using System.Linq;
 
-    public partial class IssueIndicator
+    public partial class OffchainGetChannelKeyRequest
     {
         /// <summary>
-        /// Initializes a new instance of the IssueIndicator class.
+        /// Initializes a new instance of the OffchainGetChannelKeyRequest
+        /// class.
         /// </summary>
-        public IssueIndicator()
+        public OffchainGetChannelKeyRequest()
         {
           CustomInit();
         }
 
         /// <summary>
-        /// Initializes a new instance of the IssueIndicator class.
+        /// Initializes a new instance of the OffchainGetChannelKeyRequest
+        /// class.
         /// </summary>
-        public IssueIndicator(string type = default(string), string value = default(string))
+        public OffchainGetChannelKeyRequest(string asset = default(string), string clientId = default(string))
         {
-            Type = type;
-            Value = value;
+            Asset = asset;
+            ClientId = clientId;
             CustomInit();
         }
 
@@ -39,13 +41,13 @@ namespace Lykke.blue.Service.ReferralLinks.Client.AutorestClient.Models
 
         /// <summary>
         /// </summary>
-        [JsonProperty(PropertyName = "Type")]
-        public string Type { get; set; }
+        [JsonProperty(PropertyName = "Asset")]
+        public string Asset { get; set; }
 
         /// <summary>
         /// </summary>
-        [JsonProperty(PropertyName = "Value")]
-        public string Value { get; set; }
+        [JsonProperty(PropertyName = "ClientId")]
+        public string ClientId { get; set; }
 
     }
 }

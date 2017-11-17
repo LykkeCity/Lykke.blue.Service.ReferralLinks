@@ -93,7 +93,7 @@ namespace Lykke.blue.Service.ReferralLinks.AzureRepositories.ReferralLink
                     && x.Type == ReferralLinkType.Invitation.ToString()
             ));
 
-            return numberOfCreatedReflinks.Count() >= _settings.InvitationLinkSettings.LinksNumberLimitPerSender;
+            return numberOfCreatedReflinks.Count() >= 100;
         }
 
         //TODO: Review 

@@ -8,16 +8,16 @@ namespace Lykke.blue.Service.ReferralLinks.Client
     public interface IReferralLinksClient
     {
         Task<GetReferralLinkResponse> GetReferralLink(string id);
-        Task<GetReferralLinksStatisticsBySenderIdResponse> GetReferralLinksStatisticsBySenderId(string senderClientId);
-        Task<string> RequestGiftCoinsReferralLink(GiftCoinsReferralLinkRequest request);
-        Task<string> RequestInvitationReferralLink(InvitationReferralLinkRequest request);
-        Task<string> ClaimGiftCoins(ClaimReferralLinkRequest request);
-        Task<string> ClaimInvitationLink(ClaimReferralLinkRequest request);
+        Task<object> GetReferralLinksStatisticsBySenderId(RefLinkStatisticsRequest request);
+        Task<object> RequestGiftCoinsReferralLink(GiftCoinsReferralLinkRequest request);
+        Task<object> RequestInvitationReferralLink(InvitationReferralLinkRequest request);
+        Task<object> ClaimGiftCoins(ClaimReferralLinkRequest request);
+        Task<object> ClaimInvitationLink(ClaimReferralLinkRequest request);
 
-        Task<string> GetChannelKey(string asset, string clientId);
-        Task<string> TransferToLykkeWallet(TransferToLykkeWallet request);
-        Task<string> ProcessChannel(OffchainChannelProcessModel request);
-        Task<string> FinalizeRefLinkTransfer(OffchainFinalizeModel request);
+        Task<string> GetChannelKey(OffchainGetChannelKeyRequest request);
+        Task<object> TransferToLykkeWallet(TransferToLykkeWallet request);
+        Task<object> ProcessChannel(OffchainChannelProcessModel request);
+        Task<object> FinalizeRefLinkTransfer(OffchainFinalizeModel request);
 
 
 

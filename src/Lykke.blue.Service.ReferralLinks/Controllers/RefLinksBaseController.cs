@@ -3,6 +3,7 @@ using Common.Log;
 using Lykke.blue.Service.ReferralLinks.Core.Domain.Exceptions;
 using Lykke.blue.Service.ReferralLinks.Core.Domain.Offchain;
 using Lykke.blue.Service.ReferralLinks.Extensions;
+using Lykke.blue.Service.ReferralLinks.Models;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
@@ -21,28 +22,34 @@ namespace Lykke.blue.Service.ReferralLinks.Controllers
             _log = log;
         }
 
-        protected async Task<ObjectResult> LogAndReturnInternalServerError<T>(T request, ControllerContext controllerCtx, Exception ex)
+        //protected async Task<ObjectResult> LogAndReturnInternalServerError<T>(T request, ControllerContext controllerCtx, Exception ex)
+        //{
+        //    await LogError(request, controllerCtx, ex);
+        //    return StatusCode((int)HttpStatusCode.InternalServerError, ErrorResponseModel.Create(ex.Message) );
+        //}
+
+        protected async Task<ObjectResult> LogAndReturnNotFound<T>(T request, ControllerContext controllerCtx, string info)
         {
-            await LogError(request, controllerCtx, ex);
-            return StatusCode((int)HttpStatusCode.InternalServerError, ex.Message);
+            await LogError(request, controllerCtx, new Exception(info));
+            return NotFound(ErrorResponseModel.Create(info));
         }
 
         protected async Task<ObjectResult> LogOffchainExceptionAndReturn<T>(T request, ControllerContext controllerCtx, OffchainException ex)
         {
             await LogError(request, controllerCtx, new Exception($"OffchainException: {ex.ToJson()}"));
-            return StatusCode((int)HttpStatusCode.InternalServerError, new { ex.OffchainExceptionMessage, ex.OffchainExceptionCode, ex.Message } );
+            return NotFound(ErrorResponseModel.Create((new { ex.OffchainExceptionMessage, ex.OffchainExceptionCode, ex.Message }).ToJson()));
         }
 
         protected async Task<ObjectResult> LogTraderExceptionAndReturn<T>(T request, ControllerContext controllerCtx, TradeException ex)
         {
             await LogError(request, controllerCtx, new Exception($"TradeException: {ex.ToJson()}"));
-            return StatusCode((int)HttpStatusCode.InternalServerError, new { TradeExceptionType = ex.Type.ToString(), ex.Message });
+            return NotFound(ErrorResponseModel.Create((new { TradeExceptionType = ex.Type.ToString(), ex.Message }).ToJson()));
         }
 
         protected async Task<ObjectResult> LogAndReturnBadRequest<T>(T request, ControllerContext controllerCtx, string info)
         {
             await LogWarn(request, controllerCtx, info);
-            return BadRequest(info);
+            return BadRequest(ErrorResponseModel.Create(info));
         }
 
         protected async Task LogInfo<T>(T callParams, ControllerContext controllerCtx, string info)

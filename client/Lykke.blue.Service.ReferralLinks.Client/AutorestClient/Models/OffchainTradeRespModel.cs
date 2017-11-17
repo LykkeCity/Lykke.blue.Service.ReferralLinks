@@ -12,26 +12,26 @@ namespace Lykke.blue.Service.ReferralLinks.Client.AutorestClient.Models
     using Newtonsoft.Json;
     using System.Linq;
 
-    public partial class GiftCoinsReferralLinkRequest
+    public partial class OffchainTradeRespModel
     {
         /// <summary>
-        /// Initializes a new instance of the GiftCoinsReferralLinkRequest
-        /// class.
+        /// Initializes a new instance of the OffchainTradeRespModel class.
         /// </summary>
-        public GiftCoinsReferralLinkRequest()
+        public OffchainTradeRespModel()
         {
           CustomInit();
         }
 
         /// <summary>
-        /// Initializes a new instance of the GiftCoinsReferralLinkRequest
-        /// class.
+        /// Initializes a new instance of the OffchainTradeRespModel class.
         /// </summary>
-        public GiftCoinsReferralLinkRequest(double amount, string senderClientId = default(string), string asset = default(string))
+        /// <param name="operationResult">Possible values include: 'Transfer',
+        /// 'CreateChannel', 'ClientCommitment'</param>
+        public OffchainTradeRespModel(OffchainOperationResult operationResult, string transferId = default(string), string transactionHex = default(string))
         {
-            SenderClientId = senderClientId;
-            Asset = asset;
-            Amount = amount;
+            TransferId = transferId;
+            TransactionHex = transactionHex;
+            OperationResult = operationResult;
             CustomInit();
         }
 
@@ -42,18 +42,20 @@ namespace Lykke.blue.Service.ReferralLinks.Client.AutorestClient.Models
 
         /// <summary>
         /// </summary>
-        [JsonProperty(PropertyName = "SenderClientId")]
-        public string SenderClientId { get; set; }
+        [JsonProperty(PropertyName = "TransferId")]
+        public string TransferId { get; set; }
 
         /// <summary>
         /// </summary>
-        [JsonProperty(PropertyName = "Asset")]
-        public string Asset { get; set; }
+        [JsonProperty(PropertyName = "TransactionHex")]
+        public string TransactionHex { get; set; }
 
         /// <summary>
+        /// Gets or sets possible values include: 'Transfer', 'CreateChannel',
+        /// 'ClientCommitment'
         /// </summary>
-        [JsonProperty(PropertyName = "Amount")]
-        public double Amount { get; set; }
+        [JsonProperty(PropertyName = "OperationResult")]
+        public OffchainOperationResult OperationResult { get; set; }
 
         /// <summary>
         /// Validate the object.
@@ -63,7 +65,6 @@ namespace Lykke.blue.Service.ReferralLinks.Client.AutorestClient.Models
         /// </exception>
         public virtual void Validate()
         {
-            //Nothing to validate
         }
     }
 }

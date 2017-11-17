@@ -26,6 +26,8 @@ using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using System.Transactions;
+using Lykke.blue.Service.ReferralLinks.Models.RefLinkResponseModels;
+using Lykke.blue.Service.ReferralLinks.Requests;
 
 namespace Lykke.blue.Service.ReferralLinks.Controllers
 {
@@ -96,31 +98,31 @@ namespace Lykke.blue.Service.ReferralLinks.Controllers
             var result = Mapper.Map<GetReferralLinkResponse>(referralLink);
             
             return Ok(result);
-        }      
+        }
 
         /// <summary>
         /// Get referral links statistics by sender client id.
         /// </summary>
-        /// <param name="senderClientId">Sender client id by which we wanna get statistics.</param>
+        /// <param name="request">Sender client id by which we wanna get statistics.</param>
         /// <returns></returns>
-        [HttpGet("statistics/{senderClientId}")]
+        [HttpPost("statistics")]
         [SwaggerOperation("GetReferralLinksStatisticsBySenderId")]
-        [ProducesResponseType((int)HttpStatusCode.BadRequest)]
+        [ProducesResponseType(typeof(ErrorResponseModel), (int)HttpStatusCode.BadRequest)]
         [ProducesResponseType(typeof(GetReferralLinksStatisticsBySenderIdResponse), (int)HttpStatusCode.OK)]
-        public async Task<IActionResult> GetReferralLinksStatisticsBySenderId(string senderClientId)
+        public async Task<IActionResult> GetReferralLinksStatisticsBySenderId([FromBody] RefLinkStatisticsRequest request)
         {
-            if (String.IsNullOrEmpty(senderClientId) || await _clientAccountClient.GetClientById(senderClientId) == null)
+            if (String.IsNullOrEmpty(request.SenderClientId) || await _clientAccountClient.GetClientById(request.SenderClientId) == null)
             {
-                return await LogAndReturnBadRequest(senderClientId, ControllerContext, Phrases.InvalidSenderClientId);
+                return await LogAndReturnBadRequest(request.SenderClientId, ControllerContext, Phrases.InvalidSenderClientId);
             }
 
-            var referraLinksStatistics = await _statisticsService.GetStatistics(senderClientId);
+            var referraLinksStatistics = await _statisticsService.GetStatistics(request.SenderClientId);
 
-            await LogInfo(senderClientId, ControllerContext, referraLinksStatistics.ToJson());
+            await LogInfo(request.SenderClientId, ControllerContext, referraLinksStatistics.ToJson());
 
             return Ok(referraLinksStatistics);
         }
-        
+
         /// <summary>
         /// Request money transfer referral link.
         /// </summary>
@@ -128,10 +130,11 @@ namespace Lykke.blue.Service.ReferralLinks.Controllers
         /// <returns></returns>
         [HttpPost("request/giftCoinslLink")]
         [SwaggerOperation("RequestGiftCoinsReferralLink")]
-        [ProducesResponseType((int)HttpStatusCode.BadRequest)]
-        [ProducesResponseType(typeof(string), (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(ErrorResponseModel), (int)HttpStatusCode.BadRequest)]
+        [ProducesResponseType(typeof(ErrorResponseModel), (int)HttpStatusCode.NotFound)]
+        [ProducesResponseType(typeof(RequestRefLinkResponse), (int)HttpStatusCode.Created)]        
         public async Task<IActionResult> RequestGiftCoinsReferralLink([FromBody] GiftCoinsReferralLinkRequest request)
-        {
+        {            
             if (request == null)
             {
                 return await LogAndReturnBadRequest("", ControllerContext, Phrases.InvalidRequest);
@@ -155,9 +158,15 @@ namespace Lykke.blue.Service.ReferralLinks.Controllers
             }
 
             var clientBalances = await _balancesClient.GetClientBalances(request.SenderClientId);
+
+            if (clientBalances == null)
+            {
+                return await LogAndReturnNotFound(request, ControllerContext, $"Cant get clientBalance of asset {asset.Symbol} for client id {request.SenderClientId} from service {_settings.ExternalServices.BalancesServiceUrl}");
+            }
+
             var balance = clientBalances.FirstOrDefault(x => x.AssetId == asset.Id)?.Balance;
 
-            if(!balance.HasValue || balance.Value < request.Amount)
+            if (!balance.HasValue || balance.Value < request.Amount)
             {
                 return await LogAndReturnBadRequest(request, ControllerContext, Phrases.InvalidTreesAmount);
             }
@@ -166,7 +175,7 @@ namespace Lykke.blue.Service.ReferralLinks.Controllers
 
             await LogInfo(request, ControllerContext, referralLink.ToJson());
 
-            return Created(uri: $"api/referralLinks/{referralLink.Id}", value: referralLink);
+            return Created(uri: $"api/referralLinks/{referralLink.Id}", value: new RequestRefLinkResponse { RefLinkId = referralLink.Id } );
         }
         
 
@@ -177,8 +186,8 @@ namespace Lykke.blue.Service.ReferralLinks.Controllers
         /// <returns></returns>
         [HttpPost("request/invitationLink")]
         [SwaggerOperation("RequestInvitationReferralLink")]
-        [ProducesResponseType((int)HttpStatusCode.BadRequest)]
-        [ProducesResponseType(typeof(string), (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(ErrorResponseModel), (int)HttpStatusCode.BadRequest)]
+        [ProducesResponseType(typeof(RequestRefLinkResponse), (int)HttpStatusCode.Created)]
         public async Task<IActionResult> RequestInvitationReferralLink([FromBody] InvitationReferralLinkRequest request)
         {
             if (request == null)
@@ -202,7 +211,7 @@ namespace Lykke.blue.Service.ReferralLinks.Controllers
 
             await LogInfo(request, ControllerContext, referralLink.ToJson());
 
-            return Created(uri: $"api/referralLinks/{referralLink.Id}", value: referralLink);
+            return Created(uri: $"api/referralLinks/{referralLink.Id}", value: new RequestRefLinkResponse { RefLinkId = referralLink.Id } );
         }
 
         private string ValidateClaimGiftCoinsRequest(IReferralLink refLink)
@@ -238,9 +247,9 @@ namespace Lykke.blue.Service.ReferralLinks.Controllers
 
         [HttpPost("claimGiftCoins")]
         [SwaggerOperation("ClaimGiftCoins")]
-        [ProducesResponseType((int)HttpStatusCode.BadRequest)]
-        [ProducesResponseType((int)HttpStatusCode.NotFound)]
-        [ProducesResponseType(typeof(string), (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(ErrorResponseModel), (int)HttpStatusCode.BadRequest)]
+        [ProducesResponseType(typeof(ErrorResponseModel), (int)HttpStatusCode.NotFound)]
+        [ProducesResponseType(typeof(ClaimRefLinkResponse), (int)HttpStatusCode.OK)]
         public async Task<IActionResult> ClaimGiftCoins([FromBody] ClaimReferralLinkRequest request)
         {
             var refLink = await _referralLinksService.GetReferralLinkById(request.ReferalLinkId);
@@ -276,28 +285,28 @@ namespace Lykke.blue.Service.ReferralLinks.Controllers
                         scope.Complete();
                     }
 
-                    return Ok(new { TransactionRewardRecipient = transactionRewardRecipient });
+                    return Ok(new ClaimRefLinkResponse { TransactionRewardRecipient = transactionRewardRecipient.TransactionId, SenderOffchainTransferId =  refLink.SenderOffchainTransferId });
                 }
                 else
                 {
-                    return StatusCode((int)HttpStatusCode.InternalServerError, new { TransactionRewardRecipientError = $"Code: {transactionRewardRecipient.Code}, Message: {transactionRewardRecipient.Message}" });
+                    return await LogAndReturnNotFound(request, ControllerContext, $"TransactionRewardRecipientError: Code: {transactionRewardRecipient.Code}, Message: {transactionRewardRecipient.Message}");
                 }                
                
             }
             catch (TransactionAbortedException ex)
             {
                 await LogClaimReferralLinkError(refLink, request, request.RecipientClientId, nameof(ClaimGiftCoins), ex);
-                return StatusCode((int)HttpStatusCode.InternalServerError, new { ex.Message });
+                return NotFound(ex.Message);
             }
             catch (ApplicationException ex)
             {
                 await LogClaimReferralLinkError(refLink, request, request.RecipientClientId, nameof(ClaimGiftCoins), ex);
-                return StatusCode((int)HttpStatusCode.InternalServerError, new { ex.Message });
+                return NotFound(ex.Message);
             }
             catch (Exception ex)
             {
                 await LogClaimReferralLinkError(refLink, request, request.RecipientClientId, nameof(ClaimGiftCoins), ex);
-                return StatusCode((int)HttpStatusCode.InternalServerError, new { ex.Message });
+                return NotFound(ex.Message);
             }            
             
         }
@@ -306,10 +315,9 @@ namespace Lykke.blue.Service.ReferralLinks.Controllers
 
         [HttpPost("claimInvitationLink")]
         [SwaggerOperation("ClaimInvitationLink")]
-        [ProducesResponseType(typeof(string), (int)HttpStatusCode.BadRequest)]
-        [ProducesResponseType(typeof(string), (int)HttpStatusCode.InternalServerError)]
-        [ProducesResponseType(typeof(string), (int)HttpStatusCode.OK)]
-        [ProducesResponseType(typeof(string), (int)HttpStatusCode.NoContent)]
+        [ProducesResponseType(typeof(ErrorResponseModel), (int)HttpStatusCode.BadRequest)]
+        [ProducesResponseType(typeof(ErrorResponseModel), (int)HttpStatusCode.NotFound)]
+        [ProducesResponseType(typeof(ClaimRefLinkResponse), (int)HttpStatusCode.OK)]
         public async Task<IActionResult> ClaimInvitationLink([FromBody] ClaimReferralLinkRequest request)
         {
             if (!request.IsNewClient)
@@ -351,20 +359,20 @@ namespace Lykke.blue.Service.ReferralLinks.Controllers
                 {
                     return Ok
                         (
-                            new
+                            new ClaimRefLinkResponse
                             {
-                                TransactionRewardSender = transactionRewardSender,
-                                TransactionRewardRecipient = transactionRewardRecipient
+                                TransactionRewardSender = transactionRewardSender.TransactionId,
+                                TransactionRewardRecipient = transactionRewardRecipient.TransactionId
                             }
                         );
                 }
                 else
                 {
-                    return StatusCode((int)HttpStatusCode.InternalServerError, (new { TransactionRewardSenderError = $"Code: {transactionRewardSender.Code}, Message: {transactionRewardSender.Message}" , TransactionRewardRecipientError = $"Code: {transactionRewardRecipient.Code}, Message: {transactionRewardRecipient.Message}" }).ToJson());
+                    return await LogAndReturnNotFound(request, ControllerContext, $"TransactionRewardRecipientError: Code: {transactionRewardRecipient.Code}, Message: {transactionRewardRecipient.Message}, TransactionRewardSenderError: Code: {transactionRewardSender.Code}, Message: {transactionRewardSender.Message}");                    
                 }
             }
 
-            return NoContent();
+            return Ok(new ClaimRefLinkResponse { SenderOffchainTransferId="NA", TransactionRewardSender="NA", TransactionRewardRecipient="NA" });
         }
 
         private async Task SetRefLinkClaimTransactionId(ExchangeOperationResult result, IReferralLinkClaim refLinkClaim)

@@ -12,30 +12,31 @@ namespace Lykke.blue.Service.ReferralLinks.Client.AutorestClient.Models
     using Newtonsoft.Json;
     using System.Linq;
 
-    public partial class GetReferralLinkResponse
+    public partial class ApiOffchainOrder
     {
         /// <summary>
-        /// Initializes a new instance of the GetReferralLinkResponse class.
+        /// Initializes a new instance of the ApiOffchainOrder class.
         /// </summary>
-        public GetReferralLinkResponse()
+        public ApiOffchainOrder()
         {
           CustomInit();
         }
 
         /// <summary>
-        /// Initializes a new instance of the GetReferralLinkResponse class.
+        /// Initializes a new instance of the ApiOffchainOrder class.
         /// </summary>
-        public GetReferralLinkResponse(double amount, string id = default(string), string url = default(string), System.DateTime? expirationDate = default(System.DateTime?), string senderClientId = default(string), string asset = default(string), string state = default(string), string type = default(string), string senderOffchainTransferId = default(string))
+        public ApiOffchainOrder(double volume, double price, double totalCost, double remainingVolume, double remainingOtherVolume, string id = default(string), string dateTime = default(string), string orderType = default(string), string asset = default(string), string assetPair = default(string))
         {
             Id = id;
-            Url = url;
-            ExpirationDate = expirationDate;
-            SenderClientId = senderClientId;
+            DateTime = dateTime;
+            OrderType = orderType;
+            Volume = volume;
+            Price = price;
             Asset = asset;
-            State = state;
-            Amount = amount;
-            Type = type;
-            SenderOffchainTransferId = senderOffchainTransferId;
+            AssetPair = assetPair;
+            TotalCost = totalCost;
+            RemainingVolume = remainingVolume;
+            RemainingOtherVolume = remainingOtherVolume;
             CustomInit();
         }
 
@@ -51,18 +52,23 @@ namespace Lykke.blue.Service.ReferralLinks.Client.AutorestClient.Models
 
         /// <summary>
         /// </summary>
-        [JsonProperty(PropertyName = "Url")]
-        public string Url { get; set; }
+        [JsonProperty(PropertyName = "DateTime")]
+        public string DateTime { get; set; }
 
         /// <summary>
         /// </summary>
-        [JsonProperty(PropertyName = "ExpirationDate")]
-        public System.DateTime? ExpirationDate { get; set; }
+        [JsonProperty(PropertyName = "OrderType")]
+        public string OrderType { get; set; }
 
         /// <summary>
         /// </summary>
-        [JsonProperty(PropertyName = "SenderClientId")]
-        public string SenderClientId { get; set; }
+        [JsonProperty(PropertyName = "Volume")]
+        public double Volume { get; set; }
+
+        /// <summary>
+        /// </summary>
+        [JsonProperty(PropertyName = "Price")]
+        public double Price { get; set; }
 
         /// <summary>
         /// </summary>
@@ -71,23 +77,23 @@ namespace Lykke.blue.Service.ReferralLinks.Client.AutorestClient.Models
 
         /// <summary>
         /// </summary>
-        [JsonProperty(PropertyName = "State")]
-        public string State { get; set; }
+        [JsonProperty(PropertyName = "AssetPair")]
+        public string AssetPair { get; set; }
 
         /// <summary>
         /// </summary>
-        [JsonProperty(PropertyName = "Amount")]
-        public double Amount { get; set; }
+        [JsonProperty(PropertyName = "TotalCost")]
+        public double TotalCost { get; set; }
 
         /// <summary>
         /// </summary>
-        [JsonProperty(PropertyName = "Type")]
-        public string Type { get; set; }
+        [JsonProperty(PropertyName = "RemainingVolume")]
+        public double RemainingVolume { get; set; }
 
         /// <summary>
         /// </summary>
-        [JsonProperty(PropertyName = "SenderOffchainTransferId")]
-        public string SenderOffchainTransferId { get; set; }
+        [JsonProperty(PropertyName = "RemainingOtherVolume")]
+        public double RemainingOtherVolume { get; set; }
 
         /// <summary>
         /// Validate the object.
