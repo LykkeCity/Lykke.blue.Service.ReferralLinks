@@ -124,7 +124,7 @@ namespace Lykke.blue.Service.ReferralLinks.Controllers
         }
 
         /// <summary>
-        /// Request money transfer referral link.
+        /// Request money transfer referral link   
         /// </summary>
         /// <param name="request"></param>
         /// <returns></returns>
