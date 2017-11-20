@@ -22,12 +22,6 @@ namespace Lykke.blue.Service.ReferralLinks.Controllers
             _log = log;
         }
 
-        //protected async Task<ObjectResult> LogAndReturnInternalServerError<T>(T request, ControllerContext controllerCtx, Exception ex)
-        //{
-        //    await LogError(request, controllerCtx, ex);
-        //    return StatusCode((int)HttpStatusCode.InternalServerError, ErrorResponseModel.Create(ex.Message) );
-        //}
-
         protected async Task<ObjectResult> LogAndReturnNotFound<T>(T request, ControllerContext controllerCtx, string info)
         {
             await LogError(request, controllerCtx, new Exception(info));
