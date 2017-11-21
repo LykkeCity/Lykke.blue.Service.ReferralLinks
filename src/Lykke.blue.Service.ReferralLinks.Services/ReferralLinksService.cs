@@ -9,6 +9,11 @@ using Lykke.blue.Service.ReferralLinks.Services.Domain;
 using System;
 using Lykke.blue.Service.ReferralLinks.Core.Settings.ServiceSettings;
 using Lykke.blue.Service.ReferralLinks.Core.Domain.Requests;
+using Lykke.blue.Service.ReferralLinks.Services.ExchangeOperations;
+using Lykke.Service.ExchangeOperations.Client;
+using System.Transactions;
+using Common.Log;
+using Common;
 
 namespace Lykke.blue.Service.ReferralLinks.Services
 {
@@ -17,15 +22,24 @@ namespace Lykke.blue.Service.ReferralLinks.Services
         private readonly ReferralLinksSettings _settings;
         private readonly IReferralLinkRepository _referralLinkRepository;
         private readonly IFirebaseService _firebaseService;
+        private readonly ExchangeService _exchangeService;
+        private readonly ILog _log;
+        private readonly ReferralLinkClaimsService _referralLinkClaimsService;
 
         public ReferralLinksService(
             IReferralLinkRepository referralLinkRepository, 
             IFirebaseService firebaseService,
-            ReferralLinksSettings settings)
+            ReferralLinksSettings settings,
+            ExchangeService exchangeService,
+            ReferralLinkClaimsService referralLinkClaimsService,
+            ILog log)
         {
             _referralLinkRepository = referralLinkRepository;
             _firebaseService = firebaseService;
             _settings = settings;
+            _exchangeService = exchangeService;
+            _log = log;
+            _referralLinkClaimsService = referralLinkClaimsService;
         }
 
         public async Task<IReferralLink> CreateInvitationLink(InvitationReferralLinkRequest referralLinkRequest)
@@ -88,11 +102,6 @@ namespace Lykke.blue.Service.ReferralLinks.Services
             return await _referralLinkRepository.IsInvitationLinksMaxNumberReachedForSender(senderClientId);
         }
 
-        public async Task ReturnCoinsToSender()
-        {
-            await _referralLinkRepository.ReturnCoinsToSender();
-        }
-
         public async Task SetUrl(string id, string url)
         {
             await _referralLinkRepository.SetUrl(id, url);
@@ -112,6 +121,61 @@ namespace Lykke.blue.Service.ReferralLinks.Services
         public async Task<IReferralLink> UpdateAsync(IReferralLink referralLink)
         {
             return await _referralLinkRepository.UpdateAsync(referralLink);
+        }
+
+        public async Task ReturnCoinsToSenderForExpiredGiftCoins()
+        {
+            var expiredLink = await _referralLinkRepository.GetExpiredGiftCoinLinks();
+
+            foreach (var expLink in expiredLink)
+            {
+                await _log.WriteInfoAsync(nameof(ReturnCoinsToSenderForExpiredGiftCoins), expiredLink.ToJson(), "Ref link is expired coins should be returned to sender");
+                expLink.State = ReferralLinkState.Expired.ToString();
+                await _referralLinkRepository.UpdateAsync(expLink);
+
+                try
+                {
+                    using (TransactionScope scope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
+                    {
+                        try
+                        {
+                            var claim = await _referralLinkClaimsService.CreateAsync(new ReferralLinkClaim
+                            {
+                                IsNewClient = false,
+                                RecipientClientId = expLink.SenderClientId,
+                                ReferralLinkId = expLink.Id,
+                                ShouldReceiveReward = false
+                            });
+
+                            expLink.State = ReferralLinkState.CoinsReturnedToSender.ToString();
+                            await _referralLinkRepository.UpdateAsync(expLink);
+
+                            var coinsRetured = await _exchangeService.TransferRewardCoins(expLink, false, expLink.SenderClientId, nameof(ReturnCoinsToSenderForExpiredGiftCoins));
+                            if (coinsRetured.IsOk())
+                            {
+                                scope.Complete();
+                                await _log.WriteInfoAsync(nameof(ReturnCoinsToSenderForExpiredGiftCoins), expiredLink.ToJson(), "Ref link was expired and coins returned to sender");
+                            }
+                        }
+                        catch (TransactionAbortedException ex)
+                        {
+                            await _log.WriteErrorAsync(nameof(ReturnCoinsToSenderForExpiredGiftCoins), (new { expLink }).ToJson(), ex);
+                        }
+                        catch (ApplicationException ex)
+                        {
+                            await _log.WriteErrorAsync(nameof(ReturnCoinsToSenderForExpiredGiftCoins), (new { expLink }).ToJson(), ex);
+                        }
+                        catch (Exception ex)
+                        {
+                            await _log.WriteErrorAsync(nameof(ReturnCoinsToSenderForExpiredGiftCoins), (new { expLink }).ToJson(), ex);
+                        }
+                    }             
+                }
+                catch (Exception ex)
+                {
+                    await _log.WriteErrorAsync(nameof(ReturnCoinsToSenderForExpiredGiftCoins), (new { expLink }).ToJson(), ex);
+                }
+            }            
         }
     }
 }

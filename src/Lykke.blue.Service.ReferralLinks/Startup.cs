@@ -18,7 +18,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using AutoMapper;
 using Newtonsoft.Json.Converters;
-using System.Threading;
+using System.Timers;
 using Lykke.blue.Service.ReferralLinks.AzureRepositories;
 using Lykke.blue.Service.ReferralLinks.Controllers;
 
@@ -34,7 +34,7 @@ namespace Lykke.blue.Service.ReferralLinks
         public IConfigurationRoot Configuration { get; }
         public ILog Log { get; private set; }
 
-        private Timer _timer;
+        private static Timer _timer;
 
         public Startup(IHostingEnvironment env)
         {
@@ -125,9 +125,10 @@ namespace Lykke.blue.Service.ReferralLinks
 
                 await Log.WriteMonitorAsync("", "", "Started");
 
-                //Start timer that will periodically check for expired referral links
+                
                 var appSettings = Configuration.LoadSettings<AppSettings>();
 
+                //Start timer that will periodically check for expired referral links
                 ConfigureExpiredLinksTimer(app, appSettings);
             }
             catch (Exception ex)
@@ -140,14 +141,19 @@ namespace Lykke.blue.Service.ReferralLinks
         //TODO: review and uncomment
         private void ConfigureExpiredLinksTimer(IApplicationBuilder app, IReloadingManager<AppSettings> settings)
         {
-            //var referralLinksService = app.ApplicationServices.GetService<IReferralLinksService>();
+            _timer = new Timer(settings.CurrentValue.ReferralLinksService.GiftCoinsLinkSettings.ExpiredLinksCheckTimeoutMinutes * 60000);
+            _timer.Elapsed += ReturnCoinsToSenderForExpiredGiftCoins;
+            _timer.AutoReset = true;
+            _timer.Enabled = true;
+            _timer.Start();
+        }
 
-            //_timer = new Timer(
-            //    x => { referralLinksService.ReturnCoinsToSender().Wait(); },
-            //    null,
-            //    TimeSpan.Zero,
-            //    TimeSpan.FromMinutes(settings.CurrentValue.ReferralLinksService.ExpiredLinksCheckTimeoutMinutes)
-            //);
+        private void ReturnCoinsToSenderForExpiredGiftCoins(Object source, ElapsedEventArgs e)
+        {
+            _timer.AutoReset = false;
+            var referralLinksService = ApplicationContainer.Resolve<IReferralLinksService>();
+            referralLinksService.ReturnCoinsToSenderForExpiredGiftCoins();
+            _timer.AutoReset = true;
         }
 
         private async Task StopApplication()

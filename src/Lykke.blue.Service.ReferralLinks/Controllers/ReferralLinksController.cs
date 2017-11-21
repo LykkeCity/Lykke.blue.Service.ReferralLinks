@@ -28,6 +28,7 @@ using System.Threading.Tasks;
 using System.Transactions;
 using Lykke.blue.Service.ReferralLinks.Models.RefLinkResponseModels;
 using Lykke.blue.Service.ReferralLinks.Requests;
+using Lykke.blue.Service.ReferralLinks.Services.ExchangeOperations;
 
 namespace Lykke.blue.Service.ReferralLinks.Controllers
 {
@@ -41,7 +42,7 @@ namespace Lykke.blue.Service.ReferralLinks.Controllers
         private readonly IStatisticsService _statisticsService;
         private readonly IClientAccountClient _clientAccountClient;
         private readonly ISrvKycForAsset _srvKycForAsset;
-        private readonly IExchangeOperationsServiceClient _exchangeOperationsService;
+        private readonly ExchangeService _exchangeService;
         private readonly CachedDataDictionary<string, Lykke.Service.Assets.Client.Models.Asset> _assets;
         private readonly IBalancesClient _balancesClient;
         private readonly ReferralLinksSettings _settings;
@@ -56,6 +57,7 @@ namespace Lykke.blue.Service.ReferralLinks.Controllers
             IExchangeOperationsServiceClient exchangeOperationsService,
             ReferralLinksSettings settings,
             IReferralLinkClaimsService referralLinkClaimsService,
+            ExchangeService exchangeService,
             IBalancesClient balancesClient) : base (log)
         {
 
@@ -64,7 +66,7 @@ namespace Lykke.blue.Service.ReferralLinks.Controllers
             _clientAccountClient = clientAccountClient;
             _assets = assets;
             _srvKycForAsset = srvKycForAsset;
-            _exchangeOperationsService = exchangeOperationsService;
+            _exchangeService = exchangeService;
             _settings = settings;
             _referralLinkClaimsService = referralLinkClaimsService;
             _balancesClient = balancesClient;
@@ -281,7 +283,7 @@ namespace Lykke.blue.Service.ReferralLinks.Controllers
 
             var newRefLinkClaimRecipient = await CreateNewRefLinkClaim(refLink, request.RecipientClientId, true, request.IsNewClient);
 
-            var transactionRewardRecipient = await TransferRewardCoins(refLink, request, request.RecipientClientId);
+            var transactionRewardRecipient = await _exchangeService.TransferRewardCoins(refLink, request.IsNewClient, request.RecipientClientId, ControllerContext.GetControllerAndAction());
 
             try
             {
@@ -304,17 +306,17 @@ namespace Lykke.blue.Service.ReferralLinks.Controllers
             }
             catch (TransactionAbortedException ex)
             {
-                await LogClaimReferralLinkError(refLink, request, request.RecipientClientId, nameof(ClaimGiftCoins), ex);
+                await LogError(new { Request = request, RefLink = refLink ?? new ReferralLink(), }, ControllerContext, ex) ;
                 return NotFound(ex.Message);
             }
             catch (ApplicationException ex)
             {
-                await LogClaimReferralLinkError(refLink, request, request.RecipientClientId, nameof(ClaimGiftCoins), ex);
+                await LogError(new { Request = request, RefLink = refLink ?? new ReferralLink(), }, ControllerContext, ex);
                 return NotFound(ex.Message);
             }
             catch (Exception ex)
             {
-                await LogClaimReferralLinkError(refLink, request, request.RecipientClientId, nameof(ClaimGiftCoins), ex);
+                await LogError(new { Request = request, RefLink = refLink ?? new ReferralLink(), }, ControllerContext, ex);
                 return NotFound(ex.Message);
             }            
             
@@ -359,10 +361,10 @@ namespace Lykke.blue.Service.ReferralLinks.Controllers
             {
                 var newRefLinkClaimSender = await CreateNewRefLinkClaim(refLink, refLink.SenderClientId, shouldReceiveReward, false);
 
-                var transactionRewardSender = await TransferRewardCoins(refLink, request, refLink.SenderClientId);
+                var transactionRewardSender = await _exchangeService.TransferRewardCoins(refLink, request.IsNewClient, refLink.SenderClientId, ControllerContext.GetControllerAndAction());
                 await SetRefLinkClaimTransactionId(transactionRewardSender, newRefLinkClaimSender);
 
-                var transactionRewardRecipient = await TransferRewardCoins(refLink, request, request.RecipientClientId);
+                var transactionRewardRecipient = await _exchangeService.TransferRewardCoins(refLink, request.IsNewClient, request.RecipientClientId, ControllerContext.GetControllerAndAction());
                 await SetRefLinkClaimTransactionId(transactionRewardRecipient, newRefLinkClaimRecipient);  
                 
                 if(transactionRewardSender.IsOk() && transactionRewardRecipient.IsOk())
@@ -426,58 +428,7 @@ namespace Lykke.blue.Service.ReferralLinks.Controllers
             await LogInfo(refLink, ControllerContext, $"RefLink state set to {state.ToString()}");
         }
 
-        private async Task<ExchangeOperationResult> TransferRewardCoins(IReferralLink refLink, ClaimReferralLinkRequest request, string recipientClientId)
-        {
-            try
-            {
-                var asset = (await _assets.GetDictionaryAsync()).Values.Where(v => v.Symbol == refLink.Asset).FirstOrDefault();
-                if (asset == null)
-                {
-                    var message = $"Asset with symbol {refLink.Asset} not found";
-                    await _log.WriteErrorAsync(ControllerContext.GetExecutongControllerAndAction(), nameof(TransferRewardCoins), (new { Error = message }).ToJson(), new Exception(message), DateTime.Now);
-                    return new ExchangeOperationResult { Message = message };
-                }                   
-
-                var result = await _exchangeOperationsService.TransferAsync(
-                         recipientClientId,
-                         _settings.LykkeReferralClientId,
-                         (double)refLink.Amount,
-                         asset.Id,
-                         TransferType.Common.ToString()
-                         );
-
-                if (!result.IsOk())
-                {
-                    await _log.WriteErrorAsync(ControllerContext.GetExecutongControllerAndAction(), nameof(TransferRewardCoins), (new { Error = $"TransferAsync from exchangeOperationsService returned error: Message: {result.Message}, Code: {result.Code}" }).ToJson(), new Exception(result.Message), DateTime.Now);
-                }
-
-                await LogInfo(request, ControllerContext, $"Transfer successfull: {result.ToJson()}");
-
-                return result;
-            }
-            catch (OffchainException ex)
-            {
-                await LogClaimReferralLinkError(refLink, request, recipientClientId, nameof(TransferRewardCoins), ex);
-                return new ExchangeOperationResult { };
-            }
-            catch (ApplicationException ex)
-            {
-                await LogClaimReferralLinkError(refLink, request, recipientClientId, nameof(TransferRewardCoins), ex);
-                return new ExchangeOperationResult { };
-            }
-            catch (Exception ex)
-            {
-                await LogClaimReferralLinkError(refLink, request, recipientClientId, nameof(TransferRewardCoins), ex);
-                return new ExchangeOperationResult { };
-            }
-        }
-
         
-
-        private async Task LogClaimReferralLinkError(IReferralLink refLink, ClaimReferralLinkRequest claimRequest, string recipientClientId, string method, Exception ex)
-        {
-            await _log.WriteErrorAsync(ControllerContext.GetExecutongControllerAndAction(), method, (new { refLink, claimRequest, recipientClientId }).ToJson(), ex, DateTime.Now);            
-        }
     }
 }
 

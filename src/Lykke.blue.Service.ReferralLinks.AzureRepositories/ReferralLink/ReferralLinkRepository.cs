@@ -96,19 +96,12 @@ namespace Lykke.blue.Service.ReferralLinks.AzureRepositories.ReferralLink
             return numberOfCreatedReflinks.Count() >= 100;
         }
 
-        //TODO: Review 
-        public async Task ReturnCoinsToSender()
+        public async Task<IEnumerable<IReferralLink>> GetExpiredGiftCoinLinks()
         {
-            var entities = await _referralLinkTable.GetDataAsync(
+            return await _referralLinkTable.GetDataAsync(
                 GetPartitionKey(), 
-                x => x.ExpirationDate < DateTime.UtcNow && x.State != ReferralLinkState.CoinsReturnedToSender.ToString()
-            );
-
-            foreach (var entity in entities)
-            {
-                //await ClaimGiftCoins(entity.Id, false, entity.SenderClientId);
-                await UpdateState(entity.Id, ReferralLinkState.CoinsReturnedToSender);
-            }
+                x => x.Type == ReferralLinkType.GiftCoins.ToString() && x.ExpirationDate < DateTime.UtcNow && x.State != ReferralLinkState.CoinsReturnedToSender.ToString()
+            );           
         }
 
         public async Task SetUrl(string id, string url)

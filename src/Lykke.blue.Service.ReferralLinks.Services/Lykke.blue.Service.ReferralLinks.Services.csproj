@@ -15,6 +15,7 @@
     <PackageReference Include="Lykke.MatchingEngineConnector" Version="1.0.14" />
     <PackageReference Include="Lykke.MatchingEngineConnector.Abstractions" Version="1.0.14" />
     <PackageReference Include="Lykke.Service.Assets.Client" Version="2.0.6-beta" />
+    <PackageReference Include="Lykke.Service.ExchangeOperations.Client" Version="1.0.22" />
     <PackageReference Include="Lykke.Service.Kyc.Abstractions" Version="1.0.23-beta" />
     <PackageReference Include="Lykke.Service.Kyc.Client" Version="1.0.23-beta" />
   </ItemGroup>

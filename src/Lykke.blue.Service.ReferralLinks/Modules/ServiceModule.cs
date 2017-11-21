@@ -26,6 +26,7 @@ using Lykke.Service.ClientAccount.Client;
 using Lykke.Service.Balances.Client;
 using Lykke.MatchingEngine.Connector.Abstractions.Services;
 using System.Net;
+using Lykke.blue.Service.ReferralLinks.Services.ExchangeOperations;
 
 namespace Lykke.blue.Service.ReferralLinks.Modules
 {
@@ -101,6 +102,8 @@ namespace Lykke.blue.Service.ReferralLinks.Modules
             builder.RegisterType<ReferralLinksService>().As<IReferralLinksService>().SingleInstance();
             builder.RegisterType<ReferralLinkClaimsService>().As<IReferralLinkClaimsService>().SingleInstance();
             builder.RegisterType<StatisticsService>().As<IStatisticsService>().SingleInstance();
+
+            builder.RegisterType<ExchangeService>().SingleInstance();            
         }
 
         private void RegisterRepos(ContainerBuilder builder)

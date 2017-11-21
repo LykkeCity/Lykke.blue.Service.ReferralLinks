@@ -48,17 +48,17 @@ namespace Lykke.blue.Service.ReferralLinks.Controllers
 
         protected async Task LogInfo<T>(T callParams, ControllerContext controllerCtx, string info)
         {
-            await _log.WriteInfoAsync(controllerCtx.GetExecutongControllerAndAction(), (new { callParams }).ToJson(), info, DateTime.Now);
+            await _log.WriteInfoAsync(controllerCtx.GetControllerAndAction(), (new { callParams }).ToJson(), info, DateTime.Now);
         }
 
         protected async Task LogWarn<T>(T callParams, ControllerContext controllerCtx, string info)
         {
-            await _log.WriteWarningAsync(controllerCtx.GetExecutongControllerAndAction(), (new { callParams }).ToJson(), info, DateTime.Now);
+            await _log.WriteWarningAsync(controllerCtx.GetControllerAndAction(), (new { callParams }).ToJson(), info, DateTime.Now);
         }
 
         protected async Task LogError<T>(T callParams, ControllerContext controllerCtx, Exception ex)
         {
-            await _log.WriteErrorAsync(controllerCtx.GetExecutongControllerAndAction(), (new { callParams }).ToJson(), ex, DateTime.Now);
+            await _log.WriteErrorAsync(controllerCtx.GetControllerAndAction(), (new { callParams }).ToJson(), ex, DateTime.Now);
         }
     }
 }
