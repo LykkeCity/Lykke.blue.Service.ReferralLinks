@@ -14,6 +14,7 @@ using Lykke.Service.ExchangeOperations.Client;
 using System.Transactions;
 using Common.Log;
 using Common;
+using Lykke.Service.ExchangeOperations.Client.AutorestClient.Models;
 
 namespace Lykke.blue.Service.ReferralLinks.Services
 {
@@ -24,14 +25,14 @@ namespace Lykke.blue.Service.ReferralLinks.Services
         private readonly IFirebaseService _firebaseService;
         private readonly ExchangeService _exchangeService;
         private readonly ILog _log;
-        private readonly ReferralLinkClaimsService _referralLinkClaimsService;
+        private readonly IReferralLinkClaimsService _referralLinkClaimsService;
 
         public ReferralLinksService(
             IReferralLinkRepository referralLinkRepository, 
             IFirebaseService firebaseService,
             ReferralLinksSettings settings,
             ExchangeService exchangeService,
-            ReferralLinkClaimsService referralLinkClaimsService,
+            IReferralLinkClaimsService referralLinkClaimsService,
             ILog log)
         {
             _referralLinkRepository = referralLinkRepository;
@@ -123,59 +124,50 @@ namespace Lykke.blue.Service.ReferralLinks.Services
             return await _referralLinkRepository.UpdateAsync(referralLink);
         }
 
-        public async Task ReturnCoinsToSenderForExpiredGiftCoins()
+        public async Task CheckForExpiredGiftCoinLink()
         {
             var expiredLink = await _referralLinkRepository.GetExpiredGiftCoinLinks();
 
             foreach (var expLink in expiredLink)
             {
-                await _log.WriteInfoAsync(nameof(ReturnCoinsToSenderForExpiredGiftCoins), expiredLink.ToJson(), "Ref link is expired coins should be returned to sender");
-                expLink.State = ReferralLinkState.Expired.ToString();
-                await _referralLinkRepository.UpdateAsync(expLink);
+                await _log.WriteInfoAsync(nameof(CheckForExpiredGiftCoinLink), expiredLink.ToJson(), "Ref link is expired coins should be returned to sender");
+
+                //ExchangeOperationResult coinsRetured = new ExchangeOperationResult();
 
                 try
                 {
-                    using (TransactionScope scope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
-                    {
-                        try
-                        {
-                            var claim = await _referralLinkClaimsService.CreateAsync(new ReferralLinkClaim
-                            {
-                                IsNewClient = false,
-                                RecipientClientId = expLink.SenderClientId,
-                                ReferralLinkId = expLink.Id,
-                                ShouldReceiveReward = false
-                            });
+                    expLink.State = ReferralLinkState.Expired.ToString();
+                    await _referralLinkRepository.UpdateAsync(expLink);
 
-                            expLink.State = ReferralLinkState.CoinsReturnedToSender.ToString();
-                            await _referralLinkRepository.UpdateAsync(expLink);
+                    // Code below is for returning coins to sender, but it may be better to be called manually. It should be extracted to a separated method
 
-                            var coinsRetured = await _exchangeService.TransferRewardCoins(expLink, false, expLink.SenderClientId, nameof(ReturnCoinsToSenderForExpiredGiftCoins));
-                            if (coinsRetured.IsOk())
-                            {
-                                scope.Complete();
-                                await _log.WriteInfoAsync(nameof(ReturnCoinsToSenderForExpiredGiftCoins), expiredLink.ToJson(), "Ref link was expired and coins returned to sender");
-                            }
-                        }
-                        catch (TransactionAbortedException ex)
-                        {
-                            await _log.WriteErrorAsync(nameof(ReturnCoinsToSenderForExpiredGiftCoins), (new { expLink }).ToJson(), ex);
-                        }
-                        catch (ApplicationException ex)
-                        {
-                            await _log.WriteErrorAsync(nameof(ReturnCoinsToSenderForExpiredGiftCoins), (new { expLink }).ToJson(), ex);
-                        }
-                        catch (Exception ex)
-                        {
-                            await _log.WriteErrorAsync(nameof(ReturnCoinsToSenderForExpiredGiftCoins), (new { expLink }).ToJson(), ex);
-                        }
-                    }             
+                    //coinsRetured = await _exchangeService.TransferRewardCoins(expLink, false, expLink.SenderClientId, nameof(ReturnCoinsToSenderForExpiredGiftCoins));
+                    //if (coinsRetured.IsOk())
+                    //{
+                    //    var claim = await _referralLinkClaimsService.CreateAsync(new ReferralLinkClaim
+                    //    {
+                    //        IsNewClient = false,
+                    //        RecipientClientId = expLink.SenderClientId,
+                    //        ReferralLinkId = expLink.Id,
+                    //        ShouldReceiveReward = false,
+                    //        RecipientTransactionId = coinsRetured.TransactionId,
+                    //    });
+
+                    //    expLink.State = ReferralLinkState.CoinsReturnedToSender.ToString();
+                    //    await _referralLinkRepository.UpdateAsync(expLink);
+
+                    //    await _log.WriteInfoAsync(nameof(ReturnCoinsToSenderForExpiredGiftCoins), expiredLink.ToJson(), "Ref link was expired and coins have been returned to sender");
+                    //}
+                    //else
+                    //{
+                    //    await _log.WriteWarningAsync(nameof(ReturnCoinsToSenderForExpiredGiftCoins), expiredLink.ToJson(), $"_exchangeService.TransferRewardCoins failed: Code={coinsRetured.Code}, Message={coinsRetured.Message}, TransactionId={coinsRetured.TransactionId}");
+                    //} 
                 }
                 catch (Exception ex)
                 {
-                    await _log.WriteErrorAsync(nameof(ReturnCoinsToSenderForExpiredGiftCoins), (new { expLink }).ToJson(), ex);
+                    await _log.WriteErrorAsync(nameof(CheckForExpiredGiftCoinLink), (new { expLink }).ToJson(), ex);
                 }
-            }            
+            }           
         }
     }
 }

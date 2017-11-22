@@ -21,6 +21,7 @@ using Newtonsoft.Json.Converters;
 using System.Timers;
 using Lykke.blue.Service.ReferralLinks.AzureRepositories;
 using Lykke.blue.Service.ReferralLinks.Controllers;
+using Lykke.blue.Service.ReferralLinks.Services.ExchangeOperations;
 
 namespace Lykke.blue.Service.ReferralLinks
 {
@@ -138,7 +139,6 @@ namespace Lykke.blue.Service.ReferralLinks
             }
         }
 
-        //TODO: review and uncomment
         private void ConfigureExpiredLinksTimer(IApplicationBuilder app, IReloadingManager<AppSettings> settings)
         {
             _timer = new Timer(settings.CurrentValue.ReferralLinksService.GiftCoinsLinkSettings.ExpiredLinksCheckTimeoutMinutes * 60000);
@@ -148,12 +148,12 @@ namespace Lykke.blue.Service.ReferralLinks
             _timer.Start();
         }
 
-        private void ReturnCoinsToSenderForExpiredGiftCoins(Object source, ElapsedEventArgs e)
+        private async void ReturnCoinsToSenderForExpiredGiftCoins(Object source, ElapsedEventArgs e)
         {
-            _timer.AutoReset = false;
+            _timer.Enabled = false;
             var referralLinksService = ApplicationContainer.Resolve<IReferralLinksService>();
-            referralLinksService.ReturnCoinsToSenderForExpiredGiftCoins();
-            _timer.AutoReset = true;
+            await referralLinksService.CheckForExpiredGiftCoinLink(); 
+            _timer.Enabled = true;
         }
 
         private async Task StopApplication()
