@@ -25,9 +25,10 @@ namespace Lykke.blue.Service.ReferralLinks.Client.AutorestClient.Models
         /// <summary>
         /// Initializes a new instance of the RequestRefLinkResponse class.
         /// </summary>
-        public RequestRefLinkResponse(string refLinkId = default(string))
+        public RequestRefLinkResponse(string refLinkId = default(string), string refLinkUrl = default(string))
         {
             RefLinkId = refLinkId;
+            RefLinkUrl = refLinkUrl;
             CustomInit();
         }
 
@@ -40,6 +41,11 @@ namespace Lykke.blue.Service.ReferralLinks.Client.AutorestClient.Models
         /// </summary>
         [JsonProperty(PropertyName = "RefLinkId")]
         public string RefLinkId { get; set; }
+
+        /// <summary>
+        /// </summary>
+        [JsonProperty(PropertyName = "RefLinkUrl")]
+        public string RefLinkUrl { get; set; }
 
     }
 }
