@@ -177,7 +177,7 @@ namespace Lykke.blue.Service.ReferralLinks.Controllers
 
             await LogInfo(request, ControllerContext, referralLink.ToJson());
 
-            return Created(uri: $"api/referralLinks/{referralLink.Id}", value: new RequestRefLinkResponse { RefLinkId = referralLink.Id } );
+            return Created(uri: $"api/referralLinks/{referralLink.Id}", value: new RequestRefLinkResponse { RefLinkId = referralLink.Id, RefLinkUrl = referralLink.Url });
         }
         
 
@@ -213,7 +213,7 @@ namespace Lykke.blue.Service.ReferralLinks.Controllers
 
             await LogInfo(request, ControllerContext, referralLink.ToJson());
 
-            return Created(uri: $"api/referralLinks/{referralLink.Id}", value: new RequestRefLinkResponse { RefLinkId = referralLink.Id } );
+            return Created(uri: $"api/referralLinks/{referralLink.Id}", value: new RequestRefLinkResponse { RefLinkUrl = referralLink.Url, RefLinkId = referralLink.Id } );
         }
 
         private async Task<string> ValidateClaimRefLinkAndRequest(IReferralLink refLink, ClaimReferralLinkRequest request)
