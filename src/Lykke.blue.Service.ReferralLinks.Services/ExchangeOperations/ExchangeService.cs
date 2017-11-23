@@ -4,6 +4,7 @@ using Lykke.blue.Service.ReferralLinks.Core.BitCoinApi.Models;
 using Lykke.blue.Service.ReferralLinks.Core.Domain.Offchain;
 using Lykke.blue.Service.ReferralLinks.Core.Domain.ReferralLink;
 using Lykke.blue.Service.ReferralLinks.Core.Settings.ServiceSettings;
+using Lykke.MatchingEngine.Connector.Abstractions.Models;
 using Lykke.Service.ExchangeOperations.Client;
 using Lykke.Service.ExchangeOperations.Client.AutorestClient.Models;
 using System;
@@ -56,33 +57,42 @@ namespace Lykke.blue.Service.ReferralLinks.Services.ExchangeOperations
 
                 if (!result.IsOk())
                 {
-                    await _log.WriteErrorAsync(executionContext, nameof(TransferRewardCoins), (new { Error = $"TransferAsync from exchangeOperationsService returned error: Message: {result.Message}, Code: {result.Code}" }).ToJson(), new Exception(result.Message), DateTime.Now);
+                    string error;
+                    if(result.Code.HasValue && Enum.IsDefined(typeof(MeStatusCodes), result.Code.Value))
+                    {
+                        error = $"Error: {((MeStatusCodes)result.Code.Value).ToString()}, Message: {result.Message}, TransactionId: {result.TransactionId}";                        
+                    }
+                    else
+                    {
+                        error = $"Error: {result.Code}, Message: {result.Message}, TransactionId: {result.TransactionId}";
+                    }
+                    await _log.WriteErrorAsync(executionContext, nameof(TransferRewardCoins), error, new Exception(error), DateTime.Now);
+                    result.Message = error;
+                    return result;
+                }
+                else
+                {
+                    await _log.WriteInfoAsync(executionContext, request.ToJson(), $"Transfer successfull: {result.ToJson()}");
+                    return result;
                 }
 
-                await _log.WriteInfoAsync(executionContext, request.ToJson(), $"Transfer successfull: {result.ToJson()}");
-
-                return result;
             }
             catch (OffchainException ex)
             {
-                await LogClaimReferralLinkError(request, executionContext, ex);
-                return new ExchangeOperationResult { };
+                await _log.WriteErrorAsync(executionContext, request.ToJson(), ex, DateTime.Now);
+                throw new Exception($"ExchangeOperationsService error: Code={ex.OffchainExceptionCode}.OffchainException={ex.OffchainExceptionMessage}.Message={ex.Message}.{ex.InnerException?.Message}");
             }
             catch (ApplicationException ex)
             {
-                await LogClaimReferralLinkError(request, executionContext, ex);
-                return new ExchangeOperationResult { };
+                await _log.WriteErrorAsync(executionContext, request.ToJson(), ex, DateTime.Now);
+                throw new Exception($"ExchangeOperationsService error: {ex.Message}{ex.InnerException?.Message}");
             }
             catch (Exception ex)
             {
-                await LogClaimReferralLinkError(request, executionContext, ex);
-                return new ExchangeOperationResult { };
+                await _log.WriteErrorAsync(executionContext, request.ToJson(), ex, DateTime.Now);
+                throw new Exception($"ExchangeOperationsService error: {ex.Message}{ex.InnerException?.Message}");
             }
         }
 
-        private async Task LogClaimReferralLinkError(dynamic request, string executionContext, Exception ex)
-        {
-            await _log.WriteErrorAsync(executionContext, request.ToJson(), ex, DateTime.Now);
-        }
     }
 }

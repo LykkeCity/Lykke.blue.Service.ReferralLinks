@@ -232,6 +232,11 @@ namespace Lykke.blue.Service.ReferralLinks.Controllers
                 return $"RefLink not found by id or url.";
             }
 
+            if (refLink.SenderClientId == request.RecipientClientId)
+            {
+                return $"RecipientClientId can't be the same as SenderClientId. Client cant claim their own ref link.";
+            }
+
             if (refLink.Amount == 0)
             {
                 return $"Requested amount for RefLink with id {refLink.Id} is 0 (not set). Check transfer's history.";
@@ -323,7 +328,7 @@ namespace Lykke.blue.Service.ReferralLinks.Controllers
         }
 
 
-        
+
 
         [HttpPost("claimInvitationLink")]
         [SwaggerOperation("ClaimInvitationLink")]
@@ -332,59 +337,68 @@ namespace Lykke.blue.Service.ReferralLinks.Controllers
         [ProducesResponseType(typeof(ClaimRefLinkResponse), (int)HttpStatusCode.OK)]
         public async Task<IActionResult> ClaimInvitationLink([FromBody] ClaimReferralLinkRequest request)
         {
-            if (!request.IsNewClient)
+            try
             {
-                return await LogAndReturnBadRequest(request, ControllerContext, "Not a new client.");
-            }
-
-            var refLink =  await _referralLinksService.GetReferralLinkById(request.ReferalLinkId ?? "") ?? await _referralLinksService.GetReferralLinkByUrl(request.ReferalLinkUrl ?? "");
-
-            var validationError = await ValidateClaimRefLinkAndRequest(refLink, request);
-            if (!String.IsNullOrEmpty(validationError))
-            {
-                return await LogAndReturnBadRequest(request, ControllerContext, validationError);
-            }
-
-            var claims = await _referralLinkClaimsService.GetRefLinkClaims(refLink.Id);
-
-            var alreadyClaimedByThisRecipient = claims.Where(c => c.RecipientClientId == request.RecipientClientId).Count() > 0;
-            if (alreadyClaimedByThisRecipient)
-            {
-                return await LogAndReturnBadRequest(request, ControllerContext, $"Link already claimed by client id {request.RecipientClientId}");
-            }
-
-            bool shouldReceiveReward = await ShoulReceiveReward(claims, refLink);
-
-            var newRefLinkClaimRecipient = await CreateNewRefLinkClaim(refLink, request.RecipientClientId, shouldReceiveReward, true);
-
-            if (shouldReceiveReward)
-            {
-                var newRefLinkClaimSender = await CreateNewRefLinkClaim(refLink, refLink.SenderClientId, shouldReceiveReward, false);
-
-                var transactionRewardSender = await _exchangeService.TransferRewardCoins(refLink, request.IsNewClient, refLink.SenderClientId, ControllerContext.GetControllerAndAction());
-                await SetRefLinkClaimTransactionId(transactionRewardSender, newRefLinkClaimSender);
-
-                var transactionRewardRecipient = await _exchangeService.TransferRewardCoins(refLink, request.IsNewClient, request.RecipientClientId, ControllerContext.GetControllerAndAction());
-                await SetRefLinkClaimTransactionId(transactionRewardRecipient, newRefLinkClaimRecipient);  
-                
-                if(transactionRewardSender.IsOk() && transactionRewardRecipient.IsOk())
+                if (!request.IsNewClient)
                 {
-                    return Ok
-                        (
-                            new ClaimRefLinkResponse
-                            {
-                                TransactionRewardSender = transactionRewardSender.TransactionId,
-                                TransactionRewardRecipient = transactionRewardRecipient.TransactionId
-                            }
-                        );
+                    return await LogAndReturnBadRequest(request, ControllerContext, "Not a new client.");
                 }
-                else
+
+                var refLink = await _referralLinksService.GetReferralLinkById(request.ReferalLinkId ?? "") ?? await _referralLinksService.GetReferralLinkByUrl(request.ReferalLinkUrl ?? "");
+
+                var validationError = await ValidateClaimRefLinkAndRequest(refLink, request);
+                if (!String.IsNullOrEmpty(validationError))
                 {
-                    return await LogAndReturnNotFound(request, ControllerContext, $"TransactionRewardRecipientError: Code: {transactionRewardRecipient.Code}, Message: {transactionRewardRecipient.Message}, TransactionRewardSenderError: Code: {transactionRewardSender.Code}, Message: {transactionRewardSender.Message}");                    
+                    return await LogAndReturnBadRequest(request, ControllerContext, validationError);
                 }
+
+                var claims = await _referralLinkClaimsService.GetRefLinkClaims(refLink.Id);
+
+                var alreadyClaimedByThisRecipient = claims.Where(c => c.RecipientClientId == request.RecipientClientId).Count() > 0;
+                if (alreadyClaimedByThisRecipient)
+                {
+                    return await LogAndReturnBadRequest(request, ControllerContext, $"Link already claimed by client id {request.RecipientClientId}");
+                }
+
+                bool shouldReceiveReward = await ShoulReceiveReward(claims, refLink);
+
+                var newRefLinkClaimRecipient = await CreateNewRefLinkClaim(refLink, request.RecipientClientId, shouldReceiveReward, true);
+
+                if (shouldReceiveReward)
+                {
+                    var newRefLinkClaimSender = await CreateNewRefLinkClaim(refLink, refLink.SenderClientId, shouldReceiveReward, false);
+
+                    var transactionRewardSender = await _exchangeService.TransferRewardCoins(refLink, false, refLink.SenderClientId, ControllerContext.GetControllerAndAction());
+                    await SetRefLinkClaimTransactionId(transactionRewardSender, newRefLinkClaimSender);
+
+                    var transactionRewardRecipient = await _exchangeService.TransferRewardCoins(refLink, request.IsNewClient, request.RecipientClientId, ControllerContext.GetControllerAndAction());
+                    await SetRefLinkClaimTransactionId(transactionRewardRecipient, newRefLinkClaimRecipient);
+
+                    if (transactionRewardSender.IsOk() && transactionRewardRecipient.IsOk())
+                    {
+                        return Ok
+                            (
+                                new ClaimRefLinkResponse
+                                {
+                                    TransactionRewardSender = transactionRewardSender.TransactionId,
+                                    TransactionRewardRecipient = transactionRewardRecipient.TransactionId
+                                }
+                            );
+                    }
+                    else
+                    {
+                        return await LogAndReturnNotFound(request, ControllerContext, $"TransactionRewardRecipientError: Code: {transactionRewardRecipient.Code}, {transactionRewardRecipient.Message}; TransactionRewardSenderError: Code: {transactionRewardSender.Code}, {transactionRewardSender.Message}");
+                    }
+                }
+
+                return Ok(new ClaimRefLinkResponse ());
+            }
+            catch (Exception ex)
+            {
+                await LogError(request, ControllerContext, ex);
+                return NotFound(ErrorResponseModel.Create($"{ex.Message}.{ex.InnerException?.Message}."));
             }
 
-            return Ok(new ClaimRefLinkResponse { SenderOffchainTransferId="NA", TransactionRewardSender="NA", TransactionRewardRecipient="NA" });
         }
 
         private async Task SetRefLinkClaimTransactionId(ExchangeOperationResult result, IReferralLinkClaim refLinkClaim)

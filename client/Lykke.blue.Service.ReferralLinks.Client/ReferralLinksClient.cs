@@ -72,7 +72,7 @@ namespace Lykke.blue.Service.ReferralLinks.Client
             }
         }
 
-        public async Task<string> GetChannelKey(OffchainGetChannelKeyRequest request)
+        public async Task<OffchainEncryptedKeyRespModel> GetChannelKey(OffchainGetChannelKeyRequest request)
         {
             try
             {

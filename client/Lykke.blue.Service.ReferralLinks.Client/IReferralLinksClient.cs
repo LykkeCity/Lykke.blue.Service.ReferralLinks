@@ -14,7 +14,7 @@ namespace Lykke.blue.Service.ReferralLinks.Client
         Task<object> ClaimGiftCoins(ClaimReferralLinkRequest request);
         Task<object> ClaimInvitationLink(ClaimReferralLinkRequest request);
 
-        Task<string> GetChannelKey(OffchainGetChannelKeyRequest request);
+        Task<OffchainEncryptedKeyRespModel> GetChannelKey(OffchainGetChannelKeyRequest request);
         Task<object> TransferToLykkeWallet(TransferToLykkeWallet request);
         Task<object> ProcessChannel(OffchainChannelProcessModel request);
         Task<object> FinalizeRefLinkTransfer(OffchainFinalizeModel request);

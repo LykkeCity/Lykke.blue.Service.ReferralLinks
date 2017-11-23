@@ -93,7 +93,7 @@ namespace Lykke.blue.Service.ReferralLinks.AzureRepositories.ReferralLink
                     && x.Type == ReferralLinkType.Invitation.ToString()
             ));
 
-            return numberOfCreatedReflinks.Count() >= 100;
+            return numberOfCreatedReflinks.Count() >= _settings.InvitationLinkSettings.LinksNumberLimitPerSender;
         }
 
         public async Task<IEnumerable<IReferralLink>> GetExpiredGiftCoinLinks()
