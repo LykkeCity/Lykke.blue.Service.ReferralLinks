@@ -78,7 +78,7 @@ namespace Lykke.blue.Service.ReferralLinks.Controllers
         /// <returns></returns>
         [HttpPost("channelKey")]
         [SwaggerOperation("GetChannelKey")]
-        [ProducesResponseType(typeof(string), (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(OffchainEncryptedKeyRespModel), (int)HttpStatusCode.OK)]
         public async Task<IActionResult> GetChannelKey([FromBody] OffchainGetChannelKeyRequest request)
         {
             var data = await _offchainEncryptedKeysRepository.GetKey(request.ClientId, request.Asset);

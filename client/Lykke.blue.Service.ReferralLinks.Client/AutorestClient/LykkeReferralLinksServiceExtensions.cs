@@ -114,7 +114,7 @@ namespace Lykke.blue.Service.ReferralLinks.Client.AutorestClient
             }
 
             /// <summary>
-            /// Request money transfer referral link.
+            /// Request money transfer referral link
             /// </summary>
             /// <param name='operations'>
             /// The operations group for this extension method.
@@ -127,7 +127,7 @@ namespace Lykke.blue.Service.ReferralLinks.Client.AutorestClient
             }
 
             /// <summary>
-            /// Request money transfer referral link.
+            /// Request money transfer referral link
             /// </summary>
             /// <param name='operations'>
             /// The operations group for this extension method.
@@ -237,7 +237,7 @@ namespace Lykke.blue.Service.ReferralLinks.Client.AutorestClient
             /// </param>
             /// <param name='request'>
             /// </param>
-            public static string GetChannelKey(this ILykkeReferralLinksService operations, OffchainGetChannelKeyRequest request = default(OffchainGetChannelKeyRequest))
+            public static OffchainEncryptedKeyRespModel GetChannelKey(this ILykkeReferralLinksService operations, OffchainGetChannelKeyRequest request = default(OffchainGetChannelKeyRequest))
             {
                 return operations.GetChannelKeyAsync(request).GetAwaiter().GetResult();
             }
@@ -253,7 +253,7 @@ namespace Lykke.blue.Service.ReferralLinks.Client.AutorestClient
             /// <param name='cancellationToken'>
             /// The cancellation token.
             /// </param>
-            public static async Task<string> GetChannelKeyAsync(this ILykkeReferralLinksService operations, OffchainGetChannelKeyRequest request = default(OffchainGetChannelKeyRequest), CancellationToken cancellationToken = default(CancellationToken))
+            public static async Task<OffchainEncryptedKeyRespModel> GetChannelKeyAsync(this ILykkeReferralLinksService operations, OffchainGetChannelKeyRequest request = default(OffchainGetChannelKeyRequest), CancellationToken cancellationToken = default(CancellationToken))
             {
                 using (var _result = await operations.GetChannelKeyWithHttpMessagesAsync(request, null, cancellationToken).ConfigureAwait(false))
                 {

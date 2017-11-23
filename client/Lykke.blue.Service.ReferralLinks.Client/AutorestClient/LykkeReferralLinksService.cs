@@ -565,7 +565,7 @@ namespace Lykke.blue.Service.ReferralLinks.Client.AutorestClient
         }
 
         /// <summary>
-        /// Request money transfer referral link.
+        /// Request money transfer referral link
         /// </summary>
         /// <param name='request'>
         /// </param>
@@ -1232,7 +1232,7 @@ namespace Lykke.blue.Service.ReferralLinks.Client.AutorestClient
         /// <return>
         /// A response object containing the response body and response headers.
         /// </return>
-        public async Task<HttpOperationResponse<string>> GetChannelKeyWithHttpMessagesAsync(OffchainGetChannelKeyRequest request = default(OffchainGetChannelKeyRequest), Dictionary<string, List<string>> customHeaders = null, CancellationToken cancellationToken = default(CancellationToken))
+        public async Task<HttpOperationResponse<OffchainEncryptedKeyRespModel>> GetChannelKeyWithHttpMessagesAsync(OffchainGetChannelKeyRequest request = default(OffchainGetChannelKeyRequest), Dictionary<string, List<string>> customHeaders = null, CancellationToken cancellationToken = default(CancellationToken))
         {
             // Tracing
             bool _shouldTrace = ServiceClientTracing.IsEnabled;
@@ -1313,7 +1313,7 @@ namespace Lykke.blue.Service.ReferralLinks.Client.AutorestClient
                 throw ex;
             }
             // Create Result
-            var _result = new HttpOperationResponse<string>();
+            var _result = new HttpOperationResponse<OffchainEncryptedKeyRespModel>();
             _result.Request = _httpRequest;
             _result.Response = _httpResponse;
             // Deserialize Response
@@ -1322,7 +1322,7 @@ namespace Lykke.blue.Service.ReferralLinks.Client.AutorestClient
                 _responseContent = await _httpResponse.Content.ReadAsStringAsync().ConfigureAwait(false);
                 try
                 {
-                    _result.Body = SafeJsonConvert.DeserializeObject<string>(_responseContent, DeserializationSettings);
+                    _result.Body = SafeJsonConvert.DeserializeObject<OffchainEncryptedKeyRespModel>(_responseContent, DeserializationSettings);
                 }
                 catch (JsonException ex)
                 {

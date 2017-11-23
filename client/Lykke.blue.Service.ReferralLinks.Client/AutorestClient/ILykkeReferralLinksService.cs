@@ -76,7 +76,7 @@ namespace Lykke.blue.Service.ReferralLinks.Client.AutorestClient
         Task<HttpOperationResponse<object>> GetReferralLinksStatisticsBySenderIdWithHttpMessagesAsync(RefLinkStatisticsRequest request = default(RefLinkStatisticsRequest), Dictionary<string, List<string>> customHeaders = null, CancellationToken cancellationToken = default(CancellationToken));
 
         /// <summary>
-        /// Request money transfer referral link.
+        /// Request money transfer referral link
         /// </summary>
         /// <param name='request'>
         /// </param>
@@ -132,7 +132,7 @@ namespace Lykke.blue.Service.ReferralLinks.Client.AutorestClient
         /// <param name='cancellationToken'>
         /// The cancellation token.
         /// </param>
-        Task<HttpOperationResponse<string>> GetChannelKeyWithHttpMessagesAsync(OffchainGetChannelKeyRequest request = default(OffchainGetChannelKeyRequest), Dictionary<string, List<string>> customHeaders = null, CancellationToken cancellationToken = default(CancellationToken));
+        Task<HttpOperationResponse<OffchainEncryptedKeyRespModel>> GetChannelKeyWithHttpMessagesAsync(OffchainGetChannelKeyRequest request = default(OffchainGetChannelKeyRequest), Dictionary<string, List<string>> customHeaders = null, CancellationToken cancellationToken = default(CancellationToken));
 
         /// <summary>
         /// Create offchain transfer to Lykke wallet
