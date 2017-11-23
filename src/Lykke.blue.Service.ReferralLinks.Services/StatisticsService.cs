@@ -28,17 +28,13 @@ namespace Lykke.blue.Service.ReferralLinks.Services
 
             var referralLinksForSender = await _referralLinkRepository.GetReferralLinksBySenderId(senderClientId);
 
-            var invitationLink = referralLinksForSender.FirstOrDefault(r => r.Type == ReferralLinkType.Invitation.ToString());
+            var invitationLinks = referralLinksForSender.Where(r => r.Type == ReferralLinkType.Invitation.ToString());
 
-            if (invitationLink != null)
-            {
-                statistics.NumberOfInvitationLinksSent = 1;
-                var claims = await _referralLinkClaimsRepository.GetClaimsForRefLinks(new [] { invitationLink.Id });
-                statistics.NumberOfInvitationLinksAccepted = claims.Count();
-            }
+            statistics.NumberOfInvitationLinksSent = invitationLinks.Count();
+            var claims = (await _referralLinkClaimsRepository.GetClaimsForRefLinks(invitationLinks.Select(r=>r.Id))).Where(l => l.RecipientClientId != senderClientId);
+            statistics.NumberOfInvitationLinksAccepted = claims.Count();        
 
             statistics.NumberOfGiftLinksSent = referralLinksForSender.Where(r => r.Type == ReferralLinkType.GiftCoins.ToString()).Count();
-
             statistics.AmountOfGiftCoinsDistributed = referralLinksForSender
                 .Where(x => x.Type == ReferralLinkType.GiftCoins.ToString() && x.State == ReferralLinkState.Claimed.ToString())
                 .Sum(x => x.Amount);
