@@ -117,17 +117,17 @@ namespace Lykke.blue.Service.ReferralLinks.Controllers
         {
             var decoded = WebUtility.UrlDecode(url);
 
-            if (String.IsNullOrEmpty(url))
+            if (String.IsNullOrEmpty(decoded))
             {
                 return NotFound(ErrorResponseModel.Create("Requested url cant be empty"));
             }
 
-            var referralLink = await _referralLinksService.GetReferralLinkByUrl(url);
+            var referralLink = await _referralLinksService.GetReferralLinkByUrl(decoded);
 
             if (referralLink == null)
             {
-                var msg = $"Ref link with url {url} does not exist";
-                await LogWarn(url, ControllerContext, msg);
+                var msg = $"Ref link with url {decoded} does not exist";
+                await LogWarn(decoded, ControllerContext, msg);
                 return NotFound(ErrorResponseModel.Create(msg));
             }
 
