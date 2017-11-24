@@ -48,7 +48,7 @@ namespace Lykke.blue.Service.ReferralLinks.Client.AutorestClient
         Task<HttpOperationResponse<object>> IsAliveWithHttpMessagesAsync(Dictionary<string, List<string>> customHeaders = null, CancellationToken cancellationToken = default(CancellationToken));
 
         /// <summary>
-        /// Get referral link.
+        /// Get referral link by id.
         /// </summary>
         /// <param name='id'>
         /// Id of a referral link we wanna get.
@@ -59,7 +59,21 @@ namespace Lykke.blue.Service.ReferralLinks.Client.AutorestClient
         /// <param name='cancellationToken'>
         /// The cancellation token.
         /// </param>
-        Task<HttpOperationResponse<GetReferralLinkResponse>> GetReferralLinkWithHttpMessagesAsync(string id, Dictionary<string, List<string>> customHeaders = null, CancellationToken cancellationToken = default(CancellationToken));
+        Task<HttpOperationResponse<object>> GetReferralLinkByIdWithHttpMessagesAsync(string id, Dictionary<string, List<string>> customHeaders = null, CancellationToken cancellationToken = default(CancellationToken));
+
+        /// <summary>
+        /// Get referral link by url.
+        /// </summary>
+        /// <param name='url'>
+        /// Url of the referral link we want to get.
+        /// </param>
+        /// <param name='customHeaders'>
+        /// The headers that will be added to request.
+        /// </param>
+        /// <param name='cancellationToken'>
+        /// The cancellation token.
+        /// </param>
+        Task<HttpOperationResponse<object>> GetReferralLinkByUrlWithHttpMessagesAsync(string url, Dictionary<string, List<string>> customHeaders = null, CancellationToken cancellationToken = default(CancellationToken));
 
         /// <summary>
         /// Get referral links statistics by sender client id.

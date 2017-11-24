@@ -75,30 +75,64 @@ namespace Lykke.blue.Service.ReferralLinks.Controllers
 
 
         /// <summary>
-        /// Get referral link.
+        /// Get referral link by id.
         /// </summary>
         /// <param name="id">Id of a referral link we wanna get.</param>
         /// <returns></returns>
-        [HttpGet("{id}")]
-        [SwaggerOperation("GetReferralLink")]
-        [ProducesResponseType((int)HttpStatusCode.BadRequest)]
+        [HttpGet("id/{id}")]
+        [SwaggerOperation("GetReferralLinkById")]
+        [ProducesResponseType(typeof(ErrorResponseModel), (int)HttpStatusCode.NotFound)]
         [ProducesResponseType(typeof(GetReferralLinkResponse), (int)HttpStatusCode.OK)]
-        public async Task<IActionResult> Get(string id)
+        public async Task<IActionResult> GetReferralLinkById(string id)
         {
             if (String.IsNullOrEmpty(id))
             {
-                return BadRequest(Phrases.InvalidRequest);
+                return NotFound(ErrorResponseModel.Create("Requested id cant be empty"));
             }
 
             var referralLink = await _referralLinksService.Get(id);
 
             if (referralLink == null)
             {
-                return BadRequest(Phrases.InvalidReferralLinkId);
+                var msg = $"Ref link with id {id} does not exist";
+                await LogWarn(id, ControllerContext, msg);
+                return NotFound(ErrorResponseModel.Create(msg));
             }
 
             var result = Mapper.Map<GetReferralLinkResponse>(referralLink);
             
+            return Ok(result);
+        }
+
+        /// <summary>
+        /// Get referral link by url.
+        /// </summary>
+        /// <param name="url">Url of the referral link we want to get.</param>
+        /// <returns></returns>
+        [HttpGet("url/{url}")]
+        [SwaggerOperation("GetReferralLinkByUrl")]
+        [ProducesResponseType(typeof(ErrorResponseModel), (int)HttpStatusCode.NotFound)]
+        [ProducesResponseType(typeof(GetReferralLinkResponse), (int)HttpStatusCode.OK)]
+        public async Task<IActionResult> GetReferralLinkByUrl(string url)
+        {
+            var decoded = WebUtility.UrlDecode(url);
+
+            if (String.IsNullOrEmpty(url))
+            {
+                return NotFound(ErrorResponseModel.Create("Requested url cant be empty"));
+            }
+
+            var referralLink = await _referralLinksService.GetReferralLinkByUrl(url);
+
+            if (referralLink == null)
+            {
+                var msg = $"Ref link with url {url} does not exist";
+                await LogWarn(url, ControllerContext, msg);
+                return NotFound(ErrorResponseModel.Create(msg));
+            }
+
+            var result = Mapper.Map<GetReferralLinkResponse>(referralLink);
+
             return Ok(result);
         }
 
@@ -190,6 +224,7 @@ namespace Lykke.blue.Service.ReferralLinks.Controllers
         [SwaggerOperation("RequestInvitationReferralLink")]
         [ProducesResponseType(typeof(ErrorResponseModel), (int)HttpStatusCode.BadRequest)]
         [ProducesResponseType(typeof(RequestRefLinkResponse), (int)HttpStatusCode.Created)]
+        [ProducesResponseType(typeof(RequestRefLinkResponse), (int)HttpStatusCode.OK)]
         public async Task<IActionResult> RequestInvitationReferralLink([FromBody] InvitationReferralLinkRequest request)
         {
             if (request == null)
@@ -202,12 +237,13 @@ namespace Lykke.blue.Service.ReferralLinks.Controllers
                 return await LogAndReturnBadRequest(request, ControllerContext, Phrases.InvalidSenderClientId);
             }
 
-            var referralLinksLimitReached = await _referralLinksService.IsInvitationLinksMaxNumberReachedForSender(request.SenderClientId);
-
-            if (referralLinksLimitReached)
+            var invitationLinkAlreadyCreated = await _referralLinksService.GetInvitationLinksBySenderId(request.SenderClientId);
+            if (invitationLinkAlreadyCreated != null)
             {
-                return await LogAndReturnBadRequest(request, ControllerContext, Phrases.ReferralLinksLimitReached);
-            }
+
+                await LogInfo(request, ControllerContext, $"Invitation link already exists for SenderClientId {request.SenderClientId}. RefLinkId {invitationLinkAlreadyCreated.Id}");
+                return Ok(new RequestRefLinkResponse { RefLinkUrl = invitationLinkAlreadyCreated.Url, RefLinkId = invitationLinkAlreadyCreated.Id });
+            }           
 
             var referralLink = await _referralLinksService.CreateInvitationLink(request);
 

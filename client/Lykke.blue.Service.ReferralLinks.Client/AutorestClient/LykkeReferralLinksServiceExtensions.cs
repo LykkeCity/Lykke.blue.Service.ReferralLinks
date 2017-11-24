@@ -46,7 +46,7 @@ namespace Lykke.blue.Service.ReferralLinks.Client.AutorestClient
             }
 
             /// <summary>
-            /// Get referral link.
+            /// Get referral link by id.
             /// </summary>
             /// <param name='operations'>
             /// The operations group for this extension method.
@@ -54,13 +54,13 @@ namespace Lykke.blue.Service.ReferralLinks.Client.AutorestClient
             /// <param name='id'>
             /// Id of a referral link we wanna get.
             /// </param>
-            public static GetReferralLinkResponse GetReferralLink(this ILykkeReferralLinksService operations, string id)
+            public static object GetReferralLinkById(this ILykkeReferralLinksService operations, string id)
             {
-                return operations.GetReferralLinkAsync(id).GetAwaiter().GetResult();
+                return operations.GetReferralLinkByIdAsync(id).GetAwaiter().GetResult();
             }
 
             /// <summary>
-            /// Get referral link.
+            /// Get referral link by id.
             /// </summary>
             /// <param name='operations'>
             /// The operations group for this extension method.
@@ -71,9 +71,43 @@ namespace Lykke.blue.Service.ReferralLinks.Client.AutorestClient
             /// <param name='cancellationToken'>
             /// The cancellation token.
             /// </param>
-            public static async Task<GetReferralLinkResponse> GetReferralLinkAsync(this ILykkeReferralLinksService operations, string id, CancellationToken cancellationToken = default(CancellationToken))
+            public static async Task<object> GetReferralLinkByIdAsync(this ILykkeReferralLinksService operations, string id, CancellationToken cancellationToken = default(CancellationToken))
             {
-                using (var _result = await operations.GetReferralLinkWithHttpMessagesAsync(id, null, cancellationToken).ConfigureAwait(false))
+                using (var _result = await operations.GetReferralLinkByIdWithHttpMessagesAsync(id, null, cancellationToken).ConfigureAwait(false))
+                {
+                    return _result.Body;
+                }
+            }
+
+            /// <summary>
+            /// Get referral link by url.
+            /// </summary>
+            /// <param name='operations'>
+            /// The operations group for this extension method.
+            /// </param>
+            /// <param name='url'>
+            /// Url of the referral link we want to get.
+            /// </param>
+            public static object GetReferralLinkByUrl(this ILykkeReferralLinksService operations, string url)
+            {
+                return operations.GetReferralLinkByUrlAsync(url).GetAwaiter().GetResult();
+            }
+
+            /// <summary>
+            /// Get referral link by url.
+            /// </summary>
+            /// <param name='operations'>
+            /// The operations group for this extension method.
+            /// </param>
+            /// <param name='url'>
+            /// Url of the referral link we want to get.
+            /// </param>
+            /// <param name='cancellationToken'>
+            /// The cancellation token.
+            /// </param>
+            public static async Task<object> GetReferralLinkByUrlAsync(this ILykkeReferralLinksService operations, string url, CancellationToken cancellationToken = default(CancellationToken))
+            {
+                using (var _result = await operations.GetReferralLinkByUrlWithHttpMessagesAsync(url, null, cancellationToken).ConfigureAwait(false))
                 {
                     return _result.Body;
                 }

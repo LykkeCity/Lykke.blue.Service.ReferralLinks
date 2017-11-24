@@ -16,7 +16,7 @@ namespace Lykke.blue.Service.ReferralLinks.Core.Domain.ReferralLink
         Task<IEnumerable<IReferralLink>> GetReferralLinksBySenderId(string senderClientId);
         Task SetUrl(string id, string url);
         Task<IEnumerable<IReferralLink>> GetExpiredGiftCoinLinks();
-        Task<bool> IsInvitationLinksMaxNumberReachedForSender(string claimingClientId);
+        //Task<bool> IsInvitationLinksMaxNumberReachedForSender(string claimingClientId);
         Task<IReferralLink> GetReferalLinkByUrl(string url);
     }
 }

@@ -85,11 +85,11 @@ namespace Lykke.blue.Service.ReferralLinks.Client
             }
         }
 
-        public async Task<GetReferralLinkResponse> GetReferralLink(string id)
+        public async Task<object> GetReferralLink(string id)
         {
             try
             {
-                return await _service.GetReferralLinkAsync(id);
+                return await _service.GetReferralLinkByIdAsync(id);
             }
             catch (Exception ex)
             {

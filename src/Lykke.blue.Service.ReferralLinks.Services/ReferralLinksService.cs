@@ -15,6 +15,7 @@ using System.Transactions;
 using Common.Log;
 using Common;
 using Lykke.Service.ExchangeOperations.Client.AutorestClient.Models;
+using System.Linq;
 
 namespace Lykke.blue.Service.ReferralLinks.Services
 {
@@ -93,15 +94,15 @@ namespace Lykke.blue.Service.ReferralLinks.Services
             return await _referralLinkRepository.Get(clientId, state);
         }
 
-        public async Task<IEnumerable<IReferralLink>> GetReferralLinksBySenderId(string senderClientId)
+        public async Task<IReferralLink> GetInvitationLinksBySenderId(string senderClientId)
         {
-            return await _referralLinkRepository.GetReferralLinksBySenderId(senderClientId);
+            return (await _referralLinkRepository.GetReferralLinksBySenderId(senderClientId)).SingleOrDefault(r=>r.Type == ReferralLinkType.Invitation.ToString());
         }
 
-        public async Task<bool> IsInvitationLinksMaxNumberReachedForSender(string senderClientId)
-        {
-            return await _referralLinkRepository.IsInvitationLinksMaxNumberReachedForSender(senderClientId);
-        }
+        //public async Task<bool> IsInvitationLinksMaxNumberReachedForSender(string senderClientId)
+        //{
+        //    return await _referralLinkRepository.IsInvitationLinksMaxNumberReachedForSender(senderClientId);
+        //}
 
         public async Task SetUrl(string id, string url)
         {

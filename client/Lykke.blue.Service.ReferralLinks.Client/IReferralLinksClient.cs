@@ -7,7 +7,7 @@ namespace Lykke.blue.Service.ReferralLinks.Client
 {
     public interface IReferralLinksClient
     {
-        Task<GetReferralLinkResponse> GetReferralLink(string id);
+        Task<object> GetReferralLink(string id);
         Task<object> GetReferralLinksStatisticsBySenderId(RefLinkStatisticsRequest request);
         Task<object> RequestGiftCoinsReferralLink(GiftCoinsReferralLinkRequest request);
         Task<object> RequestInvitationReferralLink(InvitationReferralLinkRequest request);

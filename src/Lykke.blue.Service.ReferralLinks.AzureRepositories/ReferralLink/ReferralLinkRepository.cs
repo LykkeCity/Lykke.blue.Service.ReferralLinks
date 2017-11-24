@@ -57,6 +57,7 @@ namespace Lykke.blue.Service.ReferralLinks.AzureRepositories.ReferralLink
             return Mapper.Map<ReferralLinkDto>(entity);
         }
 
+
         public async Task<IEnumerable<IReferralLink>> Get(string senderClientId, ReferralLinkState? state)
         {
             var entities = await _referralLinkTable.GetDataAsync(
@@ -84,17 +85,17 @@ namespace Lykke.blue.Service.ReferralLinks.AzureRepositories.ReferralLink
             );            
         }
 
-        public async Task<bool> IsInvitationLinksMaxNumberReachedForSender(string senderClientId)
-        {
-            var numberOfCreatedReflinks = (await _referralLinkTable.GetDataAsync(
-                GetPartitionKey(),
-                x => x.SenderClientId == senderClientId
-                    && x.State == ReferralLinkState.Created.ToString()
-                    && x.Type == ReferralLinkType.Invitation.ToString()
-            ));
+        //public async Task<bool> IsInvitationLinksMaxNumberReachedForSender(string senderClientId)
+        //{
+        //    var numberOfCreatedReflinks = (await _referralLinkTable.GetDataAsync(
+        //        GetPartitionKey(),
+        //        x => x.SenderClientId == senderClientId
+        //            && x.State == ReferralLinkState.Created.ToString()
+        //            && x.Type == ReferralLinkType.Invitation.ToString()
+        //    ));
 
-            return numberOfCreatedReflinks.Count() >= _settings.InvitationLinkSettings.LinksNumberLimitPerSender;
-        }
+        //    return numberOfCreatedReflinks.Count() >= _settings.InvitationLinkSettings.LinksNumberLimitPerSender;
+        //}
 
         public async Task<IEnumerable<IReferralLink>> GetExpiredGiftCoinLinks()
         {
