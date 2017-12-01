@@ -237,19 +237,30 @@ namespace Lykke.blue.Service.ReferralLinks.Controllers
                 return await LogAndReturnBadRequest(request, ControllerContext, Phrases.InvalidSenderClientId);
             }
 
-            var invitationLinkAlreadyCreated = await _referralLinksService.GetInvitationLinksBySenderId(request.SenderClientId);
-            if (invitationLinkAlreadyCreated != null)
+            var invitationLinkAlreadyCreated = _referralLinksService.GetInvitationLinksForSenderId(request.SenderClientId);
+            if (invitationLinkAlreadyCreated.Count() == 1)
             {
 
-                await LogInfo(request, ControllerContext, $"Invitation link already exists for SenderClientId {request.SenderClientId}. RefLinkId {invitationLinkAlreadyCreated.Id}");
-                return Ok(new RequestRefLinkResponse { RefLinkUrl = invitationLinkAlreadyCreated.Url, RefLinkId = invitationLinkAlreadyCreated.Id });
-            }           
+                await LogInfo(request, ControllerContext, $"Invitation link already exists for SenderClientId {request.SenderClientId}. RefLinkId {invitationLinkAlreadyCreated.First().Id}");
+                return Ok(new RequestRefLinkResponse { RefLinkUrl = invitationLinkAlreadyCreated.First().Url, RefLinkId = invitationLinkAlreadyCreated.First().Id });
+            }  
+            if(invitationLinkAlreadyCreated.Count() > 1)
+            {
+                return await LogAndReturnBadRequest(request, ControllerContext, $"There are multiple invitation links created for client {request.SenderClientId}! ");
+            }
 
-            var referralLink = await _referralLinksService.CreateInvitationLink(request);
+            if (!_referralLinksService.InvitationLinkForSenderIdExists(request.SenderClientId))
+            {
+                var referralLink = await _referralLinksService.CreateInvitationLink(request);
 
-            await LogInfo(request, ControllerContext, referralLink.ToJson());
+                await LogInfo(request, ControllerContext, referralLink.ToJson());
 
-            return Created(uri: $"api/referralLinks/{referralLink.Id}", value: new RequestRefLinkResponse { RefLinkUrl = referralLink.Url, RefLinkId = referralLink.Id } );
+                return Created(uri: $"api/referralLinks/{referralLink.Id}", value: new RequestRefLinkResponse { RefLinkUrl = referralLink.Url, RefLinkId = referralLink.Id });
+            }
+            else
+            {
+                return await LogAndReturnBadRequest(request, ControllerContext, $"Invitation link for client {request.SenderClientId} already exists. Please try again!");
+            }            
         }
 
         private async Task<string> ValidateClaimRefLinkAndRequest(IReferralLink refLink, ClaimReferralLinkRequest request)

@@ -85,17 +85,15 @@ namespace Lykke.blue.Service.ReferralLinks.AzureRepositories.ReferralLink
             );            
         }
 
-        //public async Task<bool> IsInvitationLinksMaxNumberReachedForSender(string senderClientId)
-        //{
-        //    var numberOfCreatedReflinks = (await _referralLinkTable.GetDataAsync(
-        //        GetPartitionKey(),
-        //        x => x.SenderClientId == senderClientId
-        //            && x.State == ReferralLinkState.Created.ToString()
-        //            && x.Type == ReferralLinkType.Invitation.ToString()
-        //    ));
+        public bool IsInvitationLinkForSenderAlreadyCreated(string senderClientId)
+        {
+            var numberOfCreatedReflinks = _referralLinkTable.GetDataAsync(
+                GetPartitionKey(),
+                x => x.SenderClientId == senderClientId && x.Type == ReferralLinkType.Invitation.ToString()
+            ).Result;
 
-        //    return numberOfCreatedReflinks.Count() >= _settings.InvitationLinkSettings.LinksNumberLimitPerSender;
-        //}
+            return numberOfCreatedReflinks.Count() >  0;
+        }
 
         public async Task<IEnumerable<IReferralLink>> GetExpiredGiftCoinLinks()
         {

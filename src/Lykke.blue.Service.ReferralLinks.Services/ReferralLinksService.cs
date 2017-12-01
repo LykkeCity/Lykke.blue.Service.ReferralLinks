@@ -94,15 +94,15 @@ namespace Lykke.blue.Service.ReferralLinks.Services
             return await _referralLinkRepository.Get(clientId, state);
         }
 
-        public async Task<IReferralLink> GetInvitationLinksBySenderId(string senderClientId)
+        public IEnumerable<IReferralLink> GetInvitationLinksForSenderId(string senderClientId)
         {
-            return (await _referralLinkRepository.GetReferralLinksBySenderId(senderClientId)).SingleOrDefault(r=>r.Type == ReferralLinkType.Invitation.ToString());
+            return (_referralLinkRepository.GetReferralLinksBySenderId(senderClientId)).Result.Where(r=>r.Type == ReferralLinkType.Invitation.ToString());
         }
 
-        //public async Task<bool> IsInvitationLinksMaxNumberReachedForSender(string senderClientId)
-        //{
-        //    return await _referralLinkRepository.IsInvitationLinksMaxNumberReachedForSender(senderClientId);
-        //}
+        public bool InvitationLinkForSenderIdExists(string senderClientId)
+        {
+            return _referralLinkRepository.IsInvitationLinkForSenderAlreadyCreated(senderClientId);
+        }
 
         public async Task SetUrl(string id, string url)
         {
