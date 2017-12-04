@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace Lykke.blue.Service.ReferralLinks.Core.Domain.ReferralLink
+﻿namespace Lykke.blue.Service.ReferralLinks.Core.Domain.ReferralLink
 {
     public interface IReferralLinkClaim
     {

@@ -3,23 +3,20 @@ using AzureStorage.Blob;
 using AzureStorage.Queue;
 using AzureStorage.Tables;
 using Common.Log;
-using Lykke.Logs;
 using Lykke.blue.Service.ReferralLinks.AzureRepositories.Bitcoin;
 using Lykke.blue.Service.ReferralLinks.AzureRepositories.Client;
 using Lykke.blue.Service.ReferralLinks.AzureRepositories.Kyc;
-using Lykke.blue.Service.ReferralLinks.AzureRepositories.ReferralLink;
-using Lykke.blue.Service.ReferralLinks.Core.Domain.ReferralLink;
 using Lykke.blue.Service.ReferralLinks.AzureRepositories.Offchain;
+using Lykke.blue.Service.ReferralLinks.AzureRepositories.ReferralLink;
 using Lykke.blue.Service.ReferralLinks.AzureRepositories.WalletCredentials;
 using Lykke.blue.Service.ReferralLinks.Core.BitCoinApi;
 using Lykke.blue.Service.ReferralLinks.Core.Domain.Client;
 using Lykke.blue.Service.ReferralLinks.Core.Domain.Offchain;
+using Lykke.blue.Service.ReferralLinks.Core.Domain.ReferralLink;
 using Lykke.blue.Service.ReferralLinks.Core.Kyc;
 using Lykke.blue.Service.ReferralLinks.Core.Settings.ServiceSettings;
+using Lykke.Logs;
 using Lykke.SettingsReader;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace Lykke.blue.Service.ReferralLinks.AzureRepositories
 {

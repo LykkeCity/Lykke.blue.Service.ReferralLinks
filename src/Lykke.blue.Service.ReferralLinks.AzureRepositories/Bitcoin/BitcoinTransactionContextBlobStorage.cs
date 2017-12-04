@@ -1,7 +1,5 @@
 ﻿using AzureStorage;
 using Lykke.blue.Service.ReferralLinks.Core.BitCoinApi;
-using System;
-using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
 

@@ -1,12 +1,10 @@
 ﻿using Common;
-using Lykke.Service.Kyc.Abstractions.Domain.Verification;
-using Lykke.Service.Kyc.Abstractions.Services;
 using Lykke.blue.Service.ReferralLinks.Core.Assets;
 using Lykke.blue.Service.ReferralLinks.Core.Kyc;
+using Lykke.Service.Kyc.Abstractions.Domain.Verification;
+using Lykke.Service.Kyc.Abstractions.Services;
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace Lykke.blue.Service.ReferralLinks.Services.Kyc

@@ -3,7 +3,6 @@ using Lykke.blue.Service.ReferralLinks.AzureRepositories.DTOs;
 using Lykke.blue.Service.ReferralLinks.AzureRepositories.ReferralLink;
 using Lykke.blue.Service.ReferralLinks.Core.Domain.ReferralLink;
 using Microsoft.WindowsAzure.Storage.Table;
-using System;
 
 namespace Lykke.blue.Service.ReferralLinks.AzureRepositories
 {

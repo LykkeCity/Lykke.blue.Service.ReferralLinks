@@ -1,20 +1,12 @@
-﻿using System.Threading.Tasks;
-using Lykke.blue.Service.ReferralLinks.Core.Domain.ReferralLink;
+﻿using AutoMapper;
 using AzureStorage;
-using System;
-using AutoMapper;
 using Lykke.blue.Service.ReferralLinks.AzureRepositories.DTOs;
+using Lykke.blue.Service.ReferralLinks.Core.Domain.ReferralLink;
+using Lykke.blue.Service.ReferralLinks.Core.Settings.ServiceSettings;
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using Lykke.SettingsReader;
-using Lykke.blue.Service.ReferralLinks.Core.Settings;
-using Lykke.blue.Service.ReferralLinks.Core.Settings.ServiceSettings;
-using System.Net.Http;
-using System.Net.Http.Headers;
-using System.Text;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
-using System.Dynamic;
+using System.Threading.Tasks;
 
 namespace Lykke.blue.Service.ReferralLinks.AzureRepositories.ReferralLink
 {

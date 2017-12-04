@@ -1,7 +1,4 @@
 ﻿using Lykke.blue.Service.ReferralLinks.Core.Assets;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace Lykke.blue.Service.ReferralLinks.Models
 {

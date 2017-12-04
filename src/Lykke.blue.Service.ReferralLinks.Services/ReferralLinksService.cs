@@ -1,21 +1,16 @@
-﻿using System.Threading.Tasks;
-using Lykke.blue.Service.ReferralLinks.Core.Domain.ReferralLink;
-using Lykke.blue.Service.ReferralLinks.Core.Services;
-using System.ComponentModel.DataAnnotations;
-using System.Collections.Generic;
-using Lykke.blue.Service.ReferralLinks.Core.Settings;
-using AutoMapper;
-using Lykke.blue.Service.ReferralLinks.Services.Domain;
-using System;
-using Lykke.blue.Service.ReferralLinks.Core.Settings.ServiceSettings;
-using Lykke.blue.Service.ReferralLinks.Core.Domain.Requests;
-using Lykke.blue.Service.ReferralLinks.Services.ExchangeOperations;
-using Lykke.Service.ExchangeOperations.Client;
-using System.Transactions;
+﻿using Common;
 using Common.Log;
-using Common;
-using Lykke.Service.ExchangeOperations.Client.AutorestClient.Models;
+using Lykke.blue.Service.ReferralLinks.Core.Domain.ReferralLink;
+using Lykke.blue.Service.ReferralLinks.Core.Domain.Requests;
+using Lykke.blue.Service.ReferralLinks.Core.Services;
+using Lykke.blue.Service.ReferralLinks.Core.Settings.ServiceSettings;
+using Lykke.blue.Service.ReferralLinks.Services.Domain;
+using Lykke.blue.Service.ReferralLinks.Services.ExchangeOperations;
+using System;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace Lykke.blue.Service.ReferralLinks.Services
 {

@@ -1,35 +1,29 @@
-﻿using System;
-using System.Threading.Tasks;
-using Autofac;
+﻿using Autofac;
 using Autofac.Extensions.DependencyInjection;
+using AutoMapper;
 using AzureStorage.Tables;
 using Common.Log;
-using Lykke.Common.ApiLibrary.Middleware;
-using Lykke.Common.ApiLibrary.Swagger;
-using Lykke.Logs;
+using Lykke.blue.Service.ReferralLinks.AzureRepositories;
 using Lykke.blue.Service.ReferralLinks.Core.Services;
 using Lykke.blue.Service.ReferralLinks.Core.Settings;
 using Lykke.blue.Service.ReferralLinks.Modules;
+using Lykke.Common.ApiLibrary.Swagger;
+using Lykke.Logs;
 using Lykke.SettingsReader;
 using Lykke.SlackNotification.AzureQueue;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using AutoMapper;
 using Newtonsoft.Json.Converters;
+using System;
+using System.Threading.Tasks;
 using System.Timers;
-using Lykke.blue.Service.ReferralLinks.AzureRepositories;
-using Lykke.blue.Service.ReferralLinks.Controllers;
-using Lykke.blue.Service.ReferralLinks.Services.ExchangeOperations;
 
 namespace Lykke.blue.Service.ReferralLinks
 {
     public class Startup
     {
-        //public string ApiVersion => "1.0";
-        //public string ApiTitle => "Lykke Exchange Operations Service";
-
         public IHostingEnvironment Environment { get; }
         public IContainer ApplicationContainer { get; private set; }
         public IConfigurationRoot Configuration { get; }
@@ -110,7 +104,6 @@ namespace Lykke.blue.Service.ReferralLinks
                 app.UseStaticFiles();
 
                 appLifetime.ApplicationStarted.Register(() => StartApplication(app).Wait());
-                appLifetime.ApplicationStopping.Register(() => StopApplication().Wait());
                 appLifetime.ApplicationStopped.Register(() => CleanUp().Wait());
             }
             catch (Exception ex)
@@ -124,11 +117,7 @@ namespace Lykke.blue.Service.ReferralLinks
         {
             try
             {
-                // NOTE: Service not yet receive and process requests here
-
-                await ApplicationContainer.Resolve<IStartupManager>().StartAsync();
-
-                await Log.WriteMonitorAsync("", "", "Started");
+                await Log.WriteMonitorAsync("Referral Links Service", "Startup", "Service Started");
 
                 
                 var appSettings = Configuration.LoadSettings<AppSettings>();
@@ -158,25 +147,7 @@ namespace Lykke.blue.Service.ReferralLinks
             var referralLinksService = ApplicationContainer.Resolve<IReferralLinksService>();
             await referralLinksService.CheckForExpiredGiftCoinLink(); 
             _timer.Enabled = true;
-        }
-
-        private async Task StopApplication()
-        {
-            try
-            {
-                // NOTE: Service still can receive and process requests here, so take care about it if you add logic here.
-
-                await ApplicationContainer.Resolve<IShutdownManager>().StopAsync();
-            }
-            catch (Exception ex)
-            {
-                if (Log != null)
-                {
-                    await Log.WriteFatalErrorAsync(nameof(Startup), nameof(StopApplication), "", ex);
-                }
-                throw;
-            }
-        }
+        }        
 
         private async Task CleanUp()
         {

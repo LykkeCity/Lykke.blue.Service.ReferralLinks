@@ -1,11 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Threading.Tasks;
-using AzureStorage;
-
-using Microsoft.WindowsAzure.Storage.Table;
+﻿using AzureStorage;
 using Lykke.blue.Service.ReferralLinks.Core.Kyc;
+using Microsoft.WindowsAzure.Storage.Table;
+using System.Threading.Tasks;
 
 namespace Lykke.blue.Service.ReferralLinks.AzureRepositories.Kyc
 {

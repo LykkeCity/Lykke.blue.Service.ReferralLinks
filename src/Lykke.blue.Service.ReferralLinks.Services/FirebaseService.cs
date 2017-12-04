@@ -1,13 +1,13 @@
-﻿using System.Threading.Tasks;
-using Lykke.blue.Service.ReferralLinks.Core.Services;
-using System.Net.Http;
-using System.Net.Http.Headers;
-using System.Dynamic;
+﻿using Lykke.blue.Service.ReferralLinks.Core.Services;
+using Lykke.blue.Service.ReferralLinks.Core.Settings.ServiceSettings;
 using Newtonsoft.Json;
-using System.Text;
 using Newtonsoft.Json.Linq;
 using System;
-using Lykke.blue.Service.ReferralLinks.Core.Settings.ServiceSettings;
+using System.Dynamic;
+using System.Net.Http;
+using System.Net.Http.Headers;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace Lykke.blue.Service.ReferralLinks.Services
 {

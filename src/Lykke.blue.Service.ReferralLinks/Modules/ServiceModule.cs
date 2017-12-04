@@ -1,32 +1,29 @@
 ﻿using Autofac;
 using Autofac.Extensions.DependencyInjection;
+using Common;
 using Common.Log;
-using Lykke.Service.Kyc.Abstractions.Services;
-using Lykke.Service.Kyc.Client;
+using Lykke.blue.Service.ReferralLinks.AzureRepositories;
+using Lykke.blue.Service.ReferralLinks.Core.BitCoinApi;
+using Lykke.blue.Service.ReferralLinks.Core.Domain.Offchain;
+using Lykke.blue.Service.ReferralLinks.Core.Kyc;
 using Lykke.blue.Service.ReferralLinks.Core.Services;
 using Lykke.blue.Service.ReferralLinks.Core.Settings.ServiceSettings;
 using Lykke.blue.Service.ReferralLinks.Services;
+using Lykke.blue.Service.ReferralLinks.Services.Bitcoin;
+using Lykke.blue.Service.ReferralLinks.Services.ExchangeOperations;
+using Lykke.blue.Service.ReferralLinks.Services.Kyc;
+using Lykke.blue.Service.ReferralLinks.Services.Offchain;
+using Lykke.Service.Assets.Client;
+using Lykke.Service.Balances.Client;
+using Lykke.Service.ClientAccount.Client;
+using Lykke.Service.ExchangeOperations.Client;
+using Lykke.Service.Kyc.Abstractions.Services;
+using Lykke.Service.Kyc.Client;
 using Lykke.SettingsReader;
 using Microsoft.Extensions.DependencyInjection;
-using Common;
-using Lykke.blue.Service.ReferralLinks.Core.Assets;
-using System.Linq;
-using Lykke.Service.Assets.Client;
 using System;
-using Lykke.blue.Service.ReferralLinks.Models;
-using Lykke.blue.Service.ReferralLinks.AzureRepositories;
-using Lykke.blue.Service.ReferralLinks.Services.Kyc;
-using Lykke.blue.Service.ReferralLinks.Core.Kyc;
-using Lykke.blue.Service.ReferralLinks.Core.BitCoinApi;
-using Lykke.blue.Service.ReferralLinks.Services.Bitcoin;
-using Lykke.blue.Service.ReferralLinks.Services.Offchain;
-using Lykke.Service.ExchangeOperations.Client;
-using Lykke.blue.Service.ReferralLinks.Core.Domain.Offchain;
-using Lykke.Service.ClientAccount.Client;
-using Lykke.Service.Balances.Client;
-using Lykke.MatchingEngine.Connector.Abstractions.Services;
+using System.Linq;
 using System.Net;
-using Lykke.blue.Service.ReferralLinks.Services.ExchangeOperations;
 
 namespace Lykke.blue.Service.ReferralLinks.Modules
 {
@@ -87,8 +84,6 @@ namespace Lykke.blue.Service.ReferralLinks.Modules
         private void RegisterLocalServices(ContainerBuilder builder)
         {
             builder.RegisterType<HealthService>().As<IHealthService>().SingleInstance();
-            builder.RegisterType<StartupManager>().As<IStartupManager>();
-            builder.RegisterType<ShutdownManager>().As<IShutdownManager>();
             builder.RegisterType<BitcoinTransactionService>().As<IBitcoinTransactionService>().SingleInstance();
             builder.RegisterInstance(_settings.CurrentValue.ExternalServices.KycServiceSettings);
             builder.RegisterType<KycStatusServiceClient>().As<IKycStatusService>().SingleInstance();

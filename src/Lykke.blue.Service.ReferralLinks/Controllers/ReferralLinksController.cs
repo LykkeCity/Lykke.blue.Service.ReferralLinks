@@ -1,12 +1,6 @@
 ﻿using AutoMapper;
 using Common;
 using Common.Log;
-using Lykke.Service.Balances.Client;
-using Lykke.Service.ClientAccount.Client;
-using Lykke.Service.ExchangeOperations.Client;
-using Lykke.Service.ExchangeOperations.Client.AutorestClient.Models;
-using Lykke.blue.Service.ReferralLinks.Core.BitCoinApi.Models;
-using Lykke.blue.Service.ReferralLinks.Core.Domain.Offchain;
 using Lykke.blue.Service.ReferralLinks.Core.Domain.ReferralLink;
 using Lykke.blue.Service.ReferralLinks.Core.Domain.Requests;
 using Lykke.blue.Service.ReferralLinks.Core.Kyc;
@@ -14,21 +8,25 @@ using Lykke.blue.Service.ReferralLinks.Core.Services;
 using Lykke.blue.Service.ReferralLinks.Core.Settings.ServiceSettings;
 using Lykke.blue.Service.ReferralLinks.Extensions;
 using Lykke.blue.Service.ReferralLinks.Models;
+using Lykke.blue.Service.ReferralLinks.Models.RefLinkResponseModels;
 using Lykke.blue.Service.ReferralLinks.Modules.Validation;
+using Lykke.blue.Service.ReferralLinks.Requests;
 using Lykke.blue.Service.ReferralLinks.Responses;
 using Lykke.blue.Service.ReferralLinks.Services.Domain;
+using Lykke.blue.Service.ReferralLinks.Services.ExchangeOperations;
 using Lykke.blue.Service.ReferralLinks.Strings;
+using Lykke.Service.Balances.Client;
+using Lykke.Service.ClientAccount.Client;
+using Lykke.Service.ExchangeOperations.Client;
+using Lykke.Service.ExchangeOperations.Client.AutorestClient.Models;
 using Microsoft.AspNetCore.Mvc;
+using Swashbuckle.AspNetCore.SwaggerGen;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using System.Transactions;
-using Lykke.blue.Service.ReferralLinks.Models.RefLinkResponseModels;
-using Lykke.blue.Service.ReferralLinks.Requests;
-using Lykke.blue.Service.ReferralLinks.Services.ExchangeOperations;
-using Swashbuckle.AspNetCore.SwaggerGen;
 
 namespace Lykke.blue.Service.ReferralLinks.Controllers
 {

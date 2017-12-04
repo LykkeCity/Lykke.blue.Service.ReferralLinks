@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace Core.BitCoin.BitcoinApi.Models
+﻿namespace Core.BitCoin.BitcoinApi.Models
 {
     public class BitcoinBaseResponse
     {

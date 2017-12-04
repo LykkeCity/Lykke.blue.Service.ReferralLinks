@@ -1,5 +1,5 @@
-﻿using System.Collections.Generic;
-using Lykke.blue.Service.ReferralLinks.Core.Domain.Health;
+﻿using Lykke.blue.Service.ReferralLinks.Core.Domain.Health;
+using System.Collections.Generic;
 
 namespace Lykke.blue.Service.ReferralLinks.Core.Services
 {

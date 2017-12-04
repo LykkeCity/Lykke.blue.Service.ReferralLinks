@@ -1,9 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using Common.Log;
+﻿using Common.Log;
 using Lykke.blue.Service.ReferralLinks.Client.AutorestClient;
 using Lykke.blue.Service.ReferralLinks.Client.AutorestClient.Models;
+using System;
+using System.Threading.Tasks;
 
 namespace Lykke.blue.Service.ReferralLinks.Client
 {
@@ -43,13 +42,6 @@ namespace Lykke.blue.Service.ReferralLinks.Client
                 throw;
             }
         }
-
-
-
-        //public async Task<CreateReferralLinkResponse> Create(CreateReferralLinkRequest request)
-        //{
-        //    throw new NotImplementedException();
-        //}
 
         public void Dispose()
         {
