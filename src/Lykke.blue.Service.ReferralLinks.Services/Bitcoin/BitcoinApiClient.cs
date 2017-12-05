@@ -1,10 +1,10 @@
-﻿using System;
-using System.Threading.Tasks;
-using Core.BitCoin.BitcoinApi.Models;
+﻿using Core.BitCoin.BitcoinApi.Models;
 using Lykke.blue.Service.ReferralLinks.Core.BitCoinApi;
 using Lykke.blue.Service.ReferralLinks.Core.Settings.ServiceSettings;
 using Lykke.blue.Service.ReferralLinks.Services.Generated.BitcoinCoreAPI;
 using Lykke.blue.Service.ReferralLinks.Services.Generated.BitcoinCoreAPI.Models;
+using System;
+using System.Threading.Tasks;
 
 namespace Lykke.blue.Service.ReferralLinks.Services.Bitcoin
 {
@@ -97,7 +97,7 @@ namespace Lykke.blue.Service.ReferralLinks.Services.Bitcoin
             {
                 return new OffchainBaseResponse
                 {
-                    Error = new ErrorResponse ( error.Error.Message, error.Error.Code /* Code = error.Error.Code, Message = error.Error.Message*/ )
+                    Error = new ErrorResponse ( error.Error.Message, error.Error.Code )
                 };
             }
 

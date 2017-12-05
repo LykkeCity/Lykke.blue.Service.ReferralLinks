@@ -1,5 +1,5 @@
-﻿using System.Threading.Tasks;
-using Lykke.blue.Service.ReferralLinks.Core.Domain.Offchain;
+﻿using Lykke.blue.Service.ReferralLinks.Core.Domain.Offchain;
+using System.Threading.Tasks;
 
 namespace Lykke.blue.Service.ReferralLinks.Services.Offchain
 {
@@ -8,7 +8,7 @@ namespace Lykke.blue.Service.ReferralLinks.Services.Offchain
         private readonly IOffchainRequestRepository _offchainRequestRepository;
         private readonly IOffchainTransferRepository _offchainTransferRepository;
 
-        public OffchainRequestService(IOffchainRequestRepository offchainRequestRepository, IOffchainTransferRepository offchainTransferRepository/*, IClientSettingsRepository clientSettingsRepository, IClientAccountsRepository clientAccountsRepository, IAppNotifications appNotifications*/)
+        public OffchainRequestService(IOffchainRequestRepository offchainRequestRepository, IOffchainTransferRepository offchainTransferRepository)
         {
             _offchainRequestRepository = offchainRequestRepository;
             _offchainTransferRepository = offchainTransferRepository;

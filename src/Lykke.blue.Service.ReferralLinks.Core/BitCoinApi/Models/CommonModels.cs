@@ -10,8 +10,8 @@ namespace Core.BitCoin.BitcoinApi.Models
 
         public ErrorResponse(string message, string code)
         {
-            this.Message = message;
-            this.Code = code;
+            Message = message;
+            Code = code;
         }
 
         public ErrorCode ErrorCode
