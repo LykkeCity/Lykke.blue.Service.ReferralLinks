@@ -92,7 +92,7 @@ namespace Lykke.blue.Service.ReferralLinks.Services.Offchain
 
         }
 
-        private async Task<OffchainResult> InternalErrorProcessing(string process, ErrorResponse error, IWalletCredentials credentials, IOffchainTransfer offchainTransfer, bool required)
+        private async Task<OffchainResult> InternalErrorProcessing(string process, Lykke.blue.Service.ReferralLinks.Core.BitCoinApi.Models.ErrorResponse error, IWalletCredentials credentials, IOffchainTransfer offchainTransfer, bool required)
         {
             if (error.ErrorCode == ErrorCode.ShouldOpenNewChannel)
                 return await CreateChannel(credentials, offchainTransfer, required);
