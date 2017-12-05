@@ -1,7 +1,7 @@
-﻿using AzureStorage;
+﻿using System.Threading.Tasks;
+using AzureStorage;
 using Lykke.blue.Service.ReferralLinks.Core.Domain.WalletCredentials;
 using Microsoft.WindowsAzure.Storage.Table;
-using System.Threading.Tasks;
 
 namespace Lykke.blue.Service.ReferralLinks.AzureRepositories.WalletCredentials
 {

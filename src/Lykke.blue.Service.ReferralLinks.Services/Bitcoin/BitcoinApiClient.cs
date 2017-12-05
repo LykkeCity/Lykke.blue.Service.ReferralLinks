@@ -1,10 +1,10 @@
-﻿using Core.BitCoin.BitcoinApi.Models;
+﻿using System;
+using System.Threading.Tasks;
+using Core.BitCoin.BitcoinApi.Models;
 using Lykke.blue.Service.ReferralLinks.Core.BitCoinApi;
 using Lykke.blue.Service.ReferralLinks.Core.Settings.ServiceSettings;
 using Lykke.Service.BitcoinApi.Client;
 using Lykke.Service.BitcoinApi.Client.Models;
-using System;
-using System.Threading.Tasks;
 
 namespace Lykke.blue.Service.ReferralLinks.Services.Bitcoin
 {

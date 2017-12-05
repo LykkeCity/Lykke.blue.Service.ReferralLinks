@@ -2,14 +2,10 @@
 // Changes may cause incorrect behavior and will be lost if the code is
 // regenerated.
 
+using Newtonsoft.Json;
+
 namespace Lykke.Service.BitcoinApi.Client.Models
 {
-    using Lykke.Service;
-    using Lykke.Service.BitcoinApi;
-    using Lykke.Service.BitcoinApi.Client;
-    using Newtonsoft.Json;
-    using System.Linq;
-
     public partial class SplitTransactionResponse
     {
         /// <summary>

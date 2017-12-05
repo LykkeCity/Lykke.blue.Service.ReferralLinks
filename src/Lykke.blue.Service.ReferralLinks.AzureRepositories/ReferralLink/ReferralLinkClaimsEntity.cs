@@ -1,6 +1,6 @@
-﻿using Lykke.blue.Service.ReferralLinks.Core.Domain.ReferralLink;
+﻿using System.Collections.Generic;
+using Lykke.blue.Service.ReferralLinks.Core.Domain.ReferralLink;
 using Microsoft.WindowsAzure.Storage.Table;
-using System.Collections.Generic;
 
 namespace Lykke.blue.Service.ReferralLinks.AzureRepositories.ReferralLink
 {

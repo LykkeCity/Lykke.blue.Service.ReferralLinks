@@ -1,8 +1,5 @@
-﻿using Lykke.blue.Service.ReferralLinks.Core.Domain.WalletCredentials;
-using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
+using Lykke.blue.Service.ReferralLinks.Core.Domain.WalletCredentials;
 
 namespace Lykke.blue.Service.ReferralLinks.AzureRepositories.WalletCredentials
 {

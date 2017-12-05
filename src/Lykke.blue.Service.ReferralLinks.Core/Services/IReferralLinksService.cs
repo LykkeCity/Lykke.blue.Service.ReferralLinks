@@ -1,7 +1,7 @@
-﻿using Lykke.blue.Service.ReferralLinks.Core.Domain.ReferralLink;
-using Lykke.blue.Service.ReferralLinks.Core.Domain.Requests;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Threading.Tasks;
+using Lykke.blue.Service.ReferralLinks.Core.Domain.ReferralLink;
+using Lykke.blue.Service.ReferralLinks.Core.Domain.Requests;
 
 namespace Lykke.blue.Service.ReferralLinks.Core.Services
 {

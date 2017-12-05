@@ -1,12 +1,12 @@
-﻿using Common;
+﻿using System;
+using System.Threading.Tasks;
+using Common;
 using Common.Log;
 using Lykke.blue.Service.ReferralLinks.Core.Domain.Exceptions;
 using Lykke.blue.Service.ReferralLinks.Core.Domain.Offchain;
 using Lykke.blue.Service.ReferralLinks.Extensions;
 using Lykke.blue.Service.ReferralLinks.Models;
 using Microsoft.AspNetCore.Mvc;
-using System;
-using System.Threading.Tasks;
 
 namespace Lykke.blue.Service.ReferralLinks.Controllers
 {

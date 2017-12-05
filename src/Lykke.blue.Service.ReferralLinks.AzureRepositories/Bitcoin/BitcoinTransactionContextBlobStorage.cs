@@ -1,7 +1,7 @@
-﻿using AzureStorage;
-using Lykke.blue.Service.ReferralLinks.Core.BitCoinApi;
-using System.Text;
+﻿using System.Text;
 using System.Threading.Tasks;
+using AzureStorage;
+using Lykke.blue.Service.ReferralLinks.Core.BitCoinApi;
 
 namespace Lykke.blue.Service.ReferralLinks.AzureRepositories.Bitcoin
 {

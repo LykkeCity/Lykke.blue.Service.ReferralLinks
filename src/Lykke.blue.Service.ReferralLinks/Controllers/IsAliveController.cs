@@ -1,10 +1,10 @@
-﻿using Lykke.blue.Service.ReferralLinks.Core.Services;
+﻿using System;
+using System.Linq;
+using System.Net;
+using Lykke.blue.Service.ReferralLinks.Core.Services;
 using Lykke.blue.Service.ReferralLinks.Models;
 using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.SwaggerGen;
-using System;
-using System.Linq;
-using System.Net;
 
 namespace Lykke.blue.Service.ReferralLinks.Controllers
 {

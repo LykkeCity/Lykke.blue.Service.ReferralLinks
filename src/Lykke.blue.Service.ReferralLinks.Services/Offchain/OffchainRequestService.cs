@@ -1,5 +1,5 @@
-﻿using Lykke.blue.Service.ReferralLinks.Core.Domain.Offchain;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
+using Lykke.blue.Service.ReferralLinks.Core.Domain.Offchain;
 
 namespace Lykke.blue.Service.ReferralLinks.Services.Offchain
 {

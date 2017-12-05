@@ -1,5 +1,5 @@
-﻿using Lykke.blue.Service.ReferralLinks.Core.Domain.ReferralLink;
-using System.Runtime.Serialization;
+﻿using System.Runtime.Serialization;
+using Lykke.blue.Service.ReferralLinks.Core.Domain.ReferralLink;
 
 namespace Lykke.blue.Service.ReferralLinks.Core.Domain.Requests
 {

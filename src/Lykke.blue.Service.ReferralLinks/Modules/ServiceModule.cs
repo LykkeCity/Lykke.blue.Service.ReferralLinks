@@ -1,4 +1,7 @@
-﻿using Autofac;
+﻿using System;
+using System.Linq;
+using System.Net;
+using Autofac;
 using Autofac.Extensions.DependencyInjection;
 using Common;
 using Common.Log;
@@ -21,9 +24,6 @@ using Lykke.Service.Kyc.Abstractions.Services;
 using Lykke.Service.Kyc.Client;
 using Lykke.SettingsReader;
 using Microsoft.Extensions.DependencyInjection;
-using System;
-using System.Linq;
-using System.Net;
 
 namespace Lykke.blue.Service.ReferralLinks.Modules
 {

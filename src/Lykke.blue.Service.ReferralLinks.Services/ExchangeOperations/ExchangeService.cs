@@ -1,4 +1,7 @@
-﻿using Common;
+﻿using System;
+using System.Linq;
+using System.Threading.Tasks;
+using Common;
 using Common.Log;
 using Lykke.blue.Service.ReferralLinks.Core.BitCoinApi.Models;
 using Lykke.blue.Service.ReferralLinks.Core.Domain.Offchain;
@@ -7,9 +10,6 @@ using Lykke.blue.Service.ReferralLinks.Core.Settings.ServiceSettings;
 using Lykke.MatchingEngine.Connector.Abstractions.Models;
 using Lykke.Service.ExchangeOperations.Client;
 using Lykke.Service.ExchangeOperations.Client.AutorestClient.Models;
-using System;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace Lykke.blue.Service.ReferralLinks.Services.ExchangeOperations
 {

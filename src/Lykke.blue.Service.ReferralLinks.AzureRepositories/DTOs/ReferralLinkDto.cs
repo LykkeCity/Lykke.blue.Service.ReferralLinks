@@ -1,5 +1,5 @@
-﻿using Lykke.blue.Service.ReferralLinks.Core.Domain.ReferralLink;
-using System;
+﻿using System;
+using Lykke.blue.Service.ReferralLinks.Core.Domain.ReferralLink;
 
 namespace Lykke.blue.Service.ReferralLinks.AzureRepositories.DTOs
 {

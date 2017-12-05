@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace Lykke.blue.Service.ReferralLinks.Requests
+﻿namespace Lykke.blue.Service.ReferralLinks.Requests
 {
     public class RefLinkStatisticsRequest
     {

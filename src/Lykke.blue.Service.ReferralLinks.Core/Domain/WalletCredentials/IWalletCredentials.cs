@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace Lykke.blue.Service.ReferralLinks.Core.Domain.WalletCredentials
+﻿namespace Lykke.blue.Service.ReferralLinks.Core.Domain.WalletCredentials
 {
     public interface IWalletCredentials
     {

@@ -1,9 +1,9 @@
-﻿using AzureStorage;
-using Lykke.blue.Service.ReferralLinks.Core.Domain.Offchain;
-using Microsoft.WindowsAzure.Storage.Table;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using AzureStorage;
+using Lykke.blue.Service.ReferralLinks.Core.Domain.Offchain;
+using Microsoft.WindowsAzure.Storage.Table;
 
 namespace Lykke.blue.Service.ReferralLinks.AzureRepositories.Offchain
 {

@@ -1,5 +1,5 @@
-﻿using Core.BitCoin.BitcoinApi.Models;
-using System;
+﻿using System;
+using Core.BitCoin.BitcoinApi.Models;
 
 namespace Lykke.blue.Service.ReferralLinks.Core.Domain.Offchain
 {

@@ -1,6 +1,6 @@
-﻿using Lykke.blue.Service.ReferralLinks.Core.BitCoinApi;
+﻿using System.Threading.Tasks;
+using Lykke.blue.Service.ReferralLinks.Core.BitCoinApi;
 using Lykke.blue.Service.ReferralLinks.Core.Extensions;
-using System.Threading.Tasks;
 
 namespace Lykke.blue.Service.ReferralLinks.Services.Bitcoin
 {

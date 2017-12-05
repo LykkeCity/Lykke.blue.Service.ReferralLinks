@@ -2,16 +2,11 @@
 // Changes may cause incorrect behavior and will be lost if the code is
 // regenerated.
 
+using System.Collections.Generic;
+using Newtonsoft.Json;
+
 namespace Lykke.Service.BitcoinApi.Client.Models
 {
-    using Lykke.Service;
-    using Lykke.Service.BitcoinApi;
-    using Lykke.Service.BitcoinApi.Client;
-    using Newtonsoft.Json;
-    using System.Collections;
-    using System.Collections.Generic;
-    using System.Linq;
-
     public partial class OffchainChannelsResponse
     {
         /// <summary>

@@ -1,6 +1,5 @@
 ﻿using Lykke.Service.Kyc.Client;
 
-
 namespace Lykke.blue.Service.ReferralLinks.Core.Settings.ServiceSettings
 {
     public class Services

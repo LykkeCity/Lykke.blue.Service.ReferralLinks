@@ -2,18 +2,15 @@
 // Changes may cause incorrect behavior and will be lost if the code is
 // regenerated.
 
+using System.Collections.Generic;
+using System.Threading;
+using System.Threading.Tasks;
+using Lykke.Service.BitcoinApi.Client.Models;
+using Microsoft.Rest;
+using Newtonsoft.Json;
+
 namespace Lykke.Service.BitcoinApi.Client
 {
-    using Lykke.Service;
-    using Lykke.Service.BitcoinApi;
-    using Microsoft.Rest;
-    using Models;
-    using Newtonsoft.Json;
-    using System.Collections;
-    using System.Collections.Generic;
-    using System.Threading;
-    using System.Threading.Tasks;
-
     /// <summary>
     /// </summary>
     public partial interface IBitcoinApi : System.IDisposable

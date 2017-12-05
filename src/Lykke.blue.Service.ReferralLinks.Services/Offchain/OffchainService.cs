@@ -1,4 +1,6 @@
-﻿using Common;
+﻿using System;
+using System.Threading.Tasks;
+using Common;
 using Common.Log;
 using Core.BitCoin.BitcoinApi.Models;
 using Lykke.blue.Service.ReferralLinks.AzureRepositories.WalletCredentials;
@@ -11,8 +13,6 @@ using Lykke.blue.Service.ReferralLinks.Core.Services;
 using Lykke.MatchingEngine.Connector.Abstractions.Models;
 using Lykke.MatchingEngine.Connector.Abstractions.Services;
 using Lykke.Service.Assets.Client.Models;
-using System;
-using System.Threading.Tasks;
 using ME = Lykke.MatchingEngine.Connector;
 
 namespace Lykke.blue.Service.ReferralLinks.Services.Offchain

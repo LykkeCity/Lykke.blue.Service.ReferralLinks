@@ -2,14 +2,12 @@
 // Changes may cause incorrect behavior and will be lost if the code is
 // regenerated.
 
+using System.Threading;
+using System.Threading.Tasks;
+using Lykke.Service.BitcoinApi.Client.Models;
+
 namespace Lykke.Service.BitcoinApi.Client
 {
-    using Lykke.Service;
-    using Lykke.Service.BitcoinApi;
-    using Models;
-    using System.Threading;
-    using System.Threading.Tasks;
-
     /// <summary>
     /// Extension methods for BitcoinApi.
     /// </summary>

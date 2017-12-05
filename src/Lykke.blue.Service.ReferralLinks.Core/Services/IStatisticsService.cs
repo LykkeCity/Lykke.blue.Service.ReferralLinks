@@ -1,5 +1,5 @@
-﻿using Lykke.blue.Service.ReferralLinks.Core.Domain.ReferralLink;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
+using Lykke.blue.Service.ReferralLinks.Core.Domain.ReferralLink;
 
 namespace Lykke.blue.Service.ReferralLinks.Core.Services
 {

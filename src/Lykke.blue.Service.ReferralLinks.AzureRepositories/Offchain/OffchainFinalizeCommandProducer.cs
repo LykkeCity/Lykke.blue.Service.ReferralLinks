@@ -1,7 +1,7 @@
-﻿using AzureStorage.Queue;
+﻿using System.Threading.Tasks;
+using AzureStorage.Queue;
 using Lykke.blue.Service.ReferralLinks.Core.Domain.Offchain;
 using Lykke.blue.Service.ReferralLinks.Core.Extensions;
-using System.Threading.Tasks;
 
 namespace Lykke.blue.Service.ReferralLinks.AzureRepositories.Offchain
 {

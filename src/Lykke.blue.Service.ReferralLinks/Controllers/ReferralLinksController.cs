@@ -1,4 +1,10 @@
-﻿using AutoMapper;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Net;
+using System.Threading.Tasks;
+using System.Transactions;
+using AutoMapper;
 using Common;
 using Common.Log;
 using Lykke.blue.Service.ReferralLinks.Core.Domain.ReferralLink;
@@ -21,12 +27,6 @@ using Lykke.Service.ExchangeOperations.Client;
 using Lykke.Service.ExchangeOperations.Client.AutorestClient.Models;
 using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.SwaggerGen;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net;
-using System.Threading.Tasks;
-using System.Transactions;
 
 namespace Lykke.blue.Service.ReferralLinks.Controllers
 {

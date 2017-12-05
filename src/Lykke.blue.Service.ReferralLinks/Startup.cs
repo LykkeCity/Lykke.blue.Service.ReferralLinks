@@ -1,4 +1,7 @@
-﻿using Autofac;
+﻿using System;
+using System.Threading.Tasks;
+using System.Timers;
+using Autofac;
 using Autofac.Extensions.DependencyInjection;
 using AutoMapper;
 using AzureStorage.Tables;
@@ -16,9 +19,6 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json.Converters;
-using System;
-using System.Threading.Tasks;
-using System.Timers;
 
 namespace Lykke.blue.Service.ReferralLinks
 {
