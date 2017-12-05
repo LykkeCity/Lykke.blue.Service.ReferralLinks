@@ -62,7 +62,7 @@ namespace Lykke.blue.Service.ReferralLinks.Modules
 
         public static IPEndPoint GetIPEndPointFromHostName(string hostName, int port, bool throwIfMoreThanOneIP)
         {
-            var addresses = System.Net.Dns.GetHostAddresses(hostName);
+            var addresses = Dns.GetHostAddresses(hostName);
             if (addresses.Length == 0)
             {
                 throw new ArgumentException(
@@ -70,7 +70,7 @@ namespace Lykke.blue.Service.ReferralLinks.Modules
                     "hostName"
                 );
             }
-            else if (throwIfMoreThanOneIP && addresses.Length > 1)
+            if (throwIfMoreThanOneIP && addresses.Length > 1)
             {
                 throw new ArgumentException(
                     "There is more that one IP address to the specified host.",
@@ -144,7 +144,7 @@ namespace Lykke.blue.Service.ReferralLinks.Modules
                 var ctx = c.Resolve<IComponentContext>();
                 return new CachedDataDictionary<string, Lykke.Service.Assets.Client.Models.Asset>(
                     async () =>
-                        (await ctx.Resolve<Lykke.Service.Assets.Client.IAssetsService>().AssetGetAllWithHttpMessagesAsync()).Body.ToDictionary(itm => itm.Id));   
+                        (await ctx.Resolve<IAssetsService>().AssetGetAllWithHttpMessagesAsync()).Body.ToDictionary(itm => itm.Id));   
             }).SingleInstance();
 
             builder.Register(x =>

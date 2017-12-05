@@ -132,7 +132,8 @@ namespace Lykke.blue.Service.ReferralLinks.Controllers
                     TransferType.Common.ToString()
                     );
 
-                await LogInfo(new { Method = "StartTransferAsync", TransferId = response.TransferId, SourceClientId = clientId }, ControllerContext, exchangeOpResult.ToJson());
+                await LogInfo(new { Method = "StartTransferAsync",
+                    response.TransferId, SourceClientId = clientId }, ControllerContext, exchangeOpResult.ToJson());
 
                 return Ok(new OffchainTradeRespModel
                 {

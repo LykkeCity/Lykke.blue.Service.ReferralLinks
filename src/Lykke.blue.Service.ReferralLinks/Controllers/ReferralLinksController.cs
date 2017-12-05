@@ -255,10 +255,7 @@ namespace Lykke.blue.Service.ReferralLinks.Controllers
 
                 return Created(uri: $"api/referralLinks/{referralLink.Id}", value: new RequestRefLinkResponse { RefLinkUrl = referralLink.Url, RefLinkId = referralLink.Id });
             }
-            else
-            {
-                return await LogAndReturnBadRequest(request, ControllerContext, $"Invitation link for client {request.SenderClientId} already exists. Please try again!");
-            }            
+            return await LogAndReturnBadRequest(request, ControllerContext, $"Invitation link for client {request.SenderClientId} already exists. Please try again!");
         }
 
         private async Task<string> ValidateClaimRefLinkAndRequest(IReferralLink refLink, ClaimReferralLinkRequest request)
@@ -348,25 +345,21 @@ namespace Lykke.blue.Service.ReferralLinks.Controllers
 
                     return Ok(new ClaimRefLinkResponse { TransactionRewardRecipient = transactionRewardRecipient.TransactionId, SenderOffchainTransferId =  refLink.SenderOffchainTransferId });
                 }
-                else
-                {
-                    return await LogAndReturnNotFound(request, ControllerContext, $"TransactionRewardRecipientError: Code: {transactionRewardRecipient.Code}, Message: {transactionRewardRecipient.Message}");
-                }                
-               
+                return await LogAndReturnNotFound(request, ControllerContext, $"TransactionRewardRecipientError: Code: {transactionRewardRecipient.Code}, Message: {transactionRewardRecipient.Message}");
             }
             catch (TransactionAbortedException ex)
             {
-                await LogError(new { Request = request, RefLink = refLink ?? new ReferralLink(), }, ControllerContext, ex) ;
+                await LogError(new { Request = request, RefLink = refLink ?? new ReferralLink() }, ControllerContext, ex) ;
                 return NotFound(ex.Message);
             }
             catch (ApplicationException ex)
             {
-                await LogError(new { Request = request, RefLink = refLink ?? new ReferralLink(), }, ControllerContext, ex);
+                await LogError(new { Request = request, RefLink = refLink ?? new ReferralLink() }, ControllerContext, ex);
                 return NotFound(ex.Message);
             }
             catch (Exception ex)
             {
-                await LogError(new { Request = request, RefLink = refLink ?? new ReferralLink(), }, ControllerContext, ex);
+                await LogError(new { Request = request, RefLink = refLink ?? new ReferralLink() }, ControllerContext, ex);
                 return NotFound(ex.Message);
             }            
             
@@ -430,10 +423,7 @@ namespace Lykke.blue.Service.ReferralLinks.Controllers
                                 }
                             );
                     }
-                    else
-                    {
-                        return await LogAndReturnNotFound(request, ControllerContext, $"TransactionRewardRecipientError: Code: {transactionRewardRecipient.Code}, {transactionRewardRecipient.Message}; TransactionRewardSenderError: Code: {transactionRewardSender.Code}, {transactionRewardSender.Message}");
-                    }
+                    return await LogAndReturnNotFound(request, ControllerContext, $"TransactionRewardRecipientError: Code: {transactionRewardRecipient.Code}, {transactionRewardRecipient.Message}; TransactionRewardSenderError: Code: {transactionRewardSender.Code}, {transactionRewardSender.Message}");
                 }
 
                 return Ok(new ClaimRefLinkResponse ());
