@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 
 namespace Core.BitCoin.BitcoinApi.Models
 {
@@ -41,14 +40,7 @@ namespace Core.BitCoin.BitcoinApi.Models
         public string OffchainTransferId { get; set; }
     }
 
-    public class CashoutData
-    {
-        public string ClientPubKey { get; set; }
-        public string HotWalletAddress { get; set; }
-        public string CashoutAddress { get; set; }
-        public string AssetId { get; set; }
-        public decimal Amount { get; set; }
-    }
+   
 
     public class CloseChannelData
     {
@@ -58,12 +50,7 @@ namespace Core.BitCoin.BitcoinApi.Models
         public string OffchainTransferId { get; set; }
     }
 
-    public class HubCashoutData
-    {
-        public string ClientPubKey { get; set; }
-        public string Hotwallet { get; set; }
-        public string AssetId { get; set; }
-    }
+   
 
     public class OffchainBaseResponse
     {
@@ -85,15 +72,9 @@ namespace Core.BitCoin.BitcoinApi.Models
         public bool ChannelClosing { get; set; }
     }
 
-    public class OffchainBalancesResponse : OffchainBaseResponse
-    {
-        public Dictionary<string, OffchainChannelBalance> Balances { get; set; }
-    }
+   
 
-    public class OffchainAssetBalancesResponse : OffchainBaseResponse
-    {
-        public IEnumerable<OffchainChannelBalance> Balances { get; set; }
-    }
+   
 
     public class OffchainChannelBalance
     {

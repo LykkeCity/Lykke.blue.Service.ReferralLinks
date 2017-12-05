@@ -1,11 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using AutoMapper;
+﻿using AutoMapper;
 using AzureStorage;
 using Lykke.blue.Service.ReferralLinks.AzureRepositories.DTOs;
 using Lykke.blue.Service.ReferralLinks.Core.Domain.ReferralLink;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace Lykke.blue.Service.ReferralLinks.AzureRepositories.ReferralLink
 {
@@ -44,7 +44,6 @@ namespace Lykke.blue.Service.ReferralLinks.AzureRepositories.ReferralLink
 
         public async Task<IEnumerable<IReferralLinkClaim>> GetClaimsForRefLinks(IEnumerable<string> refLinkIds)
         {
-            //var claims = await _referralLinkClaimsTable.GetDataAsync(GetPartitionKey(), (link) => link.ReferralLinkId == refLinkId);
             var claims = await _referralLinkClaimsTable.GetDataAsync(link => refLinkIds.Contains(link.ReferralLinkId));
             return claims; 
         }

@@ -1,24 +1,21 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using AutoMapper;
+﻿using AutoMapper;
 using AzureStorage;
 using Lykke.blue.Service.ReferralLinks.AzureRepositories.DTOs;
 using Lykke.blue.Service.ReferralLinks.Core.Domain.ReferralLink;
-using Lykke.blue.Service.ReferralLinks.Core.Settings.ServiceSettings;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace Lykke.blue.Service.ReferralLinks.AzureRepositories.ReferralLink
 {
     public class ReferralLinkRepository : IReferralLinkRepository
     {
         private readonly INoSQLTableStorage<ReferralLinkEntity> _referralLinkTable;
-        private readonly ReferralLinksSettings _settings;
 
-        public ReferralLinkRepository(INoSQLTableStorage<ReferralLinkEntity> referralLinkTable, ReferralLinksSettings settings)
+        public ReferralLinkRepository(INoSQLTableStorage<ReferralLinkEntity> referralLinkTable)
         {
             _referralLinkTable = referralLinkTable;
-            _settings = settings;
         }
 
         public static string GetPartitionKey() => "ReferallLink";
@@ -84,7 +81,7 @@ namespace Lykke.blue.Service.ReferralLinks.AzureRepositories.ReferralLink
                 x => x.SenderClientId == senderClientId && x.Type == ReferralLinkType.Invitation.ToString()
             ).Result;
 
-            return numberOfCreatedReflinks.Count() >  0;
+            return numberOfCreatedReflinks.Any();
         }
 
         public async Task<IEnumerable<IReferralLink>> GetExpiredGiftCoinLinks()

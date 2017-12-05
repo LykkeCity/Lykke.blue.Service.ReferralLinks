@@ -9,6 +9,7 @@
 
   <ItemGroup>
     <Compile Remove="Assets\IAsset.cs" />
+    <Compile Remove="BitCoinApi\Models\OnchainModels.cs" />
     <Compile Remove="Services\IShutdownManager.cs" />
     <Compile Remove="Services\IStartupManager.cs" />
     <Compile Remove="Settings\ServiceSettings\BitcoinCoreSettings.cs" />

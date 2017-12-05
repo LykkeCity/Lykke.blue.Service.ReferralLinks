@@ -3,18 +3,6 @@ using System.Threading.Tasks;
 
 namespace Lykke.blue.Service.ReferralLinks.Core.BitCoinApi
 {
-    public class BitCoinCommands
-    {
-        public const string CashIn = "CashIn";
-        public const string Swap = "Swap";
-        public const string SwapOffchain = "SwapOffchain";
-        public const string CashOut = "CashOut";
-        public const string Transfer = "Transfer";
-        public const string Destroy = "Destroy";
-        public const string TransferAll = "TransferAll";
-        public const string Issue = "Issue";
-        public const string Refund = "Refund";
-    }
 
     public interface IBitcoinTransaction
     {
@@ -37,16 +25,5 @@ namespace Lykke.blue.Service.ReferralLinks.Core.BitCoinApi
         Task DeleteAsync(string transactionId);
     }
 
-    public static class BintCoinTransactionsRepositoryExt
-    {
-        public static T GetContextData<T>(this IBitcoinTransaction src)
-        {
-            return Newtonsoft.Json.JsonConvert.DeserializeObject<T>(src.ContextData);
-        }
-
-        public static BaseContextData GetBaseContextData(this IBitcoinTransaction src)
-        {
-            return Newtonsoft.Json.JsonConvert.DeserializeObject<BaseContextData>(src.ContextData);
-        }
-    }
+   
 }

@@ -57,7 +57,7 @@ namespace Lykke.blue.Service.ReferralLinks.AzureRepositories
                 .As<IBitcoinTransactionContextBlobStorage>();
 
             container.RegisterInstance<IReferralLinkRepository>(
-               new ReferralLinkRepository(AzureTableStorage<ReferralLinkEntity>.Create(settings.ConnectionString(n => n.Db.ReferralLinksConnString), "ReferralLinks", log), settings.CurrentValue));
+               new ReferralLinkRepository(AzureTableStorage<ReferralLinkEntity>.Create(settings.ConnectionString(n => n.Db.ReferralLinksConnString), "ReferralLinks", log)));
 
             container.RegisterInstance<IReferralLinkClaimsRepository>(
                new ReferralLinkClaimsRepository(AzureTableStorage<ReferralLinkClaimEntity>.Create(settings.ConnectionString(n => n.Db.ReferralLinksConnString), "ReferralLinkClaims", log)));

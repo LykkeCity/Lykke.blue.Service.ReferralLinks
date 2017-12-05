@@ -2,12 +2,6 @@
 
 namespace Lykke.blue.Service.ReferralLinks.Core.Domain
 {
-    public enum NetworkType
-    {
-        Main,
-        Testnet
-    }
-
     public static class LykkeConstants
     {
         public const string Iso2USA = "US";
