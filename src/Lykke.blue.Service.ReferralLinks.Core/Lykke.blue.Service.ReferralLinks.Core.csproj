@@ -8,15 +8,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Remove="BitCoinApi\Models\OffchainModels.cs" />
-    <Compile Remove="BitCoinApi\Models\OnchainModels.cs" />
-    <Compile Remove="Services\IShutdownManager.cs" />
-    <Compile Remove="Services\IStartupManager.cs" />
-    <Compile Remove="Settings\ServiceSettings\BitcoinCoreSettings.cs" />
-  </ItemGroup>
-
-
-  <ItemGroup>
     <PackageReference Include="Lykke.Common" Version="3.0.2" />
     <PackageReference Include="Lykke.Service.Kyc.Abstractions" Version="1.0.50" />
     <PackageReference Include="Lykke.Service.Kyc.Client" Version="1.0.50" />
