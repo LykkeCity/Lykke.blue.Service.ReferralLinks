@@ -4,6 +4,7 @@ namespace Lykke.blue.Service.ReferralLinks.Core.Settings
 {
     public class AppSettings
     {
-        public ReferralLinksSettings ReferralLinksService { get; set; }        
+        public ReferralLinksSettings ReferralLinksService { get; set; }       
+        public MatchingEngineClient MatchingEngineClient { get; set; }        
     }
 }
