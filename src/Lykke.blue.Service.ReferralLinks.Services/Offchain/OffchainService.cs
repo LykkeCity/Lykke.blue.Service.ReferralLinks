@@ -29,8 +29,8 @@ namespace Lykke.blue.Service.ReferralLinks.Services.Offchain
         private readonly ILog _logger;
         private readonly IMatchingEngineClient _matchingEngineConnector;
         private readonly IOffchainFinalizeCommandProducer _offchainFinalizeCommandProducer;
-        private readonly CachedDataDictionary<string, Lykke.Service.Assets.Client.Models.AssetPair> _assetPairs;
-        private readonly CachedDataDictionary<string, Lykke.Service.Assets.Client.Models.Asset> _assets;
+        private readonly CachedDataDictionary<string, AssetPair> _assetPairs;
+        private readonly CachedDataDictionary<string, Asset> _assets;
 
         public OffchainService(IBitcoinApiClient bitcoinApiClient, 
                                 IWalletCredentialsRepository walletCredentialsRepository, 
@@ -99,7 +99,10 @@ namespace Lykke.blue.Service.ReferralLinks.Services.Offchain
             if (error.ErrorCode == ErrorCode.ShouldOpenNewChannel)
                 return await CreateChannel(credentials, offchainTransfer, required);
 
-            var offchainTransferInfo = (new { ClientId = offchainTransfer.ClientId, Asset = offchainTransfer.AssetId, Amount = offchainTransfer.Amount, Type = offchainTransfer.Type }).ToJson();
+            var offchainTransferInfo = (new {
+                offchainTransfer.ClientId, Asset = offchainTransfer.AssetId,
+                offchainTransfer.Amount,
+                offchainTransfer.Type }).ToJson();
 
             await _logger.WriteErrorAsync(process, offchainTransferInfo, new Exception($"{error.Message}, Code: {error.Code}, ErrorCode: {error.ErrorCodeString}"));
 
@@ -128,7 +131,10 @@ namespace Lykke.blue.Service.ReferralLinks.Services.Offchain
                 ExternalTransferId = offchainTransfer.ExternalTransferId
             });
 
-            var offchainTransferInfo = (new { ClientId = offchainTransfer.ClientId, Asset = offchainTransfer.AssetId, Amount = offchainTransfer.Amount, Type = offchainTransfer.Type }).ToJson();
+            var offchainTransferInfo = (new {
+                offchainTransfer.ClientId, Asset = offchainTransfer.AssetId,
+                offchainTransfer.Amount,
+                offchainTransfer.Type }).ToJson();
 
             if (!result.HasError)
             {
@@ -148,7 +154,7 @@ namespace Lykke.blue.Service.ReferralLinks.Services.Offchain
 
             await _logger.WriteErrorAsync("CreateChannel", offchainTransferInfo, new Exception($"{result.Error.Message}, Code: {result.Error.Code} "));
 
-            throw new OffchainException(result.Error.ErrorCode, result.Error.Message, result.Error.Code.ToString(), offchainTransfer.AssetId);
+            throw new OffchainException(result.Error.ErrorCode, result.Error.Message, result.Error.Code, offchainTransfer.AssetId);
         }
 
         public async Task<OffchainResult> CreateHubCommitment(string clientId, string transferId, string signedChannel)
@@ -423,8 +429,8 @@ namespace Lykke.blue.Service.ReferralLinks.Services.Offchain
             await _bitcoinTransactionService.SetTransactionContext(offchainTransfer.OrderId, ctx);
 
             var meOrderAction = order.Volume > 0
-                ? ME.Abstractions.Models.OrderAction.Buy
-                : ME.Abstractions.Models.OrderAction.Sell;
+                ? OrderAction.Buy
+                : OrderAction.Sell;
 
             MeStatusCodes? status = null;
             try

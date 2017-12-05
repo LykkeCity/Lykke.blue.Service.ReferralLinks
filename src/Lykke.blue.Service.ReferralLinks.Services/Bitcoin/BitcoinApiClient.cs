@@ -29,7 +29,7 @@ namespace Lykke.blue.Service.ReferralLinks.Services.Bitcoin
 
         public async Task<OffchainResponse> OffchainTransferAsync(OffchainTransferData data)
         {
-            var request = new TransferModel(data.ClientPubKey, (decimal?)data.Amount, data.AssetId, data.ClientPrevPrivateKey, data.Required, !string.IsNullOrWhiteSpace(data.ExternalTransferId) ? Guid.Parse(data.ExternalTransferId) : (Guid?)null);
+            var request = new TransferModel(data.ClientPubKey, data.Amount, data.AssetId, data.ClientPrevPrivateKey, data.Required, !string.IsNullOrWhiteSpace(data.ExternalTransferId) ? Guid.Parse(data.ExternalTransferId) : (Guid?)null);
 
             var response = await _apiClient.ApiOffchainTransferPostAsync(request);
 

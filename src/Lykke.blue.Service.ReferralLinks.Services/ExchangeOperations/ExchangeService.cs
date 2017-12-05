@@ -48,7 +48,7 @@ namespace Lykke.blue.Service.ReferralLinks.Services.ExchangeOperations
                 var result = await _exchangeOperationsService.TransferAsync(
                          recipientClientId,
                          _settings.LykkeReferralClientId,
-                         (double)refLink.Amount,
+                         refLink.Amount,
                          asset.Id,
                          TransferType.Common.ToString()
                          );
@@ -68,12 +68,8 @@ namespace Lykke.blue.Service.ReferralLinks.Services.ExchangeOperations
                     result.Message = error;
                     return result;
                 }
-                else
-                {
-                    await _log.WriteInfoAsync(executionContext, request.ToJson(), $"Transfer successfull: {result.ToJson()}");
-                    return result;
-                }
-
+                await _log.WriteInfoAsync(executionContext, request.ToJson(), $"Transfer successfull: {result.ToJson()}");
+                return result;
             }
             catch (OffchainException ex)
             {
