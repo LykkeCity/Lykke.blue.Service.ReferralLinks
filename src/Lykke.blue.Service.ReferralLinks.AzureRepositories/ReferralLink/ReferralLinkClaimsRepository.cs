@@ -45,7 +45,7 @@ namespace Lykke.blue.Service.ReferralLinks.AzureRepositories.ReferralLink
         public async Task<IEnumerable<IReferralLinkClaim>> GetClaimsForRefLinks(IEnumerable<string> refLinkIds)
         {
             //var claims = await _referralLinkClaimsTable.GetDataAsync(GetPartitionKey(), (link) => link.ReferralLinkId == refLinkId);
-            var claims = await _referralLinkClaimsTable.GetDataAsync((link) => refLinkIds.Contains(link.ReferralLinkId));
+            var claims = await _referralLinkClaimsTable.GetDataAsync(link => refLinkIds.Contains(link.ReferralLinkId));
             return claims; 
         }
 

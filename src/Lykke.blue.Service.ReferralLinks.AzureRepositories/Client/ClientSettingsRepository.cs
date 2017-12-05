@@ -35,7 +35,7 @@ namespace Lykke.blue.Service.ReferralLinks.AzureRepositories.Client
             var result = new ClientSettingsEntity
             {
                 PartitionKey = GeneratePartitionKey(traderId),
-                RowKey = GenerateRowKey(settings),
+                RowKey = GenerateRowKey(settings)
             };
             result.SetSettings(settings);
             return result;
