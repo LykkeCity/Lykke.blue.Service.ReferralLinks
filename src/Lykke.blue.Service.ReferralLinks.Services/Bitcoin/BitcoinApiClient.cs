@@ -3,18 +3,18 @@ using System.Threading.Tasks;
 using Core.BitCoin.BitcoinApi.Models;
 using Lykke.blue.Service.ReferralLinks.Core.BitCoinApi;
 using Lykke.blue.Service.ReferralLinks.Core.Settings.ServiceSettings;
-using Lykke.Service.BitcoinApi.Client;
-using Lykke.Service.BitcoinApi.Client.Models;
+using Lykke.blue.Service.ReferralLinks.Services.Generated.BitcoinCoreAPI;
+using Lykke.blue.Service.ReferralLinks.Services.Generated.BitcoinCoreAPI.Models;
 
 namespace Lykke.blue.Service.ReferralLinks.Services.Bitcoin
 {
     public class BitcoinApiClient : IBitcoinApiClient
     {
-        private readonly Lykke.Service.BitcoinApi.Client.BitcoinApi _apiClient;
+        private readonly BitcoinApi _apiClient;
 
         public BitcoinApiClient(ReferralLinksSettings settings)
         {
-            _apiClient = new Lykke.Service.BitcoinApi.Client.BitcoinApi(new Uri(settings.ExternalServices.BitcoinCoreApiUrl));
+            _apiClient = new BitcoinApi(new Uri(settings.ExternalServices.BitcoinCoreApiUrl));
             _apiClient.SetRetryPolicy(null);
         }
 

@@ -4,7 +4,7 @@
 
 using Newtonsoft.Json;
 
-namespace Lykke.Service.BitcoinApi.Client.Models
+namespace Lykke.blue.Service.ReferralLinks.Services.Generated.BitcoinCoreAPI.Models
 {
     public partial class TransferAllRequest
     {

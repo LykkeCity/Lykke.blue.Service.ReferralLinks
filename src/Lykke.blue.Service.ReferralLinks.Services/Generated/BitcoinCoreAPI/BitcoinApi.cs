@@ -7,12 +7,12 @@ using System.Net;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
-using Lykke.Service.BitcoinApi.Client.Models;
+using Lykke.blue.Service.ReferralLinks.Services.Generated.BitcoinCoreAPI.Models;
 using Microsoft.Rest;
 using Microsoft.Rest.Serialization;
 using Newtonsoft.Json;
 
-namespace Lykke.Service.BitcoinApi.Client
+namespace Lykke.blue.Service.ReferralLinks.Services.Generated.BitcoinCoreAPI
 {
     public partial class BitcoinApi : ServiceClient<BitcoinApi>, IBitcoinApi
     {

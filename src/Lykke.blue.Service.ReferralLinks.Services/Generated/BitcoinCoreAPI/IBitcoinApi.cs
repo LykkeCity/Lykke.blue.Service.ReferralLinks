@@ -5,11 +5,11 @@
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
-using Lykke.Service.BitcoinApi.Client.Models;
+using Lykke.blue.Service.ReferralLinks.Services.Generated.BitcoinCoreAPI.Models;
 using Microsoft.Rest;
 using Newtonsoft.Json;
 
-namespace Lykke.Service.BitcoinApi.Client
+namespace Lykke.blue.Service.ReferralLinks.Services.Generated.BitcoinCoreAPI
 {
     /// <summary>
     /// </summary>
