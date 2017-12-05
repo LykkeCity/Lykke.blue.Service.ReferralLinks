@@ -2,18 +2,20 @@
 
   <PropertyGroup>
     <TargetFramework>netcoreapp2.0</TargetFramework>
-    <AssemblyName>Lykke.Blue.Service.ReferralLinks.Core</AssemblyName>
-    <RootNamespace>Lykke.Blue.Service.ReferralLinks.Core</RootNamespace>
+    <AssemblyName>Lykke.blue.Service.ReferralLinks.Core</AssemblyName>
+    <RootNamespace>Lykke.blue.Service.ReferralLinks.Core</RootNamespace>
     <Version>1.0.0</Version>
   </PropertyGroup>
 
   <ItemGroup>
     <Compile Remove="Assets\IAsset.cs" />
+    <Compile Remove="BitCoinApi\Models\OffchainModels.cs" />
     <Compile Remove="BitCoinApi\Models\OnchainModels.cs" />
     <Compile Remove="Services\IShutdownManager.cs" />
     <Compile Remove="Services\IStartupManager.cs" />
     <Compile Remove="Settings\ServiceSettings\BitcoinCoreSettings.cs" />
   </ItemGroup>
+
 
   <ItemGroup>
     <PackageReference Include="Lykke.Common" Version="3.0.2" />

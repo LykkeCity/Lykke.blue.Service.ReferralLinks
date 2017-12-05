@@ -2,11 +2,6 @@
 
 namespace Lykke.blue.Service.ReferralLinks.Core.BitCoinApi
 {
-    public class BaseContextData
-    {
-        public string[] SignsClientIds { get; set; }
-    }
-
     public class SwapOffchainContextData : BaseContextData
     {
         public class Operation
@@ -20,5 +15,4 @@ namespace Lykke.blue.Service.ReferralLinks.Core.BitCoinApi
 
         public List<Operation> Operations { get; set; } = new List<Operation>();
     }
-
 }

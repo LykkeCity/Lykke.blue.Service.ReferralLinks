@@ -1,7 +1,6 @@
 ﻿using System.Threading.Tasks;
-using Lykke.blue.Service.ReferralLinks.Core.Domain.WalletCredentials;
 
-namespace Lykke.blue.Service.ReferralLinks.AzureRepositories.WalletCredentials
+namespace Lykke.blue.Service.ReferralLinks.Core.Domain.WalletCredentials
 {
     public interface IWalletCredentialsRepository
     {

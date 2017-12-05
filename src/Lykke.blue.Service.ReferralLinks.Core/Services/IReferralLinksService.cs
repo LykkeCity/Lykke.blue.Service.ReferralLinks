@@ -1,5 +1,5 @@
 ﻿using Lykke.blue.Service.ReferralLinks.Core.Domain.ReferralLink;
-using Lykke.blue.Service.ReferralLinks.Core.Domain.Requests;
+using Lykke.blue.Service.ReferralLinks.Core.Domain.ReferralLink.Requests;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 

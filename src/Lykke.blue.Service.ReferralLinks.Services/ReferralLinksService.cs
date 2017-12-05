@@ -1,16 +1,16 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Threading.Tasks;
-using Common;
+﻿using Common;
 using Common.Log;
 using Lykke.blue.Service.ReferralLinks.Core.Domain.ReferralLink;
-using Lykke.blue.Service.ReferralLinks.Core.Domain.Requests;
+using Lykke.blue.Service.ReferralLinks.Core.Domain.ReferralLink.Requests;
 using Lykke.blue.Service.ReferralLinks.Core.Services;
 using Lykke.blue.Service.ReferralLinks.Core.Settings.ServiceSettings;
 using Lykke.blue.Service.ReferralLinks.Services.Domain;
 using Lykke.blue.Service.ReferralLinks.Services.ExchangeOperations;
+using System;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace Lykke.blue.Service.ReferralLinks.Services
 {

@@ -1,34 +1,9 @@
-﻿using System.Threading.Tasks;
-using AzureStorage;
+﻿using AzureStorage;
 using Lykke.blue.Service.ReferralLinks.Core.Kyc;
-using Microsoft.WindowsAzure.Storage.Table;
+using System.Threading.Tasks;
 
 namespace Lykke.blue.Service.ReferralLinks.AzureRepositories.Kyc
 {
-    public class SkipKycClientEntity : TableEntity
-    {
-        public static string GeneratePartition()
-        {
-            return "SkipKyc";
-        }
-
-        public static string GenerateRowKey(string clientId)
-        {
-            return clientId;
-        }
-
-        public static SkipKycClientEntity Create(string clientId)
-        {
-            return new SkipKycClientEntity
-            {
-                PartitionKey = GeneratePartition(),
-                RowKey = GenerateRowKey(clientId)
-            };
-        }
-
-        public string ClientId => RowKey;
-    }
-
     public class SkipKycRepository : ISkipKycRepository
     {
         private readonly INoSQLTableStorage<SkipKycClientEntity> _tableStorage;

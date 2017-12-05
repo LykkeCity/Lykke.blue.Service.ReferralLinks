@@ -1,5 +1,5 @@
-﻿using Core.BitCoin.BitcoinApi.Models;
-using Lykke.blue.Service.ReferralLinks.Core.BitCoinApi;
+﻿using Lykke.blue.Service.ReferralLinks.Core.BitCoinApi;
+using Lykke.blue.Service.ReferralLinks.Core.BitCoinApi.Models;
 using Lykke.blue.Service.ReferralLinks.Core.Settings.ServiceSettings;
 using Lykke.blue.Service.ReferralLinks.Services.Generated.BitcoinCoreAPI;
 using Lykke.blue.Service.ReferralLinks.Services.Generated.BitcoinCoreAPI.Models;
