@@ -31,7 +31,6 @@ namespace Lykke.blue.Service.ReferralLinks.Modules
     {
         private readonly IReloadingManager<ReferralLinksSettings> _settings;
         private readonly ILog _log;
-        // NOTE: you can remove it if you don't need to use IServiceCollection extensions to register service specific dependencies
         private readonly IServiceCollection _services;
 
         public ServiceModule(IReloadingManager<ReferralLinksSettings> settings, ILog log)
@@ -78,7 +77,7 @@ namespace Lykke.blue.Service.ReferralLinks.Modules
                     "hostName"
                 );
             }
-            return new IPEndPoint(addresses[0], port); // Port gets validated here.
+            return new IPEndPoint(addresses[0], port);     
         }
 
         private void RegisterLocalServices(ContainerBuilder builder)
@@ -145,7 +144,7 @@ namespace Lykke.blue.Service.ReferralLinks.Modules
                 var ctx = c.Resolve<IComponentContext>();
                 return new CachedDataDictionary<string, Lykke.Service.Assets.Client.Models.Asset>(
                     async () =>
-                        (await ctx.Resolve<Lykke.Service.Assets.Client.IAssetsService>().AssetGetAllWithHttpMessagesAsync()).Body.ToDictionary(itm => itm.Id)); //.Select(a => a.ConvertToServiceModel())
+                        (await ctx.Resolve<Lykke.Service.Assets.Client.IAssetsService>().AssetGetAllWithHttpMessagesAsync()).Body.ToDictionary(itm => itm.Id));   
             }).SingleInstance();
 
             builder.Register(x =>
