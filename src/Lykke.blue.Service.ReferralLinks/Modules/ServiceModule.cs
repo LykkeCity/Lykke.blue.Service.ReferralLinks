@@ -2,6 +2,7 @@
 using Autofac.Extensions.DependencyInjection;
 using Common;
 using Common.Log;
+using Lykke.Bitcoin.Api.Client.BitcoinApi;
 using Lykke.blue.Service.ReferralLinks.AzureRepositories;
 using Lykke.blue.Service.ReferralLinks.Core.BitCoinApi;
 using Lykke.blue.Service.ReferralLinks.Core.Domain.Offchain;
@@ -87,7 +88,7 @@ namespace Lykke.blue.Service.ReferralLinks.Modules
             builder.RegisterInstance(_settings.CurrentValue.ReferralLinksService.ExternalServices.KycServiceSettings);
             builder.RegisterType<KycStatusServiceClient>().As<IKycStatusService>().SingleInstance();
             builder.RegisterType<SrvKycForAsset>().As<ISrvKycForAsset>().SingleInstance();
-            builder.RegisterType<BitcoinApiClient>().As<IBitcoinApiClient>().SingleInstance();
+            
             builder.RegisterType<OffchainRequestService>().As<IOffchainRequestService>();
             builder.RegisterType<OffchainService>().As<IOffchainService>().SingleInstance();
 
@@ -100,7 +101,8 @@ namespace Lykke.blue.Service.ReferralLinks.Modules
             builder.RegisterType<ReferralLinkClaimsService>().As<IReferralLinkClaimsService>().SingleInstance();
             builder.RegisterType<StatisticsService>().As<IStatisticsService>().SingleInstance();
 
-            builder.RegisterType<ExchangeService>().SingleInstance();            
+            builder.RegisterType<ExchangeService>().SingleInstance();
+            builder.RegisterType<BitcoinApiClientLocal>().SingleInstance();
         }
 
         private void RegisterRepos(ContainerBuilder builder)
@@ -110,6 +112,12 @@ namespace Lykke.blue.Service.ReferralLinks.Modules
 
         private void RegisterExternalServices(ContainerBuilder builder)
         {
+            builder.Register<IBitcoinApiClient>(x =>
+            {
+                var assetsSrv = new BitcoinApiClient(_settings.CurrentValue.ReferralLinksService.ExternalServices.BitcoinCoreApiUrl);
+                return assetsSrv;
+            }).SingleInstance();
+
             builder.Register<IAssetsService>(x =>
             {
                 var assetsSrv = new AssetsService(new Uri(_settings.CurrentValue.ReferralLinksService.ExternalServices.AssetsServiceUrl));

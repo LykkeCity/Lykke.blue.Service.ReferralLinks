@@ -1,12 +1,8 @@
-﻿using System;
-using System.Linq;
-using System.Net;
-using System.Threading.Tasks;
-using Common;
+﻿using Common;
 using Common.Log;
-using Lykke.blue.Service.ReferralLinks.Core.BitCoinApi.Models;
 using Lykke.blue.Service.ReferralLinks.Core.Domain.Client;
 using Lykke.blue.Service.ReferralLinks.Core.Domain.Exceptions;
+using Lykke.blue.Service.ReferralLinks.Core.Domain.ExchangeOperations;
 using Lykke.blue.Service.ReferralLinks.Core.Domain.Offchain;
 using Lykke.blue.Service.ReferralLinks.Core.Domain.ReferralLink;
 using Lykke.blue.Service.ReferralLinks.Core.Kyc;
@@ -17,6 +13,10 @@ using Lykke.blue.Service.ReferralLinks.Models.Offchain;
 using Lykke.Service.ExchangeOperations.Client;
 using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.SwaggerGen;
+using System;
+using System.Linq;
+using System.Net;
+using System.Threading.Tasks;
 
 namespace Lykke.blue.Service.ReferralLinks.Controllers
 {

@@ -1,4 +1,4 @@
-﻿namespace Lykke.blue.Service.ReferralLinks.Core.BitCoinApi.Models
+﻿namespace Lykke.blue.Service.ReferralLinks.Core.Domain.ExchangeOperations
 {
     public enum TransferType
     {
