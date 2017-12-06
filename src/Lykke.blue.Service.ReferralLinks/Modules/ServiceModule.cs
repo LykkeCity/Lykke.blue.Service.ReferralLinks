@@ -136,7 +136,7 @@ namespace Lykke.blue.Service.ReferralLinks.Modules
 
             builder.RegisterType<FirebaseService>()
                 .As<IFirebaseService>()
-                .WithParameter("settings", _settings.CurrentValue)
+                .WithParameter("settings", _settings.CurrentValue.ReferralLinksService)
                 .SingleInstance();
         }
 
