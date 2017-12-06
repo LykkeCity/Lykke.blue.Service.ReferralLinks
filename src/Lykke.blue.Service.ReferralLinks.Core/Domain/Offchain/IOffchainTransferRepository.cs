@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 
 namespace Lykke.blue.Service.ReferralLinks.Core.Domain.Offchain
 {
@@ -10,6 +8,5 @@ namespace Lykke.blue.Service.ReferralLinks.Core.Domain.Offchain
         Task<IOffchainTransfer> GetTransfer(string id);
         Task CompleteTransfer(string transferId, bool? onchain = null, string blockchainHash = null);
         Task UpdateTransfer(string transferId, string toString, bool closing = false, bool? onchain = null);
-        Task<IEnumerable<IOffchainTransfer>> GetTransfersByDate(OffchainTransferType type, DateTimeOffset from, DateTimeOffset to);
     }
 }

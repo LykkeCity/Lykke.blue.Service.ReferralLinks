@@ -8,7 +8,6 @@ using Lykke.blue.Service.ReferralLinks.Services.Domain;
 using Lykke.blue.Service.ReferralLinks.Services.ExchangeOperations;
 using System;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -19,9 +18,7 @@ namespace Lykke.blue.Service.ReferralLinks.Services
         private readonly ReferralLinksSettings _settings;
         private readonly IReferralLinkRepository _referralLinkRepository;
         private readonly IFirebaseService _firebaseService;
-        private readonly ExchangeService _exchangeService;
         private readonly ILog _log;
-        private readonly IReferralLinkClaimsService _referralLinkClaimsService;
 
         public ReferralLinksService(
             IReferralLinkRepository referralLinkRepository, 
@@ -34,20 +31,20 @@ namespace Lykke.blue.Service.ReferralLinks.Services
             _referralLinkRepository = referralLinkRepository;
             _firebaseService = firebaseService;
             _settings = settings;
-            _exchangeService = exchangeService;
             _log = log;
-            _referralLinkClaimsService = referralLinkClaimsService;
         }
 
         public async Task<IReferralLink> CreateInvitationLink(InvitationReferralLinkRequest referralLinkRequest)
         {
-            var entity = new ReferralLink();
-            entity.SenderClientId = referralLinkRequest.SenderClientId;
-            entity.Type = referralLinkRequest.Type.ToString();
-            entity.Id = Guid.NewGuid().ToString();
-            entity.ExpirationDate = null;
-            entity.Amount = _settings.InvitationLinkSettings.RewardAmount;
-            entity.Asset = _settings.InvitationLinkSettings.RewardAsset;
+            var entity = new ReferralLink
+            {
+                SenderClientId = referralLinkRequest.SenderClientId,
+                Type = referralLinkRequest.Type.ToString(),
+                Id = Guid.NewGuid().ToString(),
+                ExpirationDate = null,
+                Amount = _settings.InvitationLinkSettings.RewardAmount,
+                Asset = _settings.InvitationLinkSettings.RewardAsset
+            };
             entity.Url = await _firebaseService.GenerateUrl(entity.Id);
             entity.State = ReferralLinkState.Created.ToString();
 
@@ -56,9 +53,11 @@ namespace Lykke.blue.Service.ReferralLinks.Services
 
         public async Task<IReferralLink> CreateGiftCoinsLink(GiftCoinsReferralLinkRequest referralLinkRequest)
         {
-            var entity = new ReferralLink();
-            entity.Id = Guid.NewGuid().ToString();
-            entity.ExpirationDate = DateTime.UtcNow.AddDays(_settings.GiftCoinsLinkSettings.ExpirationDaysLimit); ;
+            var entity = new ReferralLink
+            {
+                Id = Guid.NewGuid().ToString(),
+                ExpirationDate = DateTime.UtcNow.AddDays(_settings.GiftCoinsLinkSettings.ExpirationDaysLimit)
+            };
             entity.Url = await _firebaseService.GenerateUrl(entity.Id);
             entity.SenderClientId = referralLinkRequest.SenderClientId;
             entity.Asset = referralLinkRequest.Asset;
@@ -84,11 +83,6 @@ namespace Lykke.blue.Service.ReferralLinks.Services
             return await _referralLinkRepository.Get(id);
         }
         
-        public async Task<IEnumerable<IReferralLink>> GetReferralLinksBySenderClientIdAndOrStatus(string clientId, ReferralLinkState state)
-        {
-            return await _referralLinkRepository.Get(clientId, state);
-        }
-
         public IEnumerable<IReferralLink> GetInvitationLinksForSenderId(string senderClientId)
         {
             return (_referralLinkRepository.GetReferralLinksBySenderId(senderClientId)).Result.Where(r=>r.Type == ReferralLinkType.Invitation.ToString());
@@ -97,22 +91,6 @@ namespace Lykke.blue.Service.ReferralLinks.Services
         public bool InvitationLinkForSenderIdExists(string senderClientId)
         {
             return _referralLinkRepository.IsInvitationLinkForSenderAlreadyCreated(senderClientId);
-        }
-
-        public async Task SetUrl(string id, string url)
-        {
-            await _referralLinkRepository.SetUrl(id, url);
-        }
-
-        public async Task UpdateState(string id, ReferralLinkState state)
-        {
-            await _referralLinkRepository.UpdateState(id, state);
-        }
-
-        private Task Validate(IReferralLink referralLink)
-        {
-            //TODO: Add validation here and throw ValidationException with detailed message what is not valid
-            throw new ValidationException("Not implemented, yet");
         }
 
         public async Task<IReferralLink> UpdateAsync(IReferralLink referralLink)

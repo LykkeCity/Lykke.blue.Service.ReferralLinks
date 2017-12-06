@@ -34,37 +34,7 @@ namespace Lykke.blue.Service.ReferralLinks.AzureRepositories.Offchain
         {
             return await _table.GetDataAsync(OffchainRequestEntity.ByClient.GeneratePartition(clientId));
         }
-
-        public async Task<IEnumerable<IOffchainRequest>> GetCurrentRequests()
-        {
-            return await _table.GetDataAsync(OffchainRequestEntity.ByRecord.Partition);
-        }
-
-        public async Task<IOffchainRequest> GetRequest(string requestId)
-        {
-            return await _table.GetDataAsync(OffchainRequestEntity.ByRecord.Partition, requestId);
-        }
-
-        public async Task<IOffchainRequest> LockRequest(string requestId, int serverLockSeconds)
-        {
-            return await _table.ReplaceAsync(OffchainRequestEntity.ByRecord.Partition, requestId, entity =>
-            {
-                if ((entity.ServerLock == null || (DateTime.UtcNow - entity.ServerLock.Value).TotalSeconds > serverLockSeconds) &&
-                    (entity.StartProcessing == null || (DateTime.UtcNow - entity.StartProcessing.Value).TotalSeconds > LockTimeoutSeconds))
-                {
-                    entity.StartProcessing = DateTime.UtcNow;
-                    entity.TryCount++;
-
-                    //TODO: remove
-                    if (entity.CreateDt == DateTime.MinValue)
-                        entity.CreateDt = DateTime.UtcNow;
-
-                    return entity;
-                }
-                return null;
-            });
-        }
-
+        
         public async Task Complete(string requestId)
         {
             var record = await _table.DeleteAsync(OffchainRequestEntity.ByRecord.Partition, requestId);

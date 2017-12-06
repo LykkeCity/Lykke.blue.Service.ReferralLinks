@@ -15,28 +15,16 @@ namespace Lykke.blue.Service.ReferralLinks.AzureRepositories.Client
             return settingsBase.GetId();
         }
 
-        public string Data { get; set; }
+        private string Data { get; set; }
 
         internal T GetSettings<T>() where T : TraderSettingsBase
         {
             return Newtonsoft.Json.JsonConvert.DeserializeObject<T>(Data);
         }
 
-        internal void SetSettings(TraderSettingsBase settings)
+        private void SetSettings(TraderSettingsBase settings)
         {
             Data = Newtonsoft.Json.JsonConvert.SerializeObject(settings);
-        }
-
-
-        public static ClientSettingsEntity Create(string traderId, TraderSettingsBase settings)
-        {
-            var result = new ClientSettingsEntity
-            {
-                PartitionKey = GeneratePartitionKey(traderId),
-                RowKey = GenerateRowKey(settings)
-            };
-            result.SetSettings(settings);
-            return result;
         }
     }
 }

@@ -1,5 +1,5 @@
-﻿using System;
-using Lykke.blue.Service.ReferralLinks.Core.Domain.Offchain;
+﻿using Lykke.blue.Service.ReferralLinks.Core.Domain.Offchain;
+using System;
 
 namespace Lykke.blue.Service.ReferralLinks.AzureRepositories.Offchain
 {
@@ -59,7 +59,7 @@ namespace Lykke.blue.Service.ReferralLinks.AzureRepositories.Offchain
 
         public static class Archieved
         {
-            public static string GeneratePartition()
+            private static string GeneratePartition()
             {
                 return "Archieved";
             }
@@ -83,7 +83,7 @@ namespace Lykke.blue.Service.ReferralLinks.AzureRepositories.Offchain
             }
         }
 
-        public static OffchainRequestEntity CreateNew(string transferId, string clientId, string assetId, RequestType type, OffchainTransferType transferType, DateTime? serverLock = null)
+        private static OffchainRequestEntity CreateNew(string transferId, string clientId, string assetId, RequestType type, OffchainTransferType transferType, DateTime? serverLock = null)
         {
             return new OffchainRequestEntity
             {

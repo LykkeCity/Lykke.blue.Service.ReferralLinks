@@ -23,6 +23,5 @@ namespace Lykke.blue.Service.ReferralLinks.AzureRepositories.Kyc
             };
         }
 
-        public string ClientId => RowKey;
     }
 }

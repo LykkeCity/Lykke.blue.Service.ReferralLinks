@@ -17,38 +17,7 @@ namespace Lykke.blue.Service.ReferralLinks.AzureRepositories.WalletCredentials
                 return clientId;
             }
 
-            public static WalletCredentialsEntity CreateNew(IWalletCredentials src)
-            {
-                var entity = Create(src);
-                entity.PartitionKey = GeneratePartitionKey();
-                entity.RowKey = GenerateRowKey(src.ClientId);
-                return entity;
-            }
         }
-
-        public static WalletCredentialsEntity Create(IWalletCredentials src)
-        {
-            return new WalletCredentialsEntity
-            {
-                ClientId = src.ClientId,
-                PrivateKey = src.PrivateKey,
-                Address = src.Address,
-                MultiSig = src.MultiSig,
-                ColoredMultiSig = src.ColoredMultiSig,
-                PreventTxDetection = src.PreventTxDetection,
-                EncodedPrivateKey = src.EncodedPrivateKey,
-                PublicKey = src.PublicKey,
-                BtcConvertionWalletPrivateKey = src.BtcConvertionWalletPrivateKey,
-                BtcConvertionWalletAddress = src.BtcConvertionWalletAddress,
-                EthConversionWalletAddress = src.EthConversionWalletAddress,
-                EthAddress = src.EthAddress,
-                EthPublicKey = src.EthPublicKey,
-                SolarCoinWalletAddress = src.SolarCoinWalletAddress,
-                ChronoBankContract = src.ChronoBankContract,
-                QuantaContract = src.QuantaContract
-            };
-        }
-
 
 
         public string ClientId { get; set; }

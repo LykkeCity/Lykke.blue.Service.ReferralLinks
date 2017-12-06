@@ -1,8 +1,7 @@
-﻿using System;
+﻿using Lykke.blue.Service.ReferralLinks.Core.Domain.ReferralLink;
+using Lykke.blue.Service.ReferralLinks.Core.Services;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Lykke.blue.Service.ReferralLinks.Core.Domain.ReferralLink;
-using Lykke.blue.Service.ReferralLinks.Core.Services;
 
 namespace Lykke.blue.Service.ReferralLinks.Services
 {
@@ -19,11 +18,6 @@ namespace Lykke.blue.Service.ReferralLinks.Services
         public async Task<IReferralLinkClaim> CreateAsync(IReferralLinkClaim referralLink)
         {
             return await _referralLinkClaimsRepository.Create(referralLink);
-        }
-
-        public Task<IReferralLinkClaim> GetAsync(string id)
-        {
-            throw new NotImplementedException();
         }
 
         public async Task<IEnumerable<IReferralLinkClaim>> GetRefLinkClaims(string refLinkId)

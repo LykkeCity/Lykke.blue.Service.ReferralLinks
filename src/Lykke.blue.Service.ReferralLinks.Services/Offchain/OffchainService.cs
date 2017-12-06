@@ -108,7 +108,7 @@ namespace Lykke.blue.Service.ReferralLinks.Services.Offchain
             throw new OffchainException(error.ErrorCode, error.Message, error.Code, offchainTransfer.AssetId);
         }
 
-        public async Task<OffchainResult> CreateChannel(IWalletCredentials credentials, IOffchainTransfer offchainTransfer, bool required)
+        private async Task<OffchainResult> CreateChannel(IWalletCredentials credentials, IOffchainTransfer offchainTransfer, bool required)
         {
             if (offchainTransfer == null || offchainTransfer.ClientId != credentials.ClientId || offchainTransfer.Completed)
                 throw new OffchainException(ErrorCode.Exception, offchainTransfer?.AssetId);            

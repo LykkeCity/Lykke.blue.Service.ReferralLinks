@@ -5,20 +5,15 @@ namespace Lykke.blue.Service.ReferralLinks.Core.Domain.Offchain
 {
     public class OffchainException : Exception
     {
-        public ErrorCode Type { get; }
+        private ErrorCode Type { get; }
 
         public string OffchainExceptionMessage { get; }
         public string OffchainExceptionCode { get; }
 
 
-        public string AssetId { get; }
+        private string AssetId { get; }
 
-        public bool ShouldCheckAsset { get; }
-
-        public OffchainException(ErrorCode type)
-        {
-            Type = type;
-        }
+        private bool ShouldCheckAsset { get; }
 
         public OffchainException(ErrorCode type, string assetId, bool shouldCheckAsset = true)
         {

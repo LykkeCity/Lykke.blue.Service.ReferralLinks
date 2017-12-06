@@ -1,10 +1,10 @@
 ﻿
 using Lykke.blue.Service.ReferralLinks.Client.AutorestClient.Models;
-using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace Lykke.blue.Service.ReferralLinks.Client
 {
+    //this client is intended for an external use
     public interface IReferralLinksClient
     {
         Task<object> GetReferralLink(string id);

@@ -5,7 +5,6 @@ using AzureStorage.Tables;
 using Common.Log;
 using Lykke.blue.Service.ReferralLinks.AzureRepositories.Bitcoin;
 using Lykke.blue.Service.ReferralLinks.AzureRepositories.Client;
-using Lykke.blue.Service.ReferralLinks.AzureRepositories.Kyc;
 using Lykke.blue.Service.ReferralLinks.AzureRepositories.Offchain;
 using Lykke.blue.Service.ReferralLinks.AzureRepositories.ReferralLink;
 using Lykke.blue.Service.ReferralLinks.AzureRepositories.WalletCredentials;
@@ -14,9 +13,7 @@ using Lykke.blue.Service.ReferralLinks.Core.Domain.Client;
 using Lykke.blue.Service.ReferralLinks.Core.Domain.Offchain;
 using Lykke.blue.Service.ReferralLinks.Core.Domain.ReferralLink;
 using Lykke.blue.Service.ReferralLinks.Core.Domain.WalletCredentials;
-using Lykke.blue.Service.ReferralLinks.Core.Kyc;
 using Lykke.blue.Service.ReferralLinks.Core.Settings;
-using Lykke.blue.Service.ReferralLinks.Core.Settings.ServiceSettings;
 using Lykke.Logs;
 using Lykke.SettingsReader;
 
@@ -26,9 +23,6 @@ namespace Lykke.blue.Service.ReferralLinks.AzureRepositories
     {
         public static void BindAzureRepositories(this ContainerBuilder container, IReloadingManager<AppSettings> settings, ILog log)
         {
-            container.RegisterInstance<ISkipKycRepository>(
-               new SkipKycRepository(AzureTableStorage<SkipKycClientEntity>.Create(settings.ConnectionString(n=> n.ReferralLinksService.Db.ClientPersonalInfoConnString), "SkipKycClients", log)));
-
             container.RegisterInstance<IWalletCredentialsRepository>(
                new WalletCredentialsRepository(AzureTableStorage<WalletCredentialsEntity>.Create(settings.ConnectionString(n => n.ReferralLinksService.Db.ClientPersonalInfoConnString), "WalletCredentials", log)));
 
@@ -50,12 +44,7 @@ namespace Lykke.blue.Service.ReferralLinks.AzureRepositories
                new OffchainRequestRepository(
                    AzureTableStorage<OffchainRequestEntity>.Create(settings.ConnectionString(x => x.ReferralLinksService.Db.OffchainConnString), "OffchainRequests", log)));
             
-            container.RegisterInstance<IBitCoinTransactionsRepository>(
-              new BitCoinTransactionsRepository(
-                  AzureTableStorage<BitCoinTransactionEntity>.Create(settings.ConnectionString(x => x.ReferralLinksService.Db.BitCoinQueueConnectionString),
-                      "BitCoinTransactions", log)));
-
-            container.RegisterInstance(new BitcoinTransactionContextBlobStorage(AzureBlobStorage.Create(settings.ConnectionString(x => x.ReferralLinksService.Db.BitCoinQueueConnectionString))))
+           container.RegisterInstance(new BitcoinTransactionContextBlobStorage(AzureBlobStorage.Create(settings.ConnectionString(x => x.ReferralLinksService.Db.BitCoinQueueConnectionString))))
                 .As<IBitcoinTransactionContextBlobStorage>();
 
             container.RegisterInstance<IReferralLinkRepository>(
@@ -79,8 +68,7 @@ namespace Lykke.blue.Service.ReferralLinks.AzureRepositories
             var azureStorageLogger = new LykkeLogToAzureStorage(
                 appName,
                 persistenceManager,
-                lastResortLog: consoleLogger,
-                ownPersistenceManager: true);
+                lastResortLog: consoleLogger);
 
             azureStorageLogger.Start();
 

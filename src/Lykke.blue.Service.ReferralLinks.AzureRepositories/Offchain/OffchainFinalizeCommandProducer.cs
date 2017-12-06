@@ -1,7 +1,7 @@
-﻿using System.Threading.Tasks;
-using AzureStorage.Queue;
+﻿using AzureStorage.Queue;
 using Lykke.blue.Service.ReferralLinks.Core.Domain.Offchain;
 using Lykke.blue.Service.ReferralLinks.Core.Extensions;
+using System.Threading.Tasks;
 
 namespace Lykke.blue.Service.ReferralLinks.AzureRepositories.Offchain
 {
@@ -24,7 +24,7 @@ namespace Lykke.blue.Service.ReferralLinks.AzureRepositories.Offchain
             }.ToJson());
         }
 
-        public class OfchainFinalizeTransactionCommand
+        private class OfchainFinalizeTransactionCommand
         {
             public string ClientId { get; set; }
             public string TransferId { get; set; }

@@ -18,8 +18,5 @@
 
         public double TotalCost { get; set; }
 
-        public double RemainingVolume { get; set; }
-
-        public double RemainingOtherVolume { get; set; }
     }
 }

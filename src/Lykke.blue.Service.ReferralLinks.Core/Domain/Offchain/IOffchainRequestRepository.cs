@@ -9,12 +9,6 @@ namespace Lykke.blue.Service.ReferralLinks.Core.Domain.Offchain
 
         Task<IEnumerable<IOffchainRequest>> GetRequestsForClient(string clientId);
 
-        Task<IEnumerable<IOffchainRequest>> GetCurrentRequests();
-
-        Task<IOffchainRequest> GetRequest(string requestId);
-
-        Task<IOffchainRequest> LockRequest(string requestId, int serverLockSeconds);
-
         Task Complete(string requestId);
     }
 }

@@ -18,9 +18,9 @@ namespace Lykke.blue.Service.ReferralLinks.AzureRepositories.ReferralLink
             _referralLinkTable = referralLinkTable;
         }
 
-        public static string GetPartitionKey() => "ReferallLink";
+        private static string GetPartitionKey() => "ReferallLink";
 
-        public static string GetRowKey(string id) => id;
+        private static string GetRowKey(string id) => id;
 
         public async Task<IReferralLink> Create(IReferralLink referralLink)
         {
@@ -33,11 +33,6 @@ namespace Lykke.blue.Service.ReferralLinks.AzureRepositories.ReferralLink
 
             return Mapper.Map<ReferralLinkDto>(entity);
         }        
-
-        public async Task Delete(string id)
-        {
-            await _referralLinkTable.DeleteAsync(GetPartitionKey(), GetRowKey(id));
-        }
 
         public async Task<IReferralLink> Get(string id)
         {

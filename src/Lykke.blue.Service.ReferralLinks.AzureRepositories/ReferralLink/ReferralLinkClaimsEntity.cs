@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using Lykke.blue.Service.ReferralLinks.Core.Domain.ReferralLink;
+﻿using Lykke.blue.Service.ReferralLinks.Core.Domain.ReferralLink;
 using Microsoft.WindowsAzure.Storage.Table;
 
 namespace Lykke.blue.Service.ReferralLinks.AzureRepositories.ReferralLink
@@ -13,25 +12,6 @@ namespace Lykke.blue.Service.ReferralLinks.AzureRepositories.ReferralLink
         public string RecipientTransactionId { get; set; }
         public bool IsNewClient { get; set; }
 
-        public static IEqualityComparer<ReferralLinkClaimEntity> ComparerById { get; } = new EqualityComparerById();
-
-        private class EqualityComparerById : IEqualityComparer<ReferralLinkClaimEntity>
-        {
-            public bool Equals(ReferralLinkClaimEntity x, ReferralLinkClaimEntity y)
-            {
-                if (x == y)
-                    return true;
-                if (x == null || y == null)
-                    return false;
-                return x.Id == y.Id;
-            }
-
-            public int GetHashCode(ReferralLinkClaimEntity obj)
-            {
-                if (obj?.ReferralLinkId == null)
-                    return 0;
-                return obj.ReferralLinkId.GetHashCode();
-            }
-        }
+        
     }
 }

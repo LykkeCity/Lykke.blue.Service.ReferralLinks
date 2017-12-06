@@ -18,9 +18,9 @@ namespace Lykke.blue.Service.ReferralLinks.AzureRepositories.ReferralLink
             _referralLinkClaimsTable = referralLinkClaimsTable;
         }
 
-        public static string GetPartitionKey() => "ReferallLinkClaims";
+        private static string GetPartitionKey() => "ReferallLinkClaims";
 
-        public static string GetRowKey(string id)
+        private static string GetRowKey(string id)
         {
             return String.IsNullOrEmpty(id) ? Guid.NewGuid().ToString() : id;
         }
@@ -35,11 +35,6 @@ namespace Lykke.blue.Service.ReferralLinks.AzureRepositories.ReferralLink
             await _referralLinkClaimsTable.InsertAsync(entity);
 
             return Mapper.Map<ReferralLinkClaimsDto>(entity);
-        }
-
-        public async Task Delete(string id)
-        {
-            await _referralLinkClaimsTable.DeleteAsync(GetPartitionKey(), GetRowKey(id));
         }
 
         public async Task<IEnumerable<IReferralLinkClaim>> GetClaimsForRefLinks(IEnumerable<string> refLinkIds)

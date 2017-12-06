@@ -2,8 +2,6 @@
 {
     public interface IOffchainEncryptedKey
     {
-        string ClientId { get; }
-        string Asset { get; }
         string Key { get; }
     }
 }

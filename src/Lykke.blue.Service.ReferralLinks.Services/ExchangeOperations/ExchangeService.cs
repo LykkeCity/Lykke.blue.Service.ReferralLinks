@@ -1,5 +1,6 @@
 ﻿using Common;
 using Common.Log;
+using Lykke.blue.Service.ReferralLinks.Core.Domain.ExchangeOperations;
 using Lykke.blue.Service.ReferralLinks.Core.Domain.Offchain;
 using Lykke.blue.Service.ReferralLinks.Core.Domain.ReferralLink;
 using Lykke.blue.Service.ReferralLinks.Core.Settings.ServiceSettings;
@@ -9,7 +10,6 @@ using Lykke.Service.ExchangeOperations.Client.AutorestClient.Models;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
-using Lykke.blue.Service.ReferralLinks.Core.Domain.ExchangeOperations;
 
 namespace Lykke.blue.Service.ReferralLinks.Services.ExchangeOperations
 {
@@ -37,7 +37,7 @@ namespace Lykke.blue.Service.ReferralLinks.Services.ExchangeOperations
 
             try
             {
-                var asset = (await _assets.GetDictionaryAsync()).Values.Where(v => v.Symbol == refLink.Asset).FirstOrDefault();
+                var asset = (await _assets.GetDictionaryAsync()).Values.FirstOrDefault(v => v.Symbol == refLink.Asset);
                 if (asset == null)
                 {
                     var message = $"Asset with symbol {refLink.Asset} not found";

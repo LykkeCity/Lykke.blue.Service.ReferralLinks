@@ -1,8 +1,5 @@
 ﻿using AzureStorage;
 using Lykke.blue.Service.ReferralLinks.Core.Domain.Offchain;
-using Microsoft.WindowsAzure.Storage.Table;
-using System;
-using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace Lykke.blue.Service.ReferralLinks.AzureRepositories.Offchain
@@ -56,26 +53,6 @@ namespace Lykke.blue.Service.ReferralLinks.AzureRepositories.Offchain
                      return entity;
                  });
         }
-
-        public async Task<IEnumerable<IOffchainTransfer>> GetTransfersByDate(OffchainTransferType type, DateTimeOffset from, DateTimeOffset to)
-        {
-            var filter1 = TableQuery.CombineFilters(
-                TableQuery.GenerateFilterCondition("PartitionKey", QueryComparisons.Equal,
-                    OffchainTransferEntity.ByCommon.GeneratePartitionKey()),
-                TableOperators.And,
-                TableQuery.GenerateFilterConditionForInt("Type", QueryComparisons.Equal, (int)type)
-            );
-
-            var filter2 = TableQuery.CombineFilters(
-                TableQuery.GenerateFilterConditionForDate("CreatedDt", QueryComparisons.GreaterThanOrEqual, from),
-                TableOperators.And,
-                TableQuery.GenerateFilterConditionForDate("CreatedDt", QueryComparisons.LessThanOrEqual, to)
-            );
-
-            var query = new TableQuery<OffchainTransferEntity>().Where(
-                TableQuery.CombineFilters(filter1, TableOperators.And, filter2));
-
-            return await _storage.WhereAsync(query);
-        }
+        
     }
 }

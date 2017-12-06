@@ -61,22 +61,16 @@ namespace Lykke.blue.Service.ReferralLinks.Modules
             
         }
 
-        public static IPEndPoint GetIPEndPointFromHostName(string hostName, int port, bool throwIfMoreThanOneIP)
+        private static IPEndPoint GetIpEndPointFromHostName(string hostName, int port)
         {
             var addresses = Dns.GetHostAddresses(hostName);
             if (addresses.Length == 0)
             {
-                throw new ArgumentException(
-                    "Unable to retrieve address from specified host name.",
-                    "hostName"
-                );
+                throw new ArgumentException($"Unable to retrieve address from specified host name: {hostName}", nameof(hostName));
             }
-            if (throwIfMoreThanOneIP && addresses.Length > 1)
+            if (addresses.Length > 1)
             {
-                throw new ArgumentException(
-                    "There is more that one IP address to the specified host.",
-                    "hostName"
-                );
+                throw new ArgumentException("There is more that one IP address to the specified host.", nameof(hostName));
             }
             return new IPEndPoint(addresses[0], port);     
         }
@@ -92,10 +86,9 @@ namespace Lykke.blue.Service.ReferralLinks.Modules
             builder.RegisterType<OffchainRequestService>().As<IOffchainRequestService>();
             builder.RegisterType<OffchainService>().As<IOffchainService>().SingleInstance();
 
-            builder.BindMeClient(GetIPEndPointFromHostName(
+            builder.BindMeClient(GetIpEndPointFromHostName(
                 _settings.CurrentValue.ReferralLinksService.ExternalServices.MatchingEngineClient.IpEndpoint.Host,
-                _settings.CurrentValue.ReferralLinksService.ExternalServices.MatchingEngineClient.IpEndpoint.Port,
-                true));
+                _settings.CurrentValue.ReferralLinksService.ExternalServices.MatchingEngineClient.IpEndpoint.Port));
 
             builder.RegisterType<ReferralLinksService>().As<IReferralLinksService>().SingleInstance();
             builder.RegisterType<ReferralLinkClaimsService>().As<IReferralLinkClaimsService>().SingleInstance();

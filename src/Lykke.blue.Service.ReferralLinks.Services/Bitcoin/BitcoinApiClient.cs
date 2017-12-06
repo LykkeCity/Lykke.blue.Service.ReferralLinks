@@ -64,9 +64,7 @@ namespace Lykke.blue.Service.ReferralLinks.Services.Bitcoin
 
         private OffchainResponse PrepareFinalizeOffchainResult(object response)
         {
-            var error = response as ApiException;
-
-            if (error != null)
+            if (response is ApiException error)
             {
                 return new OffchainResponse
                 {
@@ -74,8 +72,7 @@ namespace Lykke.blue.Service.ReferralLinks.Services.Bitcoin
                 };
             }
 
-            var transaction = response as FinalizeOffchainApiResponse;
-            if (transaction != null)
+            if (response is FinalizeOffchainApiResponse transaction)
             {
                 return new OffchainResponse
                 {
@@ -90,9 +87,7 @@ namespace Lykke.blue.Service.ReferralLinks.Services.Bitcoin
 
         private OffchainBaseResponse PrepareOffchainTransactionHashResult(object response)
         {
-            var error = response as ApiException;
-
-            if (error != null)
+            if (response is ApiException error)
             {
                 return new OffchainBaseResponse
                 {
@@ -100,8 +95,7 @@ namespace Lykke.blue.Service.ReferralLinks.Services.Bitcoin
                 };
             }
 
-            var transaction = response as TransactionHashResponse;
-            if (transaction != null)
+            if (response is TransactionHashResponse transaction)
             {
                 return new OffchainBaseResponse
                 {
@@ -114,9 +108,7 @@ namespace Lykke.blue.Service.ReferralLinks.Services.Bitcoin
 
         private OffchainClosingResponse PrepareOffchainClosingResult(object response)
         {
-            var error = response as ApiException;
-
-            if (error != null)
+            if (response is ApiException error)
             {
                 return new OffchainClosingResponse
                 {
@@ -124,8 +116,7 @@ namespace Lykke.blue.Service.ReferralLinks.Services.Bitcoin
                 };
             }
 
-            var cashout = response as CashoutOffchainApiResponse;
-            if (cashout != null)
+            if (response is CashoutOffchainApiResponse cashout)
             {
                 return new OffchainClosingResponse
                 {
@@ -140,9 +131,7 @@ namespace Lykke.blue.Service.ReferralLinks.Services.Bitcoin
 
         private OffchainResponse PrepareOffchainResult(object response)
         {
-            var error = response as ApiException;
-
-            if (error != null)
+            if (response is ApiException error)
             {
                 return new OffchainClosingResponse
                 {
@@ -150,8 +139,7 @@ namespace Lykke.blue.Service.ReferralLinks.Services.Bitcoin
                 };
             }
 
-            var transaction = response as OffchainApiResponse;
-            if (transaction != null)
+            if (response is OffchainApiResponse transaction)
             {
                 return new OffchainResponse
                 {

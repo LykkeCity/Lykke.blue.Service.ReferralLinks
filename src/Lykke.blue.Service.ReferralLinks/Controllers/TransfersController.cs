@@ -30,7 +30,6 @@ namespace Lykke.blue.Service.ReferralLinks.Controllers
         private readonly ReferralLinksSettings _settings;
         private readonly IOffchainRequestRepository _offchainRequestRepository;
         private readonly IOffchainTransferRepository _offchainTransferRepository;
-        private readonly ILog _log;
         private readonly IOffchainEncryptedKeysRepository _offchainEncryptedKeysRepository;        
         private readonly IReferralLinksService _referralLinksService;
         private readonly CachedDataDictionary<string, Lykke.Service.Assets.Client.Models.Asset> _assets;
@@ -51,7 +50,6 @@ namespace Lykke.blue.Service.ReferralLinks.Controllers
             _clientSettingsRepository = clientSettingsRepository;
             _offchainService = offchainService;
             _settings = settings;
-            _log = log;
             _exchangeOperationsService = exchangeOperationsService;
             _offchainEncryptedKeysRepository = offchainEncryptedKeysRepository;
             _offchainRequestRepository = offchainRequestRepository;
@@ -60,7 +58,7 @@ namespace Lykke.blue.Service.ReferralLinks.Controllers
             _assets = assets;
         }
 
-        protected async Task CheckOffchain(string clientId)
+        private async Task CheckOffchain(string clientId)
         {
             if (!await _clientSettingsRepository.IsOffchainClient(clientId))
                 throw new Exception("Offchain is not supported");
@@ -104,14 +102,14 @@ namespace Lykke.blue.Service.ReferralLinks.Controllers
 
             if(refLink == null)
             {
-                await LogAndReturnBadRequest(model, ControllerContext, "Ref link Id not found ot missing");
+                return await LogAndReturnBadRequest(model, ControllerContext, "Ref link Id not found ot missing");
             }
 
-            var asset = (await _assets.GetDictionaryAsync()).Values.Where(v => v.Symbol == refLink.Asset).FirstOrDefault();
+            var asset = (await _assets.GetDictionaryAsync()).Values.FirstOrDefault(v => v.Symbol == refLink.Asset);
 
             if(asset == null)
             {
-                await LogAndReturnBadRequest(model, ControllerContext, $"Specified asset {refLink.Asset} in reflink id {refLink.Id} not found ");
+                return await LogAndReturnBadRequest(model, ControllerContext, $"Specified asset {refLink.Asset} in reflink id {refLink.Id} not found ");
             }
 
             await CheckOffchain(clientId);
@@ -230,36 +228,41 @@ namespace Lykke.blue.Service.ReferralLinks.Controllers
 
             if (string.IsNullOrEmpty(request.ClientRevokePubKey))
             {
-                await LogAndReturnBadRequest(request, ControllerContext, "ClientRevokePubKey must not be empty");
+                return await LogAndReturnBadRequest(request, ControllerContext, "ClientRevokePubKey must not be empty");
             }
 
             if (string.IsNullOrEmpty(request.SignedTransferTransaction))
             {
-                await LogAndReturnBadRequest(request, ControllerContext, "SignedTransferTransaction must not be empty");
+                return await LogAndReturnBadRequest(request, ControllerContext, "SignedTransferTransaction must not be empty");
             }
 
             if (string.IsNullOrEmpty(request.TransferId))
             {
-                await LogAndReturnBadRequest(request, ControllerContext, "TransferId must not be empty");
+                return await LogAndReturnBadRequest(request, ControllerContext, "TransferId must not be empty");
             }
 
             var refLinkEntity = await _referralLinksService.GetReferralLinkById(request.RefLinkId);
             if (refLinkEntity == null)
             {
-                await LogAndReturnBadRequest(request, ControllerContext, "RefLinkId not found");
+                return await LogAndReturnBadRequest(request, ControllerContext, "RefLinkId not found");
             }
 
             try
             {
                 var response = await _offchainService.Finalize(clientId, request.TransferId, request.ClientRevokePubKey, request.ClientRevokeEncryptedPrivateKey, request.SignedTransferTransaction);
+
+                if (response == null)
+                {
+                    return await LogAndReturnNotFound(request, ControllerContext, "OffchainService Finalize returned NULL. Can not finalize transfer.");
+                }
                 
-                if(response!= null && response.OperationResult == OffchainOperationResult.ClientCommitment)
+                if(response.OperationResult == OffchainOperationResult.ClientCommitment)
                 {
                     AttachSenderTransferToRefLink(refLinkEntity, response.TransferId);
                 }
                 else
                 {
-                    await LogWarn(request, ControllerContext, $"_offchainService.Finalize returned unexpected result :  {response?.ToJson()}");                    
+                    await LogWarn(request, ControllerContext, $"_offchainService.Finalize returned unexpected result :  {response.ToJson()}");                    
                 }
 
                 var offchainRequest =

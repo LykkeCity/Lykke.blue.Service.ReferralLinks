@@ -34,7 +34,6 @@ namespace Lykke.blue.Service.ReferralLinks.Controllers
     [ValidateModel]
     public class ReferralLinksController : RefLinksBaseController
     {
-        private readonly ILog _log;
         private readonly IReferralLinksService _referralLinksService;
         private readonly IReferralLinkClaimsService _referralLinkClaimsService;
         private readonly IStatisticsService _statisticsService;
@@ -44,6 +43,7 @@ namespace Lykke.blue.Service.ReferralLinks.Controllers
         private readonly CachedDataDictionary<string, Lykke.Service.Assets.Client.Models.Asset> _assets;
         private readonly IBalancesClient _balancesClient;
         private readonly ReferralLinksSettings _settings;
+        private readonly double ZeroAsDouble = 0.001;
 
         public ReferralLinksController(
             ILog log,
@@ -59,7 +59,6 @@ namespace Lykke.blue.Service.ReferralLinks.Controllers
             IBalancesClient balancesClient) : base (log)
         {
 
-            _log = log;
             _referralLinksService = referralLinksService;
             _clientAccountClient = clientAccountClient;
             _assets = assets;
@@ -184,7 +183,7 @@ namespace Lykke.blue.Service.ReferralLinks.Controllers
                 return await LogAndReturnBadRequest(request, ControllerContext, Phrases.InvalidSenderClientId);
             }
             
-            var asset = (await _assets.GetDictionaryAsync()).Values.Where(v => v.DisplayId == request.Asset).FirstOrDefault();
+            var asset = (await _assets.GetDictionaryAsync()).Values.FirstOrDefault(v => v.DisplayId == request.Asset);
             
             if (String.IsNullOrEmpty(request.Asset) || asset == null)
             {
@@ -235,7 +234,7 @@ namespace Lykke.blue.Service.ReferralLinks.Controllers
                 return await LogAndReturnBadRequest(request, ControllerContext, Phrases.InvalidSenderClientId);
             }
 
-            var invitationLinkAlreadyCreated = _referralLinksService.GetInvitationLinksForSenderId(request.SenderClientId);
+            var invitationLinkAlreadyCreated = _referralLinksService.GetInvitationLinksForSenderId(request.SenderClientId).ToList();
             if (invitationLinkAlreadyCreated.Count() == 1)
             {
 
@@ -262,24 +261,24 @@ namespace Lykke.blue.Service.ReferralLinks.Controllers
         {
             if (request.RecipientClientId == null || await _clientAccountClient.GetClientByIdAsync(request.RecipientClientId) == null)
             {
-                return $"RecipientClientId not found or not supplied";
+                return "RecipientClientId not found or not supplied";
             }
             if (request.ReferalLinkId == null && request.ReferalLinkUrl == null)
             {
-                return $"ReferalLinkId and ReferalLinkUrl not supplied. Please specify either of them.";
+                return "ReferalLinkId and ReferalLinkUrl not supplied. Please specify either of them.";
             }
 
             if (refLink == null)
             {
-                return $"RefLink not found by id or url.";
+                return "RefLink not found by id or url.";
             }
 
             if (refLink.SenderClientId == request.RecipientClientId)
             {
-                return $"RecipientClientId can't be the same as SenderClientId. Client cant claim their own ref link.";
+                return "RecipientClientId can't be the same as SenderClientId. Client cant claim their own ref link.";
             }
 
-            if (refLink.Amount == 0)
+            if (Math.Abs(refLink.Amount) < ZeroAsDouble)
             {
                 return $"Requested amount for RefLink with id {refLink.Id} is 0 (not set). Check transfer's history.";
             }
@@ -318,7 +317,7 @@ namespace Lykke.blue.Service.ReferralLinks.Controllers
                 return await LogAndReturnBadRequest(request, ControllerContext, validationError);
             }
 
-            var asset = (await _assets.GetDictionaryAsync()).Values.Where(v => v.Symbol == refLink.Asset).FirstOrDefault();
+            var asset = (await _assets.GetDictionaryAsync()).Values.FirstOrDefault(v => v.Symbol == refLink.Asset);
 
             if (asset == null)
             {
@@ -390,9 +389,9 @@ namespace Lykke.blue.Service.ReferralLinks.Controllers
                     return await LogAndReturnBadRequest(request, ControllerContext, validationError);
                 }
 
-                var claims = await _referralLinkClaimsService.GetRefLinkClaims(refLink.Id);
+                var claims = (await _referralLinkClaimsService.GetRefLinkClaims(refLink.Id)).ToList();
 
-                var alreadyClaimedByThisRecipient = claims.Where(c => c.RecipientClientId == request.RecipientClientId).Count() > 0;
+                var alreadyClaimedByThisRecipient = claims.Any(c => c.RecipientClientId == request.RecipientClientId);
                 if (alreadyClaimedByThisRecipient)
                 {
                     return await LogAndReturnBadRequest(request, ControllerContext, $"Link already claimed by client id {request.RecipientClientId}");
@@ -404,7 +403,7 @@ namespace Lykke.blue.Service.ReferralLinks.Controllers
 
                 if (shouldReceiveReward)
                 {
-                    var newRefLinkClaimSender = await CreateNewRefLinkClaim(refLink, refLink.SenderClientId, shouldReceiveReward, false);
+                    var newRefLinkClaimSender = await CreateNewRefLinkClaim(refLink, refLink.SenderClientId, true, false);
 
                     var transactionRewardSender = await _exchangeService.TransferRewardCoins(refLink, false, refLink.SenderClientId, ControllerContext.GetControllerAndAction());
                     await SetRefLinkClaimTransactionId(transactionRewardSender, newRefLinkClaimSender);
@@ -448,12 +447,12 @@ namespace Lykke.blue.Service.ReferralLinks.Controllers
 
         private async Task<bool> ShoulReceiveReward(IEnumerable<IReferralLinkClaim> claims, IReferralLink refLink)
         {
-            var countOfNewClientClaims = claims.Where(c => c.IsNewClient && c.ShouldReceiveReward && c.RecipientClientId != refLink.SenderClientId).Count();
+            var countOfNewClientClaims = claims.Count(c => c.IsNewClient && c.ShouldReceiveReward && c.RecipientClientId != refLink.SenderClientId);
             bool shouldReceiveReaward = countOfNewClientClaims < _settings.InvitationLinkSettings.MaxNumOfClientsToReceiveReward;
 
             if (!shouldReceiveReaward)
             {
-                await LogInfo(refLink, ControllerContext, $"MaxNumOfClientsToReceiveReward reached. Recipient and sender wont get reward coins.");
+                await LogInfo(refLink, ControllerContext, "MaxNumOfClientsToReceiveReward reached. Recipient and sender wont get reward coins.");
             }
 
             return shouldReceiveReaward;

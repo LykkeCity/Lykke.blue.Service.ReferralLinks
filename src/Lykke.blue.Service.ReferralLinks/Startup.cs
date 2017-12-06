@@ -1,7 +1,4 @@
-﻿using System;
-using System.Threading.Tasks;
-using System.Timers;
-using Autofac;
+﻿using Autofac;
 using Autofac.Extensions.DependencyInjection;
 using AutoMapper;
 using AzureStorage.Tables;
@@ -19,15 +16,18 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json.Converters;
+using System;
+using System.Threading.Tasks;
+using System.Timers;
 
 namespace Lykke.blue.Service.ReferralLinks
 {
     public class Startup
     {
-        public IHostingEnvironment Environment { get; }
-        public IContainer ApplicationContainer { get; private set; }
-        public IConfigurationRoot Configuration { get; }
-        public ILog Log { get; private set; }
+        private IHostingEnvironment Environment { get; }
+        private IContainer ApplicationContainer { get; set; }
+        private IConfigurationRoot Configuration { get; }
+        private ILog Log { get; set; }
 
         private static Timer _timer;
 
