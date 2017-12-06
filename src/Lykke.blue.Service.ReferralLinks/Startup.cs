@@ -3,7 +3,6 @@ using Autofac.Extensions.DependencyInjection;
 using AutoMapper;
 using AzureStorage.Tables;
 using Common.Log;
-using Lykke.blue.Service.ReferralLinks.AzureRepositories;
 using Lykke.blue.Service.ReferralLinks.Core.Services;
 using Lykke.blue.Service.ReferralLinks.Core.Settings;
 using Lykke.blue.Service.ReferralLinks.Modules;
@@ -68,7 +67,7 @@ namespace Lykke.blue.Service.ReferralLinks
 
                 var builder = new ContainerBuilder();
                 var appSettings = Configuration.LoadSettings<AppSettings>();
-                Log = builder.BindLog(appSettings.ConnectionString(x => x.ReferralLinksService.Db.LogsConnString), "ReferralLinksService", "ReferralLinksLog");
+                Log = CreateLogWithSlack(services, appSettings);
 
                 builder.RegisterModule(new ServiceModule(appSettings, Log));
                 builder.Populate(services);
@@ -91,8 +90,6 @@ namespace Lykke.blue.Service.ReferralLinks
                 {
                     app.UseDeveloperExceptionPage();
                 }
-
-                //app.UseLykkeMiddleware("ReferralLinks", ex => new {Message = "Technical problem"});
 
                 app.UseMvc();
                 app.UseSwagger();
@@ -195,9 +192,9 @@ namespace Lykke.blue.Service.ReferralLinks
             {
                 var persistenceManager = new LykkeLogToAzureStoragePersistenceManager(
                     AzureTableStorage<LogEntity>.Create(dbLogConnectionStringManager, "ReferralLinksLog", consoleLogger),
-                    consoleLogger);
+                    consoleLogger); 
 
-                var slackNotificationsManager = new LykkeLogToAzureSlackNotificationsManager(slackService, consoleLogger);
+                 var slackNotificationsManager = new LykkeLogToAzureSlackNotificationsManager(slackService, consoleLogger);
 
                 var azureStorageLogger = new LykkeLogToAzureStorage(
                     persistenceManager,
