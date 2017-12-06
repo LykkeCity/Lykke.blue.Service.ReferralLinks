@@ -1,7 +1,4 @@
-﻿using System;
-using System.Linq;
-using System.Net;
-using Autofac;
+﻿using Autofac;
 using Autofac.Extensions.DependencyInjection;
 using Common;
 using Common.Log;
@@ -10,7 +7,7 @@ using Lykke.blue.Service.ReferralLinks.Core.BitCoinApi;
 using Lykke.blue.Service.ReferralLinks.Core.Domain.Offchain;
 using Lykke.blue.Service.ReferralLinks.Core.Kyc;
 using Lykke.blue.Service.ReferralLinks.Core.Services;
-using Lykke.blue.Service.ReferralLinks.Core.Settings.ServiceSettings;
+using Lykke.blue.Service.ReferralLinks.Core.Settings;
 using Lykke.blue.Service.ReferralLinks.Services;
 using Lykke.blue.Service.ReferralLinks.Services.Bitcoin;
 using Lykke.blue.Service.ReferralLinks.Services.ExchangeOperations;
@@ -24,7 +21,9 @@ using Lykke.Service.Kyc.Abstractions.Services;
 using Lykke.Service.Kyc.Client;
 using Lykke.SettingsReader;
 using Microsoft.Extensions.DependencyInjection;
-using Lykke.blue.Service.ReferralLinks.Core.Settings;
+using System;
+using System.Linq;
+using System.Net;
 
 namespace Lykke.blue.Service.ReferralLinks.Modules
 {
@@ -93,8 +92,8 @@ namespace Lykke.blue.Service.ReferralLinks.Modules
             builder.RegisterType<OffchainService>().As<IOffchainService>().SingleInstance();
 
             builder.BindMeClient(GetIPEndPointFromHostName(
-                _settings.CurrentValue.MatchingEngineClient.IpEndpoint.Host,
-                _settings.CurrentValue.MatchingEngineClient.IpEndpoint.Port,
+                _settings.CurrentValue.ReferralLinksService.ExternalServices.MatchingEngineClient.IpEndpoint.Host,
+                _settings.CurrentValue.ReferralLinksService.ExternalServices.MatchingEngineClient.IpEndpoint.Port,
                 true));
 
             builder.RegisterType<ReferralLinksService>().As<IReferralLinksService>().SingleInstance();

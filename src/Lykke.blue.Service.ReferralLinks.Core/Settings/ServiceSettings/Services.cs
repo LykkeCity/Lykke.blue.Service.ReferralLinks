@@ -10,5 +10,6 @@ namespace Lykke.blue.Service.ReferralLinks.Core.Settings.ServiceSettings
         public KycServiceClientSettings KycServiceSettings { get; set; }
         public string ClientAccountServiceUrl { get; set; }
         public string BalancesServiceUrl { get; set; }
+        public MatchingEngineClient MatchingEngineClient { get; set; }
     }
 }
