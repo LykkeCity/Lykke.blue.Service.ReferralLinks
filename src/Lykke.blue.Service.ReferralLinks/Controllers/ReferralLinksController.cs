@@ -230,13 +230,13 @@ namespace Lykke.blue.Service.ReferralLinks.Controllers
             }
 
             var invitationLinkAlreadyCreated = _referralLinksService.GetInvitationLinksForSenderId(request.SenderClientId).ToList();
-            if (invitationLinkAlreadyCreated.Count() == 1)
+            if (invitationLinkAlreadyCreated.Count == 1)
             {
 
                 await LogInfo(request, ControllerContext, $"Invitation link already exists for SenderClientId {request.SenderClientId}. RefLinkId {invitationLinkAlreadyCreated.First().Id}");
                 return Ok(new RequestRefLinkResponse { RefLinkUrl = invitationLinkAlreadyCreated.First().Url, RefLinkId = invitationLinkAlreadyCreated.First().Id });
             }  
-            if(invitationLinkAlreadyCreated.Count() > 1)
+            if(invitationLinkAlreadyCreated.Count > 1)
             {
                 return await LogAndReturnBadRequest(request, ControllerContext, $"There are multiple invitation links created for client {request.SenderClientId}! ");
             }

@@ -1,7 +1,6 @@
 ﻿using Common;
 using Common.Log;
 using Lykke.blue.Service.ReferralLinks.Core.Domain.Client;
-using Lykke.blue.Service.ReferralLinks.Core.Domain.Exceptions;
 using Lykke.blue.Service.ReferralLinks.Core.Domain.ExchangeOperations;
 using Lykke.blue.Service.ReferralLinks.Core.Domain.Offchain;
 using Lykke.blue.Service.ReferralLinks.Core.Domain.ReferralLink;
@@ -285,10 +284,6 @@ namespace Lykke.blue.Service.ReferralLinks.Controllers
             catch (OffchainException ex)
             {
                 return await LogOffchainExceptionAndReturn(request, ControllerContext, ex);
-            }
-            catch (TradeException ex)
-            {
-               return await LogTraderExceptionAndReturn(request, ControllerContext, ex);
             }
             catch (Exception ex)
             {

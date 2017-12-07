@@ -7,7 +7,7 @@
             return "IsOffchainUserSettings";
         }
 
-        public bool IsOffchain { get; set; } = true;
+        public bool IsOffchain { get; } = true;
 
         public static IsOffchainUserSettings CreateDefault()
         {

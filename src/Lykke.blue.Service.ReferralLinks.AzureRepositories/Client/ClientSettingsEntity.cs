@@ -21,10 +21,5 @@ namespace Lykke.blue.Service.ReferralLinks.AzureRepositories.Client
         {
             return Newtonsoft.Json.JsonConvert.DeserializeObject<T>(Data);
         }
-
-        private void SetSettings(TraderSettingsBase settings)
-        {
-            Data = Newtonsoft.Json.JsonConvert.SerializeObject(settings);
-        }
     }
 }

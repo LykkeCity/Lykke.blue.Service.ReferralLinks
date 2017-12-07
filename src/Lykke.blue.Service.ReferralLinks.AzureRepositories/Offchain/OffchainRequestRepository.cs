@@ -8,8 +8,6 @@ namespace Lykke.blue.Service.ReferralLinks.AzureRepositories.Offchain
 {
     public class OffchainRequestRepository : IOffchainRequestRepository
     {
-        private const int LockTimeoutSeconds = 100;
-
         private readonly INoSQLTableStorage<OffchainRequestEntity> _table;
 
         public OffchainRequestRepository(INoSQLTableStorage<OffchainRequestEntity> table)

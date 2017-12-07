@@ -1,14 +1,11 @@
 ﻿using Autofac;
-using AzureStorage.Blob;
 using AzureStorage.Queue;
 using AzureStorage.Tables;
 using Common.Log;
-using Lykke.blue.Service.ReferralLinks.AzureRepositories.Bitcoin;
 using Lykke.blue.Service.ReferralLinks.AzureRepositories.Client;
 using Lykke.blue.Service.ReferralLinks.AzureRepositories.Offchain;
 using Lykke.blue.Service.ReferralLinks.AzureRepositories.ReferralLink;
 using Lykke.blue.Service.ReferralLinks.AzureRepositories.WalletCredentials;
-using Lykke.blue.Service.ReferralLinks.Core.BitCoinApi;
 using Lykke.blue.Service.ReferralLinks.Core.Domain.Client;
 using Lykke.blue.Service.ReferralLinks.Core.Domain.Offchain;
 using Lykke.blue.Service.ReferralLinks.Core.Domain.ReferralLink;
@@ -39,9 +36,6 @@ namespace Lykke.blue.Service.ReferralLinks.AzureRepositories
                new OffchainRequestRepository(
                    AzureTableStorage<OffchainRequestEntity>.Create(settings.ConnectionString(x => x.ReferralLinksService.Db.OffchainConnString), "OffchainRequests", log)));
             
-           container.RegisterInstance(new BitcoinTransactionContextBlobStorage(AzureBlobStorage.Create(settings.ConnectionString(x => x.ReferralLinksService.Db.BitCoinQueueConnectionString))))
-                .As<IBitcoinTransactionContextBlobStorage>();
-
             container.RegisterInstance<IReferralLinkRepository>(
                new ReferralLinkRepository(AzureTableStorage<ReferralLinkEntity>.Create(settings.ConnectionString(n => n.ReferralLinksService.Db.ReferralLinksConnString), "ReferralLinks", log)));
 

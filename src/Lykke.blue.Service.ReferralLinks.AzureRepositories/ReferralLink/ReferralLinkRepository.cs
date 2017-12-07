@@ -41,17 +41,6 @@ namespace Lykke.blue.Service.ReferralLinks.AzureRepositories.ReferralLink
             return Mapper.Map<ReferralLinkDto>(entity);
         }
 
-
-        public async Task<IEnumerable<IReferralLink>> Get(string senderClientId, ReferralLinkState? state)
-        {
-            var entities = await _referralLinkTable.GetDataAsync(
-                GetPartitionKey(),
-                x => (String.IsNullOrEmpty(senderClientId) || x.SenderClientId == senderClientId) && (!state.HasValue || x.State == state.Value.ToString())
-            );
-
-            return Mapper.Map<IEnumerable<ReferralLinkDto>>(entities);
-        }
-
         public async Task<IReferralLink> GetReferalLinkByUrl(string url)
         {
             var entities = await _referralLinkTable.GetDataAsync(
@@ -87,14 +76,6 @@ namespace Lykke.blue.Service.ReferralLinks.AzureRepositories.ReferralLink
             );           
         }
 
-        public async Task SetUrl(string id, string url)
-        {
-            var entity = await _referralLinkTable.GetDataAsync(GetPartitionKey(), GetRowKey(id));
-            entity.Url = url;
-
-            await _referralLinkTable.InsertOrReplaceAsync(entity);
-        }
-
         public async Task<IReferralLink> UpdateAsync(IReferralLink referralLink)
         {
             var result = await _referralLinkTable.MergeAsync(GetPartitionKey(), GetRowKey(referralLink.Id), x =>
@@ -107,12 +88,5 @@ namespace Lykke.blue.Service.ReferralLinks.AzureRepositories.ReferralLink
             return Mapper.Map<ReferralLinkDto>(result);
         }
 
-        public async Task UpdateState(string id, ReferralLinkState state)
-        {
-            var entity = await _referralLinkTable.GetDataAsync(GetPartitionKey(), GetRowKey(id));
-            entity.State = state.ToString();
-
-            await _referralLinkTable.InsertOrReplaceAsync(entity);
-        }
     }
 }

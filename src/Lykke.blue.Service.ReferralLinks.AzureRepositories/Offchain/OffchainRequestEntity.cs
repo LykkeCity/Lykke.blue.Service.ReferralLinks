@@ -6,23 +6,23 @@ namespace Lykke.blue.Service.ReferralLinks.AzureRepositories.Offchain
     public class OffchainRequestEntity : BaseEntity, IOffchainRequest
     {
         public string RequestId => RowKey;
-        public string TransferId { get; set; }
+        public string TransferId { get; private set; }
 
-        public string AssetId { get; set; }
+        public string AssetId { get; private set; }
 
-        public string ClientId { get; set; }
+        public string ClientId { get; private set; }
 
-        public RequestType Type { get; set; }
+        public RequestType Type { get; private set; }
 
-        public DateTime? StartProcessing { get; set; }
+        public DateTime? StartProcessing { get; private set; }
 
-        public DateTime CreateDt { get; set; }
+        public DateTime CreateDt { get; private set; }
 
-        public int TryCount { get; set; }
+        public int TryCount { get; private set; }
 
-        public OffchainTransferType TransferType { get; set; }
+        public OffchainTransferType TransferType { get; private set; }
 
-        public DateTime? ServerLock { get; set; }
+        public DateTime? ServerLock { get; private set; }
 
         public static class ByRecord
         {

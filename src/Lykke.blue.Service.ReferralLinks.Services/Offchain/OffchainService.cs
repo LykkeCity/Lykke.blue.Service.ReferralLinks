@@ -87,21 +87,16 @@ namespace Lykke.blue.Service.ReferralLinks.Services.Offchain
         private async Task<OffchainResult> CreateChannel(IWalletCredentials credentials, IOffchainTransfer offchainTransfer, bool required)
         {
             if (offchainTransfer == null || offchainTransfer.ClientId != credentials.ClientId || offchainTransfer.Completed)
-                throw new OffchainException(ErrorCode.Exception, offchainTransfer?.AssetId);            
+                throw new OffchainException(ErrorCode.Exception, offchainTransfer?.AssetId);
 
-            var fromClient = offchainTransfer.Type == OffchainTransferType.FromClient ||
-                             offchainTransfer.Type == OffchainTransferType.DirectTransferFromClient ||
-                             offchainTransfer.Type == OffchainTransferType.OffchainCashout;
-
-            var fromHub = offchainTransfer.Type == OffchainTransferType.FromHub ||
-                          offchainTransfer.Type == OffchainTransferType.CashinToClient;
+            var fromClient = offchainTransfer.Type == OffchainTransferType.DirectTransferFromClient;
 
             var result = await _bitcoinApiClient.CreateChannelAsync(new CreateChannelData
             {
                 AssetId = offchainTransfer.AssetId,
                 ClientPubKey = credentials.PublicKey,
                 ClientAmount = fromClient ? offchainTransfer.Amount : 0,
-                HubAmount = fromHub ? offchainTransfer.Amount : 0,
+                HubAmount =  0,
                 Required = required,
                 ExternalTransferId = offchainTransfer.ExternalTransferId
             });
@@ -151,19 +146,13 @@ namespace Lykke.blue.Service.ReferralLinks.Services.Offchain
             }                
 
             var amount = 0.0M;
-            var required = false;
+
             switch (offchainTransfer.Type)
             {
                 case OffchainTransferType.DirectTransferFromClient:
-                case OffchainTransferType.OffchainCashout:
-                case OffchainTransferType.FromClient:
                     amount = -offchainTransfer.Amount;
                     break;
-                case OffchainTransferType.CashinToClient:
-                case OffchainTransferType.FromHub:
-                    amount = offchainTransfer.Amount;
-                    required = true;
-                    break;
+                default: throw new OffchainException(ErrorCode.OperationNotSupported, $"Unsuported offchainTransfer.Type: {offchainTransfer.Type} while initializing CreateHubCommitment.", "", "", false  );
             }
 
             var result = await _bitcoinApiClient.CreateHubCommitment(new CreateHubComitmentData
@@ -175,7 +164,7 @@ namespace Lykke.blue.Service.ReferralLinks.Services.Offchain
             });
 
             if (result.HasError)
-                return await InternalErrorProcessing("ProcessClientTransfer", result.Error, credentials, offchainTransfer, required);
+                return await InternalErrorProcessing("ProcessClientTransfer", result.Error, credentials, offchainTransfer, required:false);
 
             return new OffchainResult
             {
@@ -229,8 +218,7 @@ namespace Lykke.blue.Service.ReferralLinks.Services.Offchain
 
             if (result.HasError)
             {
-                var required = offchainTransfer.Type == OffchainTransferType.FromHub || offchainTransfer.Type == OffchainTransferType.CashinToClient;
-                return await InternalErrorProcessing(nameof(ProcessTransfer), result.Error, credentials, offchainTransfer, required);
+                return await InternalErrorProcessing(nameof(ProcessTransfer), result.Error, credentials, offchainTransfer, required:false);
             }
 
             await _offchainTransferRepository.CompleteTransfer(offchainTransfer.Id, blockchainHash: result.TxHash);
