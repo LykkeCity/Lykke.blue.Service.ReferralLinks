@@ -2,12 +2,12 @@
 using Autofac.Extensions.DependencyInjection;
 using Common;
 using Common.Log;
+using Lykke.Bitcoin.Api.Client.BitcoinApi;
 using Lykke.blue.Service.ReferralLinks.AzureRepositories;
 using Lykke.blue.Service.ReferralLinks.Core.Kyc;
 using Lykke.blue.Service.ReferralLinks.Core.Services;
 using Lykke.blue.Service.ReferralLinks.Core.Settings;
 using Lykke.blue.Service.ReferralLinks.Services;
-using Lykke.blue.Service.ReferralLinks.Services.Bitcoin;
 using Lykke.blue.Service.ReferralLinks.Services.ExchangeOperations;
 using Lykke.blue.Service.ReferralLinks.Services.Kyc;
 using Lykke.blue.Service.ReferralLinks.Services.Offchain;
@@ -67,7 +67,6 @@ namespace Lykke.blue.Service.ReferralLinks.Modules
             builder.RegisterType<StatisticsService>().As<IStatisticsService>().SingleInstance();
 
             builder.RegisterType<ExchangeService>().SingleInstance();
-            builder.RegisterType<BitcoinApiClientLocal>().SingleInstance();
         }
 
         private void RegisterRepos(ContainerBuilder builder)
@@ -77,6 +76,13 @@ namespace Lykke.blue.Service.ReferralLinks.Modules
 
         private void RegisterExternalServices(ContainerBuilder builder)
         {
+            builder.Register<IBitcoinApiClient>(x =>
+            {
+                var client = new BitcoinApiClient(_settings.CurrentValue.BitCoinCore.BitcoinCoreApiUrl);
+                return client;
+            }).SingleInstance();
+
+
             builder.Register<IKycStatusService>(x =>
             {
                 var assetsSrv = new KycStatusServiceClient(_settings.CurrentValue.KycServiceClient, _log);

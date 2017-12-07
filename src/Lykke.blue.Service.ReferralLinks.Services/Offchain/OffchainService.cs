@@ -1,10 +1,10 @@
 ﻿using Common;
 using Common.Log;
+using Lykke.Bitcoin.Api.Client.BitcoinApi;
 using Lykke.Bitcoin.Api.Client.BitcoinApi.Models;
 using Lykke.blue.Service.ReferralLinks.Core.Domain.Offchain;
 using Lykke.blue.Service.ReferralLinks.Core.Domain.WalletCredentials;
 using Lykke.blue.Service.ReferralLinks.Core.Services;
-using Lykke.blue.Service.ReferralLinks.Services.Bitcoin;
 using System;
 using System.Threading.Tasks;
 
@@ -12,14 +12,14 @@ namespace Lykke.blue.Service.ReferralLinks.Services.Offchain
 {
     public class OffchainService : IOffchainService
     {
-        private readonly BitcoinApiClientLocal _bitcoinApiClient;
+        private readonly IBitcoinApiClient _bitcoinApiClient;
         private readonly IWalletCredentialsRepository _walletCredentialsRepository;
         private readonly IOffchainTransferRepository _offchainTransferRepository;
         private readonly IOffchainEncryptedKeysRepository _offchainEncryptedKeysRepository;
         private readonly ILog _logger;
         private readonly IOffchainFinalizeCommandProducer _offchainFinalizeCommandProducer;
 
-        public OffchainService(BitcoinApiClientLocal bitcoinApiClient, 
+        public OffchainService(IBitcoinApiClient bitcoinApiClient, 
                                 IWalletCredentialsRepository walletCredentialsRepository, 
                                 IOffchainTransferRepository offchainTransferRepository,
                                 IOffchainEncryptedKeysRepository offchainEncryptedKeysRepository,
@@ -69,7 +69,7 @@ namespace Lykke.blue.Service.ReferralLinks.Services.Offchain
 
         }
 
-        private async Task<OffchainResult> InternalErrorProcessing(string process, Lykke.Bitcoin.Api.Client.BitcoinApi.Models.ErrorResponse error, IWalletCredentials credentials, IOffchainTransfer offchainTransfer, bool required)
+        private async Task<OffchainResult> InternalErrorProcessing(string process, ErrorResponse error, IWalletCredentials credentials, IOffchainTransfer offchainTransfer, bool required)
         {
             if (error.ErrorCode == ErrorCode.ShouldOpenNewChannel)
                 return await CreateChannel(credentials, offchainTransfer, required);
