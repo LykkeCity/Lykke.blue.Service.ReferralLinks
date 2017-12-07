@@ -1,5 +1,5 @@
-﻿using System;
-using Lykke.blue.Service.ReferralLinks.Core.Domain.Offchain;
+﻿using Lykke.blue.Service.ReferralLinks.Core.Domain.Offchain;
+using System;
 
 namespace Lykke.blue.Service.ReferralLinks.AzureRepositories.Offchain
 {
@@ -10,15 +10,11 @@ namespace Lykke.blue.Service.ReferralLinks.AzureRepositories.Offchain
         public string AssetId { get; set; }
         public decimal Amount { get; set; }
         public bool Completed { get; set; }
-        public string OrderId { get; set; }
         public DateTime CreatedDt { get; set; }
         public string ExternalTransferId { get; set; }
         public OffchainTransferType Type { get; set; }
         public bool ChannelClosing { get; set; }
         public bool Onchain { get; set; }
-        public bool IsChild { get; set; }
-        public string ParentTransferId { get; set; }
-        public string AdditionalDataJson { get; set; }
         public string BlockchainHash { get; set; }
 
         public class ByCommon
@@ -29,7 +25,7 @@ namespace Lykke.blue.Service.ReferralLinks.AzureRepositories.Offchain
             }
 
             public static OffchainTransferEntity Create(string id, string clientId, string assetId, decimal amount, OffchainTransferType type, string externalTransferId,
-                string orderId = null, bool channelClosing = false, bool onchain = false)
+                bool channelClosing = false, bool onchain = false)
             {
                 return new OffchainTransferEntity
                 {
@@ -38,7 +34,6 @@ namespace Lykke.blue.Service.ReferralLinks.AzureRepositories.Offchain
                     AssetId = assetId,
                     Amount = amount,
                     ClientId = clientId,
-                    OrderId = orderId,
                     CreatedDt = DateTime.UtcNow,
                     ExternalTransferId = externalTransferId,
                     Type = type,

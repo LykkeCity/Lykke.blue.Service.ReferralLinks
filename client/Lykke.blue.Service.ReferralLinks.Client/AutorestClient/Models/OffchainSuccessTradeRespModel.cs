@@ -29,12 +29,11 @@ namespace Lykke.blue.Service.ReferralLinks.Client.AutorestClient.Models
         /// </summary>
         /// <param name="operationResult">Possible values include: 'Transfer',
         /// 'CreateChannel', 'ClientCommitment'</param>
-        public OffchainSuccessTradeRespModel(OffchainOperationResult operationResult, string transferId = default(string), string transactionHex = default(string), ApiOffchainOrder order = default(ApiOffchainOrder))
+        public OffchainSuccessTradeRespModel(OffchainOperationResult operationResult, string transferId = default(string), string transactionHex = default(string))
         {
             TransferId = transferId;
             TransactionHex = transactionHex;
             OperationResult = operationResult;
-            Order = order;
             CustomInit();
         }
 
@@ -61,11 +60,6 @@ namespace Lykke.blue.Service.ReferralLinks.Client.AutorestClient.Models
         public OffchainOperationResult OperationResult { get; set; }
 
         /// <summary>
-        /// </summary>
-        [JsonProperty(PropertyName = "Order")]
-        public ApiOffchainOrder Order { get; set; }
-
-        /// <summary>
         /// Validate the object.
         /// </summary>
         /// <exception cref="Microsoft.Rest.ValidationException">
@@ -73,10 +67,6 @@ namespace Lykke.blue.Service.ReferralLinks.Client.AutorestClient.Models
         /// </exception>
         public virtual void Validate()
         {
-            if (Order != null)
-            {
-                Order.Validate();
-            }
         }
     }
 }

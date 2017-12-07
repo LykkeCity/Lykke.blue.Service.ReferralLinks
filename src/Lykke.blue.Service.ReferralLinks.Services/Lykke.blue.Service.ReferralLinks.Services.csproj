@@ -8,6 +8,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Bitcoin\BitcoinTransactionService.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="AutoMapper" Version="6.1.1" />
     <PackageReference Include="CsvHelper" Version="3.1.1" />
     <PackageReference Include="Flurl.Http" Version="1.2.0" />

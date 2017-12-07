@@ -116,7 +116,7 @@ namespace Lykke.blue.Service.ReferralLinks.Controllers
 
             if (await _srvKycForAsset.IsKycNeeded(clientId, asset.Id))
             {
-                return await LogAndReturnBadRequest(model, ControllerContext, $"KYC needed for sender client id {model.ClientId} before claiming asset {refLink.Asset}");
+                return await LogAndReturnBadRequest(model, ControllerContext, $"KYC needed for sender client id {model.ClientId} before sending asset {refLink.Asset}");
             }               
 
             try
@@ -275,14 +275,11 @@ namespace Lykke.blue.Service.ReferralLinks.Controllers
                     await LogInfo(request, ControllerContext, $"Offchain request set to complete: {offchainRequest.ToJson()}");
                 }                    
 
-                var offchainOrder = await _offchainService.GetResultOrderFromTransfer(request.TransferId);
-
                 return Ok(new OffchainSuccessTradeRespModel
                 {
                     TransferId = response.TransferId,
                     TransactionHex = response.TransactionHex,
                     OperationResult = response.OperationResult,
-                    Order = offchainOrder != null ? ConvertToApi(offchainOrder) : null
                 });
             }
             catch (OffchainException ex)
@@ -297,21 +294,6 @@ namespace Lykke.blue.Service.ReferralLinks.Controllers
             {
                 return await LogAndReturnNotFound(request, ControllerContext, ex.Message);
             }
-        }
-
-        private ApiOffchainOrder ConvertToApi(OffchainResultOrder order)
-        {
-            return new ApiOffchainOrder
-            {
-                AssetPair = order.AssetPair,
-                Asset = order.Asset,
-                Id = order.Id,
-                DateTime = order.DateTime.ToIsoDateTime(),
-                OrderType = order.OrderType.ToString(),
-                Price = order.Price,
-                Volume = Math.Abs(order.Volume),
-                TotalCost = Math.Abs(order.TotalCost)
-            };
         }
     }
 }

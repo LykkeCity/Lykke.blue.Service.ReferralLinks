@@ -7,7 +7,5 @@ namespace Lykke.blue.Service.ReferralLinks.Models.Offchain
         public string TransferId { get; set; }
         public string TransactionHex { get; set; }
         public OffchainOperationResult OperationResult { get; set; }
-
-        public ApiOffchainOrder Order { get; set; }
     }
 }

@@ -7,7 +7,6 @@
         string AssetId { get; }
         decimal Amount { get; }
         bool Completed { get; }
-        string OrderId { get; }
         string ExternalTransferId { get; }
         OffchainTransferType Type { get; }
         bool ChannelClosing { get; }

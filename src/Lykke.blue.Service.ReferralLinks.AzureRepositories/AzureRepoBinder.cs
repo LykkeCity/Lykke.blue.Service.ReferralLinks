@@ -35,10 +35,6 @@ namespace Lykke.blue.Service.ReferralLinks.AzureRepositories
                new OffchainEncryptedKeyRepository(
                    AzureTableStorage<OffchainEncryptedKeyEntity>.Create(settings.ConnectionString(x => x.ReferralLinksService.Db.OffchainConnString), "OffchainEncryptedKeys", log)));
 
-            container.RegisterInstance<IOffchainOrdersRepository>(
-                new OffchainOrderRepository(
-                    AzureTableStorage<OffchainOrder>.Create(settings.ConnectionString(x => x.ReferralLinksService.Db.OffchainConnString), "OffchainOrders", log)));
-
             container.RegisterInstance<IOffchainRequestRepository>(
                new OffchainRequestRepository(
                    AzureTableStorage<OffchainRequestEntity>.Create(settings.ConnectionString(x => x.ReferralLinksService.Db.OffchainConnString), "OffchainRequests", log)));

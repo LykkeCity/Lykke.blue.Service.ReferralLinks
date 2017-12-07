@@ -16,7 +16,6 @@ using Lykke.blue.Service.ReferralLinks.Services.Domain;
 using Lykke.blue.Service.ReferralLinks.Services.ExchangeOperations;
 using Lykke.blue.Service.ReferralLinks.Strings;
 using Lykke.Service.Balances.Client;
-using Lykke.Service.ClientAccount.Client;
 using Lykke.Service.ExchangeOperations.Client;
 using Lykke.Service.ExchangeOperations.Client.AutorestClient.Models;
 using Microsoft.AspNetCore.Mvc;
@@ -37,7 +36,6 @@ namespace Lykke.blue.Service.ReferralLinks.Controllers
         private readonly IReferralLinksService _referralLinksService;
         private readonly IReferralLinkClaimsService _referralLinkClaimsService;
         private readonly IStatisticsService _statisticsService;
-        private readonly IClientAccountClient _clientAccountClient;
         private readonly ISrvKycForAsset _srvKycForAsset;
         private readonly ExchangeService _exchangeService;
         private readonly CachedDataDictionary<string, Lykke.Service.Assets.Client.Models.Asset> _assets;
@@ -48,7 +46,6 @@ namespace Lykke.blue.Service.ReferralLinks.Controllers
         public ReferralLinksController(
             ILog log,
             IReferralLinksService referralLinksService,
-            IClientAccountClient clientAccountClient,
             IStatisticsService statisticsService,
             CachedDataDictionary<string, Lykke.Service.Assets.Client.Models.Asset> assets,
             ISrvKycForAsset srvKycForAsset,
@@ -60,7 +57,6 @@ namespace Lykke.blue.Service.ReferralLinks.Controllers
         {
 
             _referralLinksService = referralLinksService;
-            _clientAccountClient = clientAccountClient;
             _assets = assets;
             _srvKycForAsset = srvKycForAsset;
             _exchangeService = exchangeService;
@@ -143,7 +139,7 @@ namespace Lykke.blue.Service.ReferralLinks.Controllers
         [ProducesResponseType(typeof(GetReferralLinksStatisticsBySenderIdResponse), (int)HttpStatusCode.OK)]
         public async Task<IActionResult> GetReferralLinksStatisticsBySenderId([FromBody] RefLinkStatisticsRequest request)
         {
-            if (String.IsNullOrEmpty(request.SenderClientId) || await _clientAccountClient.GetClientByIdAsync(request.SenderClientId) == null)
+            if (String.IsNullOrEmpty(request.SenderClientId))
             {
                 return await LogAndReturnBadRequest(request.SenderClientId, ControllerContext, Phrases.InvalidSenderClientId);
             }
@@ -177,7 +173,7 @@ namespace Lykke.blue.Service.ReferralLinks.Controllers
                 return await LogAndReturnBadRequest(request, ControllerContext, Phrases.InvalidAmount);
             }
 
-            if (String.IsNullOrEmpty(request.SenderClientId) || await _clientAccountClient.GetClientByIdAsync(request.SenderClientId) == null)
+            if (String.IsNullOrEmpty(request.SenderClientId))
             {
                 return await LogAndReturnBadRequest(request, ControllerContext, Phrases.InvalidSenderClientId);
             }
@@ -228,7 +224,7 @@ namespace Lykke.blue.Service.ReferralLinks.Controllers
                 return await LogAndReturnBadRequest("", ControllerContext, Phrases.InvalidRequest);
             }
 
-            if (String.IsNullOrEmpty(request.SenderClientId) || await _clientAccountClient.GetClientByIdAsync(request.SenderClientId) == null)
+            if (String.IsNullOrEmpty(request.SenderClientId))
             {
                 return await LogAndReturnBadRequest(request, ControllerContext, Phrases.InvalidSenderClientId);
             }
@@ -256,9 +252,9 @@ namespace Lykke.blue.Service.ReferralLinks.Controllers
             return await LogAndReturnBadRequest(request, ControllerContext, $"Invitation link for client {request.SenderClientId} already exists. Please try again!");
         }
 
-        private async Task<string> ValidateClaimRefLinkAndRequest(IReferralLink refLink, ClaimReferralLinkRequest request)
+        private string ValidateClaimRefLinkAndRequest(IReferralLink refLink, ClaimReferralLinkRequest request)
         {
-            if (request.RecipientClientId == null || await _clientAccountClient.GetClientByIdAsync(request.RecipientClientId) == null)
+            if (request.RecipientClientId == null)
             {
                 return "RecipientClientId not found or not supplied";
             }
@@ -310,7 +306,7 @@ namespace Lykke.blue.Service.ReferralLinks.Controllers
         {
             var refLink = await _referralLinksService.GetReferralLinkById(request.ReferalLinkId ?? "");
 
-            var validationError = await ValidateClaimRefLinkAndRequest(refLink, request);
+            var validationError = ValidateClaimRefLinkAndRequest(refLink, request);
             if (!String.IsNullOrEmpty(validationError))
             {
                 return await LogAndReturnBadRequest(request, ControllerContext, validationError);
@@ -382,7 +378,7 @@ namespace Lykke.blue.Service.ReferralLinks.Controllers
 
                 var refLink = await _referralLinksService.GetReferralLinkById(request.ReferalLinkId ?? "") ?? await _referralLinksService.GetReferralLinkByUrl(request.ReferalLinkUrl ?? "");
 
-                var validationError = await ValidateClaimRefLinkAndRequest(refLink, request);
+                var validationError = ValidateClaimRefLinkAndRequest(refLink, request);
                 if (!String.IsNullOrEmpty(validationError))
                 {
                     return await LogAndReturnBadRequest(request, ControllerContext, validationError);

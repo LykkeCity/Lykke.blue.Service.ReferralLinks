@@ -13,9 +13,9 @@ namespace Lykke.blue.Service.ReferralLinks.AzureRepositories.Offchain
             _storage = storage;
         }
 
-        public async Task<IOffchainTransfer> CreateTransfer(string transactionId, string clientId, string assetId, decimal amount, OffchainTransferType type, string externalTransferId, string orderId, bool channelClosing = false)
+        public async Task<IOffchainTransfer> CreateTransfer(string transactionId, string clientId, string assetId, decimal amount, OffchainTransferType type, string externalTransferId, bool channelClosing = false)
         {
-            var entity = OffchainTransferEntity.ByCommon.Create(transactionId, clientId, assetId, amount, type, externalTransferId, orderId, channelClosing);
+            var entity = OffchainTransferEntity.ByCommon.Create(transactionId, clientId, assetId, amount, type, externalTransferId, channelClosing);
 
             await _storage.InsertAsync(entity);
 
