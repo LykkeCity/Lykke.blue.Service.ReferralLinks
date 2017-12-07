@@ -5,7 +5,7 @@ using Lykke.blue.Service.ReferralLinks.Core.Domain.ReferralLink;
 using Lykke.blue.Service.ReferralLinks.Core.Domain.ReferralLink.Requests;
 using Lykke.blue.Service.ReferralLinks.Core.Kyc;
 using Lykke.blue.Service.ReferralLinks.Core.Services;
-using Lykke.blue.Service.ReferralLinks.Core.Settings.ServiceSettings;
+using Lykke.blue.Service.ReferralLinks.Core.Settings;
 using Lykke.blue.Service.ReferralLinks.Extensions;
 using Lykke.blue.Service.ReferralLinks.Models;
 using Lykke.blue.Service.ReferralLinks.Models.RefLinkResponseModels;
@@ -42,7 +42,7 @@ namespace Lykke.blue.Service.ReferralLinks.Controllers
         private readonly ExchangeService _exchangeService;
         private readonly CachedDataDictionary<string, Lykke.Service.Assets.Client.Models.Asset> _assets;
         private readonly IBalancesClient _balancesClient;
-        private readonly ReferralLinksSettings _settings;
+        private readonly AppSettings _settings;
         private readonly double ZeroAsDouble = 0.001;
 
         public ReferralLinksController(
@@ -53,7 +53,7 @@ namespace Lykke.blue.Service.ReferralLinks.Controllers
             CachedDataDictionary<string, Lykke.Service.Assets.Client.Models.Asset> assets,
             ISrvKycForAsset srvKycForAsset,
             IExchangeOperationsServiceClient exchangeOperationsService,
-            ReferralLinksSettings settings,
+            AppSettings settings,
             IReferralLinkClaimsService referralLinkClaimsService,
             ExchangeService exchangeService,
             IBalancesClient balancesClient) : base (log)
@@ -84,7 +84,7 @@ namespace Lykke.blue.Service.ReferralLinks.Controllers
         {
             if (String.IsNullOrEmpty(id))
             {
-                return NotFound(ErrorResponseModel.Create("Requested id cant be empty"));
+                return await LogAndReturnNotFound(id, ControllerContext, "Requested id cant be empty");
             }
 
             var referralLink = await _referralLinksService.Get(id);
@@ -92,8 +92,7 @@ namespace Lykke.blue.Service.ReferralLinks.Controllers
             if (referralLink == null)
             {
                 var msg = $"Ref link with id {id} does not exist";
-                await LogWarn(id, ControllerContext, msg);
-                return NotFound(ErrorResponseModel.Create(msg));
+                return await LogAndReturnNotFound(id, ControllerContext, msg);
             }
 
             var result = Mapper.Map<GetReferralLinkResponse>(referralLink);
@@ -194,7 +193,7 @@ namespace Lykke.blue.Service.ReferralLinks.Controllers
 
             if (clientBalances == null)
             {
-                return await LogAndReturnNotFound(request, ControllerContext, $"Cant get clientBalance of asset {asset.Symbol} for client id {request.SenderClientId} from service {_settings.ExternalServices.BalancesServiceUrl}");
+                return await LogAndReturnNotFound(request, ControllerContext, $"Cant get clientBalance of asset {asset.Symbol} for client id {request.SenderClientId} from service {_settings.BalancesServiceClient.ServiceUrl}");
             }
 
             var balance = clientBalances.FirstOrDefault(x => x.AssetId == asset.Id)?.Balance;
@@ -448,7 +447,7 @@ namespace Lykke.blue.Service.ReferralLinks.Controllers
         private async Task<bool> ShoulReceiveReward(IEnumerable<IReferralLinkClaim> claims, IReferralLink refLink)
         {
             var countOfNewClientClaims = claims.Count(c => c.IsNewClient && c.ShouldReceiveReward && c.RecipientClientId != refLink.SenderClientId);
-            bool shouldReceiveReaward = countOfNewClientClaims < _settings.InvitationLinkSettings.MaxNumOfClientsToReceiveReward;
+            bool shouldReceiveReaward = countOfNewClientClaims < _settings.ReferralLinksService.InvitationLinkSettings.MaxNumOfClientsToReceiveReward;
 
             if (!shouldReceiveReaward)
             {

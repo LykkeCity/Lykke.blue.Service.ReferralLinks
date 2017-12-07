@@ -2,7 +2,6 @@
 using Autofac.Extensions.DependencyInjection;
 using Common;
 using Common.Log;
-using Lykke.Bitcoin.Api.Client.BitcoinApi;
 using Lykke.blue.Service.ReferralLinks.AzureRepositories;
 using Lykke.blue.Service.ReferralLinks.Core.BitCoinApi;
 using Lykke.blue.Service.ReferralLinks.Core.Domain.Offchain;
@@ -57,8 +56,7 @@ namespace Lykke.blue.Service.ReferralLinks.Modules
         private void RegisterLocalTypes(ContainerBuilder builder)
         {
             builder.RegisterInstance(_log).As<ILog>().SingleInstance();
-            builder.RegisterInstance(_settings.CurrentValue.ReferralLinksService);
-            
+            builder.RegisterInstance(_settings.CurrentValue);
         }
 
         private static IPEndPoint GetIpEndPointFromHostName(string hostName, int port)
@@ -79,16 +77,14 @@ namespace Lykke.blue.Service.ReferralLinks.Modules
         {
             builder.RegisterType<HealthService>().As<IHealthService>().SingleInstance();
             builder.RegisterType<BitcoinTransactionService>().As<IBitcoinTransactionService>().SingleInstance();
-            builder.RegisterInstance(_settings.CurrentValue.ReferralLinksService.ExternalServices.KycServiceSettings);
-            builder.RegisterType<KycStatusServiceClient>().As<IKycStatusService>().SingleInstance();
             builder.RegisterType<SrvKycForAsset>().As<ISrvKycForAsset>().SingleInstance();
             
             builder.RegisterType<OffchainRequestService>().As<IOffchainRequestService>();
             builder.RegisterType<OffchainService>().As<IOffchainService>().SingleInstance();
 
             builder.BindMeClient(GetIpEndPointFromHostName(
-                _settings.CurrentValue.ReferralLinksService.ExternalServices.MatchingEngineClient.IpEndpoint.Host,
-                _settings.CurrentValue.ReferralLinksService.ExternalServices.MatchingEngineClient.IpEndpoint.Port));
+                _settings.CurrentValue.MatchingEngineClient.IpEndpoint.Host,
+                _settings.CurrentValue.MatchingEngineClient.IpEndpoint.Port));
 
             builder.RegisterType<ReferralLinksService>().As<IReferralLinksService>().SingleInstance();
             builder.RegisterType<ReferralLinkClaimsService>().As<IReferralLinkClaimsService>().SingleInstance();
@@ -105,39 +101,39 @@ namespace Lykke.blue.Service.ReferralLinks.Modules
 
         private void RegisterExternalServices(ContainerBuilder builder)
         {
-            builder.Register<IBitcoinApiClient>(x =>
+            builder.Register<IKycStatusService>(x =>
             {
-                var assetsSrv = new BitcoinApiClient(_settings.CurrentValue.ReferralLinksService.ExternalServices.BitcoinCoreApiUrl);
+                var assetsSrv = new KycStatusServiceClient(_settings.CurrentValue.KycServiceClient, _log);
                 return assetsSrv;
             }).SingleInstance();
 
             builder.Register<IAssetsService>(x =>
             {
-                var assetsSrv = new AssetsService(new Uri(_settings.CurrentValue.ReferralLinksService.ExternalServices.AssetsServiceUrl));
+                var assetsSrv = new AssetsService(new Uri(_settings.CurrentValue.AssetsServiceClient.ServiceUrl));
                 return assetsSrv;
             }).SingleInstance();
 
             builder.Register<IExchangeOperationsServiceClient>(x =>
             {
-                var exchOpSrv = new ExchangeOperationsServiceClient(_settings.CurrentValue.ReferralLinksService.ExternalServices.ExchangeOperationsServiceUrl);
+                var exchOpSrv = new ExchangeOperationsServiceClient(_settings.CurrentValue.ExchangeOperationsServiceClient.ServiceUrl);
                 return exchOpSrv;
             }).SingleInstance();
 
-            builder.RegisterType<ClientAccountClient>()
+            builder.RegisterType<Lykke.Service.ClientAccount.Client.ClientAccountClient>()
                 .As<IClientAccountClient>()
-                .WithParameter("serviceUrl", _settings.CurrentValue.ReferralLinksService.ExternalServices.ClientAccountServiceUrl)
+                .WithParameter("serviceUrl", _settings.CurrentValue.ClientAccountClient.ServiceUrl)
                 .WithParameter("log", _log)
                 .SingleInstance();
 
             builder.RegisterType<BalancesClient>()
                 .As<IBalancesClient>()
-                .WithParameter("serviceUrl", _settings.CurrentValue.ReferralLinksService.ExternalServices.BalancesServiceUrl)
+                .WithParameter("serviceUrl", _settings.CurrentValue.BalancesServiceClient.ServiceUrl)
                 .WithParameter("log", _log)
                 .SingleInstance();
 
             builder.RegisterType<FirebaseService>()
                 .As<IFirebaseService>()
-                .WithParameter("settings", _settings.CurrentValue.ReferralLinksService)
+                .WithParameter("settings", _settings.CurrentValue)
                 .SingleInstance();
         }
 

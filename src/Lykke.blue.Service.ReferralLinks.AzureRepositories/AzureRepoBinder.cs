@@ -14,7 +14,6 @@ using Lykke.blue.Service.ReferralLinks.Core.Domain.Offchain;
 using Lykke.blue.Service.ReferralLinks.Core.Domain.ReferralLink;
 using Lykke.blue.Service.ReferralLinks.Core.Domain.WalletCredentials;
 using Lykke.blue.Service.ReferralLinks.Core.Settings;
-using Lykke.Logs;
 using Lykke.SettingsReader;
 
 namespace Lykke.blue.Service.ReferralLinks.AzureRepositories
@@ -54,27 +53,6 @@ namespace Lykke.blue.Service.ReferralLinks.AzureRepositories
                new ReferralLinkClaimsRepository(AzureTableStorage<ReferralLinkClaimEntity>.Create(settings.ConnectionString(n => n.ReferralLinksService.Db.ReferralLinksConnString), "ReferralLinkClaims", log)));
 
             container.RegisterInstance<IOffchainFinalizeCommandProducer>(new OffchainFinalizeCommandProducer(AzureQueueExt.Create(settings.ConnectionString(x => x.ReferralLinksService.Db.BitCoinQueueConnectionString), "offchain-finalization")));
-        }
-
-        public static ILog BindLog(this ContainerBuilder container, IReloadingManager<string> connectionString, string appName, string tableName)
-        {
-            var consoleLogger = new LogToConsole();
-
-            var persistenceManager = new LykkeLogToAzureStoragePersistenceManager(
-                appName,
-                AzureTableStorage<LogEntity>.Create(connectionString, tableName, consoleLogger),
-                consoleLogger);
-
-            var azureStorageLogger = new LykkeLogToAzureStorage(
-                appName,
-                persistenceManager,
-                lastResortLog: consoleLogger);
-
-            azureStorageLogger.Start();
-
-            container.RegisterInstance<ILog>(azureStorageLogger);
-
-            return azureStorageLogger;
         }
     }
 }

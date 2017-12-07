@@ -3,7 +3,7 @@ using Common.Log;
 using Lykke.blue.Service.ReferralLinks.Core.Domain.ExchangeOperations;
 using Lykke.blue.Service.ReferralLinks.Core.Domain.Offchain;
 using Lykke.blue.Service.ReferralLinks.Core.Domain.ReferralLink;
-using Lykke.blue.Service.ReferralLinks.Core.Settings.ServiceSettings;
+using Lykke.blue.Service.ReferralLinks.Core.Settings;
 using Lykke.MatchingEngine.Connector.Abstractions.Models;
 using Lykke.Service.ExchangeOperations.Client;
 using Lykke.Service.ExchangeOperations.Client.AutorestClient.Models;
@@ -18,12 +18,12 @@ namespace Lykke.blue.Service.ReferralLinks.Services.ExchangeOperations
         private readonly ILog _log;
         private readonly IExchangeOperationsServiceClient _exchangeOperationsService;
         private readonly CachedDataDictionary<string, Lykke.Service.Assets.Client.Models.Asset> _assets;
-        private readonly ReferralLinksSettings _settings;
+        private readonly AppSettings _settings;
 
         public ExchangeService(ILog log, 
             IExchangeOperationsServiceClient exchangeOperationsService, 
             CachedDataDictionary<string, Lykke.Service.Assets.Client.Models.Asset> assets,
-            ReferralLinksSettings settings)
+            AppSettings settings)
         {
             _log = log;
             _exchangeOperationsService = exchangeOperationsService;
@@ -47,7 +47,7 @@ namespace Lykke.blue.Service.ReferralLinks.Services.ExchangeOperations
 
                 var result = await _exchangeOperationsService.TransferAsync(
                          recipientClientId,
-                         _settings.LykkeReferralClientId,
+                         _settings.ReferralLinksService.LykkeReferralClientId,
                          refLink.Amount,
                          asset.Id,
                          TransferType.Common.ToString()

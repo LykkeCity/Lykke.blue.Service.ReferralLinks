@@ -7,7 +7,7 @@ using Lykke.blue.Service.ReferralLinks.Core.Domain.Offchain;
 using Lykke.blue.Service.ReferralLinks.Core.Domain.ReferralLink;
 using Lykke.blue.Service.ReferralLinks.Core.Kyc;
 using Lykke.blue.Service.ReferralLinks.Core.Services;
-using Lykke.blue.Service.ReferralLinks.Core.Settings.ServiceSettings;
+using Lykke.blue.Service.ReferralLinks.Core.Settings;
 using Lykke.blue.Service.ReferralLinks.Models;
 using Lykke.blue.Service.ReferralLinks.Models.Offchain;
 using Lykke.Service.ExchangeOperations.Client;
@@ -27,7 +27,7 @@ namespace Lykke.blue.Service.ReferralLinks.Controllers
         private readonly IClientSettingsRepository _clientSettingsRepository;
         private readonly IOffchainService _offchainService;
         private readonly IExchangeOperationsServiceClient _exchangeOperationsService;
-        private readonly ReferralLinksSettings _settings;
+        private readonly AppSettings _settings;
         private readonly IOffchainRequestRepository _offchainRequestRepository;
         private readonly IOffchainTransferRepository _offchainTransferRepository;
         private readonly IOffchainEncryptedKeysRepository _offchainEncryptedKeysRepository;        
@@ -37,7 +37,7 @@ namespace Lykke.blue.Service.ReferralLinks.Controllers
         public TransfersController(ISrvKycForAsset srvKycForAsset, 
             IClientSettingsRepository clientSettingsRepository, 
             IOffchainService offchainService, 
-            ReferralLinksSettings settings, 
+            AppSettings settings, 
             ILog log, 
             IExchangeOperationsServiceClient exchangeOperationsService, 
             IOffchainEncryptedKeysRepository offchainEncryptedKeysRepository, 
@@ -125,7 +125,7 @@ namespace Lykke.blue.Service.ReferralLinks.Controllers
 
                 var exchangeOpResult = await _exchangeOperationsService.StartTransferAsync(
                     response.TransferId,
-                    _settings.LykkeReferralClientId, //send to shared lykke wallet where coins will be temporary stored until claimed by the recipient
+                    _settings.ReferralLinksService.LykkeReferralClientId, //send to shared lykke wallet where coins will be temporary stored until claimed by the recipient
                     clientId,
                     TransferType.Common.ToString()
                     );

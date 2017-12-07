@@ -3,9 +3,8 @@ using Common.Log;
 using Lykke.blue.Service.ReferralLinks.Core.Domain.ReferralLink;
 using Lykke.blue.Service.ReferralLinks.Core.Domain.ReferralLink.Requests;
 using Lykke.blue.Service.ReferralLinks.Core.Services;
-using Lykke.blue.Service.ReferralLinks.Core.Settings.ServiceSettings;
+using Lykke.blue.Service.ReferralLinks.Core.Settings;
 using Lykke.blue.Service.ReferralLinks.Services.Domain;
-using Lykke.blue.Service.ReferralLinks.Services.ExchangeOperations;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -15,7 +14,7 @@ namespace Lykke.blue.Service.ReferralLinks.Services
 {
     public class ReferralLinksService : IReferralLinksService
     {
-        private readonly ReferralLinksSettings _settings;
+        private readonly AppSettings _settings;
         private readonly IReferralLinkRepository _referralLinkRepository;
         private readonly IFirebaseService _firebaseService;
         private readonly ILog _log;
@@ -23,9 +22,7 @@ namespace Lykke.blue.Service.ReferralLinks.Services
         public ReferralLinksService(
             IReferralLinkRepository referralLinkRepository, 
             IFirebaseService firebaseService,
-            ReferralLinksSettings settings,
-            ExchangeService exchangeService,
-            IReferralLinkClaimsService referralLinkClaimsService,
+            AppSettings settings,
             ILog log)
         {
             _referralLinkRepository = referralLinkRepository;
@@ -42,8 +39,8 @@ namespace Lykke.blue.Service.ReferralLinks.Services
                 Type = referralLinkRequest.Type.ToString(),
                 Id = Guid.NewGuid().ToString(),
                 ExpirationDate = null,
-                Amount = _settings.InvitationLinkSettings.RewardAmount,
-                Asset = _settings.InvitationLinkSettings.RewardAsset
+                Amount = _settings.ReferralLinksService.InvitationLinkSettings.RewardAmount,
+                Asset = _settings.ReferralLinksService.InvitationLinkSettings.RewardAsset
             };
             entity.Url = await _firebaseService.GenerateUrl(entity.Id);
             entity.State = ReferralLinkState.Created.ToString();
@@ -56,7 +53,7 @@ namespace Lykke.blue.Service.ReferralLinks.Services
             var entity = new ReferralLink
             {
                 Id = Guid.NewGuid().ToString(),
-                ExpirationDate = DateTime.UtcNow.AddDays(_settings.GiftCoinsLinkSettings.ExpirationDaysLimit)
+                ExpirationDate = DateTime.UtcNow.AddDays(_settings.ReferralLinksService.GiftCoinsLinkSettings.ExpirationDaysLimit)
             };
             entity.Url = await _firebaseService.GenerateUrl(entity.Id);
             entity.SenderClientId = referralLinkRequest.SenderClientId;
