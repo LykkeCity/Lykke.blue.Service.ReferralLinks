@@ -90,19 +90,6 @@ namespace Lykke.blue.Service.ReferralLinks.Client.AutorestClient
         Task<HttpOperationResponse<object>> GetReferralLinksStatisticsBySenderIdWithHttpMessagesAsync(RefLinkStatisticsRequest request = default(RefLinkStatisticsRequest), Dictionary<string, List<string>> customHeaders = null, CancellationToken cancellationToken = default(CancellationToken));
 
         /// <summary>
-        /// Request money transfer referral link
-        /// </summary>
-        /// <param name='request'>
-        /// </param>
-        /// <param name='customHeaders'>
-        /// The headers that will be added to request.
-        /// </param>
-        /// <param name='cancellationToken'>
-        /// The cancellation token.
-        /// </param>
-        Task<HttpOperationResponse<object>> RequestGiftCoinsReferralLinkWithHttpMessagesAsync(GiftCoinsReferralLinkRequest request = default(GiftCoinsReferralLinkRequest), Dictionary<string, List<string>> customHeaders = null, CancellationToken cancellationToken = default(CancellationToken));
-
-        /// <summary>
         /// Request invitation referral link.
         /// </summary>
         /// <param name='request'>
@@ -115,29 +102,11 @@ namespace Lykke.blue.Service.ReferralLinks.Client.AutorestClient
         /// </param>
         Task<HttpOperationResponse<object>> RequestInvitationReferralLinkWithHttpMessagesAsync(InvitationReferralLinkRequest request = default(InvitationReferralLinkRequest), Dictionary<string, List<string>> customHeaders = null, CancellationToken cancellationToken = default(CancellationToken));
 
-        /// <param name='request'>
-        /// </param>
-        /// <param name='customHeaders'>
-        /// The headers that will be added to request.
-        /// </param>
-        /// <param name='cancellationToken'>
-        /// The cancellation token.
-        /// </param>
-        Task<HttpOperationResponse<object>> ClaimGiftCoinsWithHttpMessagesAsync(ClaimReferralLinkRequest request = default(ClaimReferralLinkRequest), Dictionary<string, List<string>> customHeaders = null, CancellationToken cancellationToken = default(CancellationToken));
-
-        /// <param name='request'>
-        /// </param>
-        /// <param name='customHeaders'>
-        /// The headers that will be added to request.
-        /// </param>
-        /// <param name='cancellationToken'>
-        /// The cancellation token.
-        /// </param>
-        Task<HttpOperationResponse<object>> ClaimInvitationLinkWithHttpMessagesAsync(ClaimReferralLinkRequest request = default(ClaimReferralLinkRequest), Dictionary<string, List<string>> customHeaders = null, CancellationToken cancellationToken = default(CancellationToken));
-
         /// <summary>
-        /// Get offchain ChannelKey for transfer.
+        /// Claim invitation referral link.
         /// </summary>
+        /// <param name='refLinkId'>
+        /// </param>
         /// <param name='request'>
         /// </param>
         /// <param name='customHeaders'>
@@ -146,46 +115,7 @@ namespace Lykke.blue.Service.ReferralLinks.Client.AutorestClient
         /// <param name='cancellationToken'>
         /// The cancellation token.
         /// </param>
-        Task<HttpOperationResponse<OffchainEncryptedKeyRespModel>> GetChannelKeyWithHttpMessagesAsync(OffchainGetChannelKeyRequest request = default(OffchainGetChannelKeyRequest), Dictionary<string, List<string>> customHeaders = null, CancellationToken cancellationToken = default(CancellationToken));
-
-        /// <summary>
-        /// Create offchain transfer to Lykke wallet
-        /// </summary>
-        /// <param name='model'>
-        /// </param>
-        /// <param name='customHeaders'>
-        /// The headers that will be added to request.
-        /// </param>
-        /// <param name='cancellationToken'>
-        /// The cancellation token.
-        /// </param>
-        Task<HttpOperationResponse<object>> TransferToLykkeWalletMethodWithHttpMessagesAsync(TransferToLykkeWallet model = default(TransferToLykkeWallet), Dictionary<string, List<string>> customHeaders = null, CancellationToken cancellationToken = default(CancellationToken));
-
-        /// <summary>
-        /// Process offchain channel
-        /// </summary>
-        /// <param name='request'>
-        /// </param>
-        /// <param name='customHeaders'>
-        /// The headers that will be added to request.
-        /// </param>
-        /// <param name='cancellationToken'>
-        /// The cancellation token.
-        /// </param>
-        Task<HttpOperationResponse<object>> ProcessChannelWithHttpMessagesAsync(OffchainChannelProcessModel request = default(OffchainChannelProcessModel), Dictionary<string, List<string>> customHeaders = null, CancellationToken cancellationToken = default(CancellationToken));
-
-        /// <summary>
-        /// Process offchain channel
-        /// </summary>
-        /// <param name='request'>
-        /// </param>
-        /// <param name='customHeaders'>
-        /// The headers that will be added to request.
-        /// </param>
-        /// <param name='cancellationToken'>
-        /// The cancellation token.
-        /// </param>
-        Task<HttpOperationResponse<object>> FinalizeRefLinkTransferWithHttpMessagesAsync(OffchainFinalizeModel request = default(OffchainFinalizeModel), Dictionary<string, List<string>> customHeaders = null, CancellationToken cancellationToken = default(CancellationToken));
+        Task<HttpOperationResponse<object>> ClaimInvitationLinkWithHttpMessagesAsync(string refLinkId, ClaimReferralLinkRequest request = default(ClaimReferralLinkRequest), Dictionary<string, List<string>> customHeaders = null, CancellationToken cancellationToken = default(CancellationToken));
 
     }
 }

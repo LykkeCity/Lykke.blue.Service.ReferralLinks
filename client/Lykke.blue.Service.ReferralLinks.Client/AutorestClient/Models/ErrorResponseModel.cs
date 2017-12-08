@@ -10,8 +10,6 @@ namespace Lykke.blue.Service.ReferralLinks.Client.AutorestClient.Models
     using Lykke.blue.Service.ReferralLinks.Client;
     using Lykke.blue.Service.ReferralLinks.Client.AutorestClient;
     using Newtonsoft.Json;
-    using System.Collections;
-    using System.Collections.Generic;
     using System.Linq;
 
     public partial class ErrorResponseModel
@@ -27,10 +25,9 @@ namespace Lykke.blue.Service.ReferralLinks.Client.AutorestClient.Models
         /// <summary>
         /// Initializes a new instance of the ErrorResponseModel class.
         /// </summary>
-        public ErrorResponseModel(string errorMessage = default(string), IDictionary<string, IList<string>> modelErrors = default(IDictionary<string, IList<string>>))
+        public ErrorResponseModel(string errorMessage = default(string))
         {
             ErrorMessage = errorMessage;
-            ModelErrors = modelErrors;
             CustomInit();
         }
 
@@ -43,11 +40,6 @@ namespace Lykke.blue.Service.ReferralLinks.Client.AutorestClient.Models
         /// </summary>
         [JsonProperty(PropertyName = "ErrorMessage")]
         public string ErrorMessage { get; private set; }
-
-        /// <summary>
-        /// </summary>
-        [JsonProperty(PropertyName = "ModelErrors")]
-        public IDictionary<string, IList<string>> ModelErrors { get; private set; }
 
     }
 }

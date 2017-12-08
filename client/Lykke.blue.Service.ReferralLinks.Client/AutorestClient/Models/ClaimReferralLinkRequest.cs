@@ -25,10 +25,9 @@ namespace Lykke.blue.Service.ReferralLinks.Client.AutorestClient.Models
         /// <summary>
         /// Initializes a new instance of the ClaimReferralLinkRequest class.
         /// </summary>
-        public ClaimReferralLinkRequest(bool isNewClient, string recipientClientId = default(string), string referalLinkId = default(string), string referalLinkUrl = default(string))
+        public ClaimReferralLinkRequest(bool isNewClient, string recipientClientId = default(string), string referalLinkUrl = default(string))
         {
             RecipientClientId = recipientClientId;
-            ReferalLinkId = referalLinkId;
             ReferalLinkUrl = referalLinkUrl;
             IsNewClient = isNewClient;
             CustomInit();
@@ -43,11 +42,6 @@ namespace Lykke.blue.Service.ReferralLinks.Client.AutorestClient.Models
         /// </summary>
         [JsonProperty(PropertyName = "RecipientClientId")]
         public string RecipientClientId { get; set; }
-
-        /// <summary>
-        /// </summary>
-        [JsonProperty(PropertyName = "ReferalLinkId")]
-        public string ReferalLinkId { get; set; }
 
         /// <summary>
         /// </summary>

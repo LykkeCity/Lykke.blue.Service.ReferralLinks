@@ -4,7 +4,7 @@ namespace Lykke.blue.Service.ReferralLinks.Models
 {
     public class ErrorResponseModel
     {
-        private string ErrorMessage { get; }
+        public string ErrorMessage { get; }
 
         private Dictionary<string, List<string>> ModelErrors { get; }
 

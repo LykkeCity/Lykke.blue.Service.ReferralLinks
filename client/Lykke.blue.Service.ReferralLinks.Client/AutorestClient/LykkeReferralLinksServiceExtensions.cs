@@ -148,38 +148,6 @@ namespace Lykke.blue.Service.ReferralLinks.Client.AutorestClient
             }
 
             /// <summary>
-            /// Request money transfer referral link
-            /// </summary>
-            /// <param name='operations'>
-            /// The operations group for this extension method.
-            /// </param>
-            /// <param name='request'>
-            /// </param>
-            public static object RequestGiftCoinsReferralLink(this ILykkeReferralLinksService operations, GiftCoinsReferralLinkRequest request = default(GiftCoinsReferralLinkRequest))
-            {
-                return operations.RequestGiftCoinsReferralLinkAsync(request).GetAwaiter().GetResult();
-            }
-
-            /// <summary>
-            /// Request money transfer referral link
-            /// </summary>
-            /// <param name='operations'>
-            /// The operations group for this extension method.
-            /// </param>
-            /// <param name='request'>
-            /// </param>
-            /// <param name='cancellationToken'>
-            /// The cancellation token.
-            /// </param>
-            public static async Task<object> RequestGiftCoinsReferralLinkAsync(this ILykkeReferralLinksService operations, GiftCoinsReferralLinkRequest request = default(GiftCoinsReferralLinkRequest), CancellationToken cancellationToken = default(CancellationToken))
-            {
-                using (var _result = await operations.RequestGiftCoinsReferralLinkWithHttpMessagesAsync(request, null, cancellationToken).ConfigureAwait(false))
-                {
-                    return _result.Body;
-                }
-            }
-
-            /// <summary>
             /// Request invitation referral link.
             /// </summary>
             /// <param name='operations'>
@@ -211,181 +179,37 @@ namespace Lykke.blue.Service.ReferralLinks.Client.AutorestClient
                 }
             }
 
+            /// <summary>
+            /// Claim invitation referral link.
+            /// </summary>
             /// <param name='operations'>
             /// The operations group for this extension method.
+            /// </param>
+            /// <param name='refLinkId'>
             /// </param>
             /// <param name='request'>
             /// </param>
-            public static object ClaimGiftCoins(this ILykkeReferralLinksService operations, ClaimReferralLinkRequest request = default(ClaimReferralLinkRequest))
+            public static object ClaimInvitationLink(this ILykkeReferralLinksService operations, string refLinkId, ClaimReferralLinkRequest request = default(ClaimReferralLinkRequest))
             {
-                return operations.ClaimGiftCoinsAsync(request).GetAwaiter().GetResult();
+                return operations.ClaimInvitationLinkAsync(refLinkId, request).GetAwaiter().GetResult();
             }
 
+            /// <summary>
+            /// Claim invitation referral link.
+            /// </summary>
             /// <param name='operations'>
             /// The operations group for this extension method.
+            /// </param>
+            /// <param name='refLinkId'>
             /// </param>
             /// <param name='request'>
             /// </param>
             /// <param name='cancellationToken'>
             /// The cancellation token.
             /// </param>
-            public static async Task<object> ClaimGiftCoinsAsync(this ILykkeReferralLinksService operations, ClaimReferralLinkRequest request = default(ClaimReferralLinkRequest), CancellationToken cancellationToken = default(CancellationToken))
+            public static async Task<object> ClaimInvitationLinkAsync(this ILykkeReferralLinksService operations, string refLinkId, ClaimReferralLinkRequest request = default(ClaimReferralLinkRequest), CancellationToken cancellationToken = default(CancellationToken))
             {
-                using (var _result = await operations.ClaimGiftCoinsWithHttpMessagesAsync(request, null, cancellationToken).ConfigureAwait(false))
-                {
-                    return _result.Body;
-                }
-            }
-
-            /// <param name='operations'>
-            /// The operations group for this extension method.
-            /// </param>
-            /// <param name='request'>
-            /// </param>
-            public static object ClaimInvitationLink(this ILykkeReferralLinksService operations, ClaimReferralLinkRequest request = default(ClaimReferralLinkRequest))
-            {
-                return operations.ClaimInvitationLinkAsync(request).GetAwaiter().GetResult();
-            }
-
-            /// <param name='operations'>
-            /// The operations group for this extension method.
-            /// </param>
-            /// <param name='request'>
-            /// </param>
-            /// <param name='cancellationToken'>
-            /// The cancellation token.
-            /// </param>
-            public static async Task<object> ClaimInvitationLinkAsync(this ILykkeReferralLinksService operations, ClaimReferralLinkRequest request = default(ClaimReferralLinkRequest), CancellationToken cancellationToken = default(CancellationToken))
-            {
-                using (var _result = await operations.ClaimInvitationLinkWithHttpMessagesAsync(request, null, cancellationToken).ConfigureAwait(false))
-                {
-                    return _result.Body;
-                }
-            }
-
-            /// <summary>
-            /// Get offchain ChannelKey for transfer.
-            /// </summary>
-            /// <param name='operations'>
-            /// The operations group for this extension method.
-            /// </param>
-            /// <param name='request'>
-            /// </param>
-            public static OffchainEncryptedKeyRespModel GetChannelKey(this ILykkeReferralLinksService operations, OffchainGetChannelKeyRequest request = default(OffchainGetChannelKeyRequest))
-            {
-                return operations.GetChannelKeyAsync(request).GetAwaiter().GetResult();
-            }
-
-            /// <summary>
-            /// Get offchain ChannelKey for transfer.
-            /// </summary>
-            /// <param name='operations'>
-            /// The operations group for this extension method.
-            /// </param>
-            /// <param name='request'>
-            /// </param>
-            /// <param name='cancellationToken'>
-            /// The cancellation token.
-            /// </param>
-            public static async Task<OffchainEncryptedKeyRespModel> GetChannelKeyAsync(this ILykkeReferralLinksService operations, OffchainGetChannelKeyRequest request = default(OffchainGetChannelKeyRequest), CancellationToken cancellationToken = default(CancellationToken))
-            {
-                using (var _result = await operations.GetChannelKeyWithHttpMessagesAsync(request, null, cancellationToken).ConfigureAwait(false))
-                {
-                    return _result.Body;
-                }
-            }
-
-            /// <summary>
-            /// Create offchain transfer to Lykke wallet
-            /// </summary>
-            /// <param name='operations'>
-            /// The operations group for this extension method.
-            /// </param>
-            /// <param name='model'>
-            /// </param>
-            public static object TransferToLykkeWalletMethod(this ILykkeReferralLinksService operations, TransferToLykkeWallet model = default(TransferToLykkeWallet))
-            {
-                return operations.TransferToLykkeWalletMethodAsync(model).GetAwaiter().GetResult();
-            }
-
-            /// <summary>
-            /// Create offchain transfer to Lykke wallet
-            /// </summary>
-            /// <param name='operations'>
-            /// The operations group for this extension method.
-            /// </param>
-            /// <param name='model'>
-            /// </param>
-            /// <param name='cancellationToken'>
-            /// The cancellation token.
-            /// </param>
-            public static async Task<object> TransferToLykkeWalletMethodAsync(this ILykkeReferralLinksService operations, TransferToLykkeWallet model = default(TransferToLykkeWallet), CancellationToken cancellationToken = default(CancellationToken))
-            {
-                using (var _result = await operations.TransferToLykkeWalletMethodWithHttpMessagesAsync(model, null, cancellationToken).ConfigureAwait(false))
-                {
-                    return _result.Body;
-                }
-            }
-
-            /// <summary>
-            /// Process offchain channel
-            /// </summary>
-            /// <param name='operations'>
-            /// The operations group for this extension method.
-            /// </param>
-            /// <param name='request'>
-            /// </param>
-            public static object ProcessChannel(this ILykkeReferralLinksService operations, OffchainChannelProcessModel request = default(OffchainChannelProcessModel))
-            {
-                return operations.ProcessChannelAsync(request).GetAwaiter().GetResult();
-            }
-
-            /// <summary>
-            /// Process offchain channel
-            /// </summary>
-            /// <param name='operations'>
-            /// The operations group for this extension method.
-            /// </param>
-            /// <param name='request'>
-            /// </param>
-            /// <param name='cancellationToken'>
-            /// The cancellation token.
-            /// </param>
-            public static async Task<object> ProcessChannelAsync(this ILykkeReferralLinksService operations, OffchainChannelProcessModel request = default(OffchainChannelProcessModel), CancellationToken cancellationToken = default(CancellationToken))
-            {
-                using (var _result = await operations.ProcessChannelWithHttpMessagesAsync(request, null, cancellationToken).ConfigureAwait(false))
-                {
-                    return _result.Body;
-                }
-            }
-
-            /// <summary>
-            /// Process offchain channel
-            /// </summary>
-            /// <param name='operations'>
-            /// The operations group for this extension method.
-            /// </param>
-            /// <param name='request'>
-            /// </param>
-            public static object FinalizeRefLinkTransfer(this ILykkeReferralLinksService operations, OffchainFinalizeModel request = default(OffchainFinalizeModel))
-            {
-                return operations.FinalizeRefLinkTransferAsync(request).GetAwaiter().GetResult();
-            }
-
-            /// <summary>
-            /// Process offchain channel
-            /// </summary>
-            /// <param name='operations'>
-            /// The operations group for this extension method.
-            /// </param>
-            /// <param name='request'>
-            /// </param>
-            /// <param name='cancellationToken'>
-            /// The cancellation token.
-            /// </param>
-            public static async Task<object> FinalizeRefLinkTransferAsync(this ILykkeReferralLinksService operations, OffchainFinalizeModel request = default(OffchainFinalizeModel), CancellationToken cancellationToken = default(CancellationToken))
-            {
-                using (var _result = await operations.FinalizeRefLinkTransferWithHttpMessagesAsync(request, null, cancellationToken).ConfigureAwait(false))
+                using (var _result = await operations.ClaimInvitationLinkWithHttpMessagesAsync(refLinkId, request, null, cancellationToken).ConfigureAwait(false))
                 {
                     return _result.Body;
                 }

@@ -5,6 +5,7 @@ using Lykke.blue.Service.ReferralLinks.Extensions;
 using Lykke.blue.Service.ReferralLinks.Models;
 using Microsoft.AspNetCore.Mvc;
 using System;
+using System.Net;
 using System.Threading.Tasks;
 
 namespace Lykke.blue.Service.ReferralLinks.Controllers
@@ -20,7 +21,7 @@ namespace Lykke.blue.Service.ReferralLinks.Controllers
 
         protected async Task<ObjectResult> LogAndReturnNotFound<T>(T request, ControllerContext controllerCtx, string info)
         {
-            await LogError(request, controllerCtx, new Exception(info));
+            await LogInfo(request, controllerCtx,info);
             return NotFound(ErrorResponseModel.Create(info));
         }
 
@@ -32,23 +33,29 @@ namespace Lykke.blue.Service.ReferralLinks.Controllers
 
         protected async Task<ObjectResult> LogAndReturnBadRequest<T>(T request, ControllerContext controllerCtx, string info)
         {
-            await LogWarn(request, controllerCtx, info);
+            await LogInfo(request, controllerCtx, info);
             return BadRequest(ErrorResponseModel.Create(info));
         }
 
+        protected async Task<ObjectResult> LogAndReturnInternalServerError<T>(T callParams, ControllerContext controllerCtx, string error)
+        {
+            await LogError(callParams, controllerCtx, new Exception(error));
+            return StatusCode((int)HttpStatusCode.InternalServerError, ErrorResponseModel.Create(error));
+        }
+ 
         protected async Task LogInfo<T>(T callParams, ControllerContext controllerCtx, string info)
         {
-            await _log.WriteInfoAsync(controllerCtx.GetControllerAndAction(), (new { callParams }).ToJson(), info, DateTime.Now);
+            await _log.WriteInfoAsync(controllerCtx.GetControllerAndAction(), (new { callParams }).ToJson(), info);
         }
 
         protected async Task LogWarn<T>(T callParams, ControllerContext controllerCtx, string info)
         {
-            await _log.WriteWarningAsync(controllerCtx.GetControllerAndAction(), (new { callParams }).ToJson(), info, DateTime.Now);
+            await _log.WriteWarningAsync(controllerCtx.GetControllerAndAction(), (new { callParams }).ToJson(), info);
         }
 
         protected async Task LogError<T>(T callParams, ControllerContext controllerCtx, Exception ex)
         {
-            await _log.WriteErrorAsync(controllerCtx.GetControllerAndAction(), (new { callParams }).ToJson(), ex, DateTime.Now);
+            await _log.WriteErrorAsync(controllerCtx.GetControllerAndAction(), (new { callParams }).ToJson(), ex);
         }
     }
 }

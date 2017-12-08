@@ -7,7 +7,6 @@ namespace Lykke.blue.Service.ReferralLinks.Modules.Validation
     {
         public ClaimReferralLinkRequestValidationModel()
         {
-            RuleFor(reg => reg.ReferalLinkId).NotNull().WithMessage("ReferalLinkId not specified");
             RuleFor(reg => reg.RecipientClientId).NotNull().WithMessage("RecipientClientId not specified");
         }
 

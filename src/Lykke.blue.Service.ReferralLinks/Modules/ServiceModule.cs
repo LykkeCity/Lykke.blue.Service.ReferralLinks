@@ -53,6 +53,7 @@ namespace Lykke.blue.Service.ReferralLinks.Modules
         {
             builder.RegisterInstance(_log).As<ILog>().SingleInstance();
             builder.RegisterInstance(_settings.CurrentValue);
+            builder.RegisterInstance(_settings.CurrentValue.ReferralLinksService);
         }
 
         private void RegisterLocalServices(ContainerBuilder builder)

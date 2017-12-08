@@ -41,7 +41,7 @@ namespace Lykke.blue.Service.ReferralLinks.Services.ExchangeOperations
                 if (asset == null)
                 {
                     var message = $"Asset with symbol {refLink.Asset} not found";
-                    await _log.WriteErrorAsync(executionContext, nameof(TransferRewardCoins), (new { Error = message }).ToJson(), new Exception(message), DateTime.Now);
+                    await _log.WriteErrorAsync(executionContext, nameof(TransferRewardCoins), (new { Error = message }).ToJson(), new Exception(message));
                     return new ExchangeOperationResult { Message = message };
                 }
 
@@ -64,7 +64,7 @@ namespace Lykke.blue.Service.ReferralLinks.Services.ExchangeOperations
                     {
                         error = $"Error: {result.Code}, Message: {result.Message}, TransactionId: {result.TransactionId}";
                     }
-                    await _log.WriteErrorAsync(executionContext, nameof(TransferRewardCoins), error, new Exception(error), DateTime.Now);
+                    await _log.WriteErrorAsync(executionContext, nameof(TransferRewardCoins), error, new Exception(error));
                     result.Message = error;
                     return result;
                 }
@@ -73,17 +73,17 @@ namespace Lykke.blue.Service.ReferralLinks.Services.ExchangeOperations
             }
             catch (OffchainException ex)
             {
-                await _log.WriteErrorAsync(executionContext, request.ToJson(), ex, DateTime.Now);
+                await _log.WriteErrorAsync(executionContext, request.ToJson(), ex);
                 throw new Exception($"ExchangeOperationsService error: Code={ex.OffchainExceptionCode}.OffchainException={ex.OffchainExceptionMessage}.Message={ex.Message}.{ex.InnerException?.Message}");
             }
             catch (ApplicationException ex)
             {
-                await _log.WriteErrorAsync(executionContext, request.ToJson(), ex, DateTime.Now);
+                await _log.WriteErrorAsync(executionContext, request.ToJson(), ex);
                 throw new Exception($"ExchangeOperationsService error: {ex.Message}{ex.InnerException?.Message}");
             }
             catch (Exception ex)
             {
-                await _log.WriteErrorAsync(executionContext, request.ToJson(), ex, DateTime.Now);
+                await _log.WriteErrorAsync(executionContext, request.ToJson(), ex);
                 throw new Exception($"ExchangeOperationsService error: {ex.Message}{ex.InnerException?.Message}");
             }
         }
