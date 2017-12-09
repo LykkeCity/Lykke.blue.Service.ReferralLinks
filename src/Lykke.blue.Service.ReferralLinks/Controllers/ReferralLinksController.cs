@@ -41,7 +41,7 @@ namespace Lykke.blue.Service.ReferralLinks.Controllers
         private readonly CachedDataDictionary<string, Lykke.Service.Assets.Client.Models.Asset> _assets;
         private readonly IBalancesClient _balancesClient;
         private readonly AppSettings _settings;
-        private readonly double ZeroAsDouble = 0.001;
+        private readonly double MinimalAmount = 0.00000001;
 
         public ReferralLinksController(
             ILog log,
@@ -72,7 +72,7 @@ namespace Lykke.blue.Service.ReferralLinks.Controllers
         /// </summary>
         /// <param name="id">Id of a referral link we wanna get.</param>
         /// <returns></returns>
-        [HttpGet("id/{id}")]
+        [HttpGet("{id}")]
         [SwaggerOperation("GetReferralLinkById")]
         [ProducesResponseType(typeof(ErrorResponseModel), (int)HttpStatusCode.NotFound)]
         [ProducesResponseType(typeof(GetReferralLinkResponse), (int)HttpStatusCode.OK)]
@@ -156,11 +156,11 @@ namespace Lykke.blue.Service.ReferralLinks.Controllers
         /// </summary>
         /// <param name="request"></param>
         /// <returns></returns>
-        //[HttpPost("giftCoinLinks")]
+        //[HttpPost("giftCoinLinks")] - for v2
         //[SwaggerOperation("RequestGiftCoinsReferralLink")]
         //[ProducesResponseType(typeof(ErrorResponseModel), (int)HttpStatusCode.BadRequest)]
         //[ProducesResponseType(typeof(ErrorResponseModel), (int)HttpStatusCode.NotFound)]
-        //[ProducesResponseType(typeof(RequestRefLinkResponse), (int)HttpStatusCode.Created)]        
+        //[ProducesResponseType(typeof(RequestRefLinkResponse), (int)HttpStatusCode.Created)]
         private async Task<IActionResult> RequestGiftCoinsReferralLink([FromBody] GiftCoinsReferralLinkRequest request)
         {
             if (request == null)
@@ -189,7 +189,7 @@ namespace Lykke.blue.Service.ReferralLinks.Controllers
 
             if (clientBalances == null)
             {
-                return await LogAndReturnNotFound(request, ControllerContext, $"Cant get clientBalance of asset {asset.Symbol} for client id {request.SenderClientId} from service {_settings.BalancesServiceClient.ServiceUrl}");
+                return await LogAndReturnNotFound(request, ControllerContext, $"Cant get clientBalance of asset {asset.Name} for client id {request.SenderClientId} from service {_settings.BalancesServiceClient.ServiceUrl}");
             }
 
             var balance = clientBalances.FirstOrDefault(x => x.AssetId == asset.Id)?.Balance;
@@ -212,7 +212,8 @@ namespace Lykke.blue.Service.ReferralLinks.Controllers
         /// </summary>
         /// <param name="request"></param>
         /// <returns></returns>
-        [HttpPost("invitationLinks")]
+
+        [HttpPost("invitation")]
         [SwaggerOperation("RequestInvitationReferralLink")]
         [ProducesResponseType(typeof(ErrorResponseModel), (int)HttpStatusCode.BadRequest)]
         [ProducesResponseType(typeof(ErrorResponseModel), (int)HttpStatusCode.InternalServerError)]
@@ -230,27 +231,19 @@ namespace Lykke.blue.Service.ReferralLinks.Controllers
                 return await LogAndReturnBadRequest(request, ControllerContext, Phrases.InvalidSenderClientId);
             }
 
-            var invitationLinkAlreadyCreated = _referralLinksService.GetInvitationLinksForSenderId(request.SenderClientId).ToList();
-            if (invitationLinkAlreadyCreated.Count == 1)
-            {
 
-                await LogInfo(request, ControllerContext, $"Invitation link already exists for SenderClientId {request.SenderClientId}. RefLinkId {invitationLinkAlreadyCreated.First().Id}");
-                return Ok(new RequestRefLinkResponse { RefLinkUrl = invitationLinkAlreadyCreated.First().Url, RefLinkId = invitationLinkAlreadyCreated.First().Id });
-            }
-            if (invitationLinkAlreadyCreated.Count > 1)
+            var invitation = _referralLinksService.GetInvitationLinksForSenderId(request.SenderClientId).FirstOrDefault();
+            if (invitation != null)
             {
-                return await LogAndReturnInternalServerError(request, ControllerContext, $"There are multiple invitation links created for client {request.SenderClientId}! ");
+                await LogInfo(request, ControllerContext, $"Invitation link requested by SenderClientId {request.SenderClientId}. RefLinkId {invitation.Id}");
+                return Ok(new RequestRefLinkResponse { RefLinkUrl = invitation.Url, RefLinkId = invitation.Id });
             }
 
-            if (!_referralLinksService.InvitationLinkForSenderIdExists(request.SenderClientId))
-            {
-                var referralLink = await _referralLinksService.CreateInvitationLink(request);
+            var referralLink = await _referralLinksService.CreateInvitationLink(request);
 
-                await LogInfo(request, ControllerContext, referralLink.ToJson());
+            await LogInfo(request, ControllerContext, referralLink.ToJson());
 
-                return Created(uri: $"api/referralLinks/{referralLink.Id}", value: new RequestRefLinkResponse { RefLinkUrl = referralLink.Url, RefLinkId = referralLink.Id });
-            }
-            return await LogAndReturnBadRequest(request, ControllerContext, $"Invitation link for client {request.SenderClientId} already exists. Please try again!");
+            return Created(uri: $"api/referralLinks/{referralLink.Id}", value: new RequestRefLinkResponse { RefLinkUrl = referralLink.Url, RefLinkId = referralLink.Id });
         }
 
         private string ValidateClaimRefLinkAndRequest(IReferralLink refLink, ClaimReferralLinkRequest request, string refLinkId)
@@ -274,7 +267,7 @@ namespace Lykke.blue.Service.ReferralLinks.Controllers
                 return "RecipientClientId can't be the same as SenderClientId. Client cant claim their own ref link.";
             }
 
-            if (Math.Abs(refLink.Amount) < ZeroAsDouble)
+            if (Math.Abs(refLink.Amount) < MinimalAmount)
             {
                 return $"Requested amount for RefLink with id {refLink.Id} is 0 (not set). Check transfer's history.";
             }
@@ -365,38 +358,39 @@ namespace Lykke.blue.Service.ReferralLinks.Controllers
         /// <param name="refLinkId"></param>
         /// <param name="request"></param>
         /// <returns></returns>
-        [HttpPut("invitationLinks/{refLinkId}/claim")]
+
+        [HttpPut("invitation/{refLinkId}/claim")]
         [SwaggerOperation("ClaimInvitationLink")]
         [ProducesResponseType(typeof(ErrorResponseModel), (int)HttpStatusCode.BadRequest)]
         [ProducesResponseType(typeof(ErrorResponseModel), (int)HttpStatusCode.InternalServerError)]
         [ProducesResponseType(typeof(ClaimRefLinkResponse), (int)HttpStatusCode.OK)]
         public async Task<IActionResult> ClaimInvitationLink(string refLinkId, [FromBody] ClaimReferralLinkRequest request )
         {
+            if (!request.IsNewClient)
+            {
+                return await LogAndReturnBadRequest(request, ControllerContext, "Not a new client.");
+            }
+
+            var refLink = await _referralLinksService.GetReferralLinkById(refLinkId ?? "") ?? await _referralLinksService.GetReferralLinkByUrl(request.ReferalLinkUrl ?? "");
+
+            var validationError = ValidateClaimRefLinkAndRequest(refLink, request, refLinkId);
+            if (!String.IsNullOrEmpty(validationError))
+            {
+                return await LogAndReturnBadRequest(request, ControllerContext, validationError);
+            }
+
+            var claims = (await _referralLinkClaimsService.GetRefLinkClaims(refLink.Id)).ToList();
+
+            var alreadyClaimedByThisRecipient = claims.Any(c => c.RecipientClientId == request.RecipientClientId);
+            if (alreadyClaimedByThisRecipient)
+            {
+                return await LogAndReturnBadRequest(request, ControllerContext, $"Link already claimed by client id {request.RecipientClientId}");
+            }
+
+            bool shouldReceiveReward = await ShoulReceiveReward(claims, refLink);
+
             try
             {
-                if (!request.IsNewClient)
-                {
-                    return await LogAndReturnBadRequest(request, ControllerContext, "Not a new client.");
-                }
-
-                var refLink = await _referralLinksService.GetReferralLinkById(refLinkId ?? "") ?? await _referralLinksService.GetReferralLinkByUrl(request.ReferalLinkUrl ?? "");
-
-                var validationError = ValidateClaimRefLinkAndRequest(refLink, request, refLinkId);
-                if (!String.IsNullOrEmpty(validationError))
-                {
-                    return await LogAndReturnBadRequest(request, ControllerContext, validationError);
-                }
-
-                var claims = (await _referralLinkClaimsService.GetRefLinkClaims(refLink.Id)).ToList();
-
-                var alreadyClaimedByThisRecipient = claims.Any(c => c.RecipientClientId == request.RecipientClientId);
-                if (alreadyClaimedByThisRecipient)
-                {
-                    return await LogAndReturnBadRequest(request, ControllerContext, $"Link already claimed by client id {request.RecipientClientId}");
-                }
-
-                bool shouldReceiveReward = await ShoulReceiveReward(claims, refLink);
-
                 var newRefLinkClaimRecipient = await CreateNewRefLinkClaim(refLink, request.RecipientClientId, shouldReceiveReward, true);
 
                 if (shouldReceiveReward)
@@ -427,8 +421,7 @@ namespace Lykke.blue.Service.ReferralLinks.Controllers
             }
             catch (Exception ex)
             {
-                await LogError(request, ControllerContext, ex);
-                return NotFound(ErrorResponseModel.Create($"{ex.Message}.{ex.InnerException?.Message}."));
+                return await LogAndReturnInternalServerError(request, ControllerContext, $"{ex.Message}.");
             }
 
         }
