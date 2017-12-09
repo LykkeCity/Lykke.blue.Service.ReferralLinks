@@ -101,7 +101,7 @@ namespace Lykke.blue.Service.ReferralLinks.Controllers
                 return await LogAndReturnBadRequest(model, ControllerContext, "Ref link Id not found ot missing");
             }
 
-            var asset = (await _assets.GetDictionaryAsync()).Values.FirstOrDefault(v => v.Symbol == refLink.Asset);
+            var asset = (await _assets.GetDictionaryAsync()).Values.FirstOrDefault(v => v.Id == refLink.Asset);
 
             if (asset == null)
             {
@@ -202,13 +202,13 @@ namespace Lykke.blue.Service.ReferralLinks.Controllers
             var transfer = await _offchainTransferRepository.GetTransfer(transferId);
 
             refLink.Amount = (double)transfer.Amount;
-            refLink.Asset = (await _assets.GetItemAsync(transfer.AssetId)).Symbol;
+            refLink.Asset = (await _assets.GetItemAsync(transfer.AssetId)).Id;
             refLink.SenderOffchainTransferId = transferId;
             refLink.State = ReferralLinkState.SentToLykkeSharedWallet.ToString();
 
             await _referralLinksService.UpdateAsync(refLink);
 
-            await LogInfo(new { RefLink = refLink, TransferId = transferId }, ControllerContext, $"Transfer complete for ref link id {refLink.Id} with amount {transfer.Amount} and asset {refLink.Asset}. Offchain transfer Id {transferId} attached with ref link. ");
+            await LogInfo(new { RefLink = refLink, TransferId = transferId }, ControllerContext, $"Transfer complete for ref link id {refLink.Id} with amount {transfer.Amount} and asset Id {refLink.Asset}. Offchain transfer Id {transferId} attached with ref link. ");
         }
 
         /// <summary>

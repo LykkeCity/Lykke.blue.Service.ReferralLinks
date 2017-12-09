@@ -178,7 +178,7 @@ namespace Lykke.blue.Service.ReferralLinks.Controllers
                 return await LogAndReturnBadRequest(request, ControllerContext, Phrases.InvalidSenderClientId);
             }
 
-            var asset = (await _assets.GetDictionaryAsync()).Values.FirstOrDefault(v => v.DisplayId == request.Asset);
+            var asset = (await _assets.GetDictionaryAsync()).Values.FirstOrDefault(v => v.Id == request.Asset);
 
             if (String.IsNullOrEmpty(request.Asset) || asset == null)
             {
@@ -305,7 +305,7 @@ namespace Lykke.blue.Service.ReferralLinks.Controllers
                 return await LogAndReturnBadRequest(request, ControllerContext, validationError);
             }
 
-            var asset = (await _assets.GetDictionaryAsync()).Values.FirstOrDefault(v => v.Symbol == refLink.Asset);
+            var asset = (await _assets.GetDictionaryAsync()).Values.FirstOrDefault(v => v.Id == refLink.Asset);
 
             if (asset == null)
             {
