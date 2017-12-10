@@ -18,7 +18,7 @@ namespace Lykke.blue.Service.ReferralLinks.AzureRepositories.ReferralLink
             _referralLinkClaimsTable = referralLinkClaimsTable;
         }
 
-        private static string GetPartitionKey() => "ReferallLinkClaims";
+        private static string GetPartitionKey(IReferralLinkClaim referralLinkClaim) => referralLinkClaim.ReferralLinkId;
 
         private static string GetRowKey(string id)
         {
@@ -29,7 +29,7 @@ namespace Lykke.blue.Service.ReferralLinks.AzureRepositories.ReferralLink
         {
             var entity = Mapper.Map<ReferralLinkClaimEntity>(referralLinkClaim);
 
-            entity.PartitionKey = GetPartitionKey();
+            entity.PartitionKey = GetPartitionKey(referralLinkClaim);
             entity.RowKey = GetRowKey(referralLinkClaim.Id);
 
             await _referralLinkClaimsTable.InsertAsync(entity);
@@ -43,11 +43,11 @@ namespace Lykke.blue.Service.ReferralLinks.AzureRepositories.ReferralLink
             return claims; 
         }
 
-        public async Task<IReferralLinkClaim> Update(IReferralLinkClaim referralLinkClaims)
+        public async Task<IReferralLinkClaim> Update(IReferralLinkClaim referralLinkClaim)
         {
-            var result = await _referralLinkClaimsTable.MergeAsync(GetPartitionKey(), GetRowKey(referralLinkClaims.Id), x =>
+            var result = await _referralLinkClaimsTable.MergeAsync(GetPartitionKey(referralLinkClaim), GetRowKey(referralLinkClaim.Id), x =>
             {
-                Mapper.Map(referralLinkClaims, x);
+                Mapper.Map(referralLinkClaim, x);
 
                 return x;
             });

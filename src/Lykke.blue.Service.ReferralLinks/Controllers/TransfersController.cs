@@ -105,7 +105,7 @@ namespace Lykke.blue.Service.ReferralLinks.Controllers
 
             if (asset == null)
             {
-                return await LogAndReturnBadRequest(model, ControllerContext, $"Specified asset {refLink.Asset} in reflink id {refLink.Id} not found ");
+                return await LogAndReturnBadRequest(model, ControllerContext, $"Specified asset id {refLink.Asset} in reflink id {refLink.Id} not found ");
             }
 
             await CheckOffchain(clientId);

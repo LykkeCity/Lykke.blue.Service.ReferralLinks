@@ -13,6 +13,7 @@ namespace Lykke.blue.Service.ReferralLinks.Controllers
     public class RefLinksBaseController : Controller
     {
         private readonly ILog _log;
+        private string TECHNICAL_ERROR_MESSAGE = "Error while processing request.";
 
         public RefLinksBaseController(ILog log)
         {
@@ -27,8 +28,8 @@ namespace Lykke.blue.Service.ReferralLinks.Controllers
 
         protected async Task<ObjectResult> LogOffchainExceptionAndReturn<T>(T request, ControllerContext controllerCtx, OffchainException ex)
         {
-            await LogError(request, controllerCtx, new Exception($"OffchainException: {ex.ToJson()}"));
-            return NotFound(ErrorResponseModel.Create((new { ex.OffchainExceptionMessage, ex.OffchainExceptionCode, ex.Message }).ToJson()));
+            await LogError(request, controllerCtx, new Exception($"OffchainException: {ex.OffchainExceptionMessage}, Code: {ex.OffchainExceptionCode}, Error: {ex.Message}"));
+            return StatusCode((int)HttpStatusCode.InternalServerError, ErrorResponseModel.Create(TECHNICAL_ERROR_MESSAGE));
         }
 
         protected async Task<ObjectResult> LogAndReturnBadRequest<T>(T request, ControllerContext controllerCtx, string info)
@@ -40,7 +41,7 @@ namespace Lykke.blue.Service.ReferralLinks.Controllers
         protected async Task<ObjectResult> LogAndReturnInternalServerError<T>(T callParams, ControllerContext controllerCtx, string error)
         {
             await LogError(callParams, controllerCtx, new Exception(error));
-            return StatusCode((int)HttpStatusCode.InternalServerError, ErrorResponseModel.Create(error));
+            return StatusCode((int)HttpStatusCode.InternalServerError, ErrorResponseModel.Create(TECHNICAL_ERROR_MESSAGE));
         }
  
         protected async Task LogInfo<T>(T callParams, ControllerContext controllerCtx, string info)

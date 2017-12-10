@@ -40,7 +40,7 @@ namespace Lykke.blue.Service.ReferralLinks.Services.ExchangeOperations
                 var asset = (await _assets.GetDictionaryAsync()).Values.FirstOrDefault(v => v.Id == refLink.Asset);
                 if (asset == null)
                 {
-                    var message = $"Asset with symbol {refLink.Asset} not found";
+                    var message = $"Asset with symbol id {refLink.Asset} not found";
                     await _log.WriteErrorAsync(executionContext, nameof(TransferRewardCoins), (new { Error = message }).ToJson(), new Exception(message));
                     return new ExchangeOperationResult { Message = message };
                 }
