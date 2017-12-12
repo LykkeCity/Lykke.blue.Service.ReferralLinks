@@ -8,7 +8,7 @@ namespace Lykke.blue.Service.ReferralLinks
     {
         public AutoMapperProfile()
         {
-            CreateMap<IReferralLink, GetReferralLinkResponse>();            
+            CreateMap<IReferralLink, GetReferralLinkResponse>().ForMember(x=>x.SenderClientId, v=> v.UseValue("")).ForMember(y=>y.SenderOffchainTransferId, z=>z.UseValue(""));            
             CreateMap<IReferralLinksStatistics, GetReferralLinksStatisticsBySenderIdResponse>();
         }
     }

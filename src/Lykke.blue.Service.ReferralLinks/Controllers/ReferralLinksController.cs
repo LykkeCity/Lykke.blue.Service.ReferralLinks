@@ -91,7 +91,7 @@ namespace Lykke.blue.Service.ReferralLinks.Controllers
                 return await LogAndReturnNotFound(id, ControllerContext, msg);
             }
 
-            var result = Mapper.Map<GetReferralLinkResponse>(referralLink);
+            var result = Mapper.Map<GetReferralLinkResponse>(referralLink); //SenderClientId and SenderOffchainTransferId are set to "" by AutoMapperProfile
 
             return Ok(result);
         }
@@ -123,7 +123,7 @@ namespace Lykke.blue.Service.ReferralLinks.Controllers
                 return NotFound(ErrorResponseModel.Create(msg));
             }
 
-            var result = Mapper.Map<GetReferralLinkResponse>(referralLink);
+            var result = Mapper.Map<GetReferralLinkResponse>(referralLink); //SenderClientId and SenderOffchainTransferId are set to "" by AutoMapperProfile
 
             return Ok(result);
         }
