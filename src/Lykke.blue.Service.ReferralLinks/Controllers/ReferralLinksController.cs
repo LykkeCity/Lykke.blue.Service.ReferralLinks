@@ -399,6 +399,7 @@ namespace Lykke.blue.Service.ReferralLinks.Controllers
 
                     if (Math.Abs(refLink.Amount) < MinimalAmount)
                     {
+                        await LogWarn(request, ControllerContext, $"Invitation link with id {refLink.Id} is claimed, but the link is set to reward amount 0. If this is intentional, please act accordingly - possibly rewarding the recipients manually. Records for the claim will be created in DB, but with empty transaction ID. Invitation links get created with 0 amount if the relevant setting in config is set to 0. ");
                         return Ok(new ClaimRefLinkResponse());
                     }
 
