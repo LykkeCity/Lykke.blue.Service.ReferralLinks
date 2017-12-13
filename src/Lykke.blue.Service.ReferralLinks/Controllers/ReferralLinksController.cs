@@ -267,9 +267,9 @@ namespace Lykke.blue.Service.ReferralLinks.Controllers
                 return "RecipientClientId can't be the same as SenderClientId. Client cant claim their own ref link.";
             }
 
-            if (Math.Abs(refLink.Amount) < MinimalAmount)
+            if (Math.Abs(refLink.Amount) < MinimalAmount && refLink.Type == ReferralLinkType.GiftCoins.ToString())
             {
-                return $"Requested amount for RefLink with id {refLink.Id} is 0 (not set). Check transfer's history.";
+                return $"Requested amount for RefLink with id {refLink.Id} is 0 (not set). 0 amount gift links are not allowed.";
             }
 
             if (refLink.Type == ReferralLinkType.GiftCoins.ToString() && refLink.State != ReferralLinkState.SentToLykkeSharedWallet.ToString())
@@ -396,6 +396,12 @@ namespace Lykke.blue.Service.ReferralLinks.Controllers
                 if (shouldReceiveReward)
                 {
                     var newRefLinkClaimSender = await CreateNewRefLinkClaim(refLink, refLink.SenderClientId, true, false);
+
+                    if (Math.Abs(refLink.Amount) < MinimalAmount)
+                    {
+                        await LogWarn(request, ControllerContext, $"Invitation link with id {refLink.Id} is claimed, but the link is set to reward amount 0. If this is intentional, please act accordingly - possibly rewarding the recipients manually. Records for the claim will be created in DB, but with empty transaction ID. Invitation links get created with 0 amount if the relevant setting in config is set to 0. ");
+                        return Ok(new ClaimRefLinkResponse());
+                    }
 
                     var transactionRewardSender = await _exchangeService.TransferRewardCoins(refLink, false, refLink.SenderClientId, ControllerContext.GetControllerAndAction());
                     await SetRefLinkClaimTransactionId(transactionRewardSender, newRefLinkClaimSender);
