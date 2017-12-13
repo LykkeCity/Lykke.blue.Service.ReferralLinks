@@ -267,9 +267,9 @@ namespace Lykke.blue.Service.ReferralLinks.Controllers
                 return "RecipientClientId can't be the same as SenderClientId. Client cant claim their own ref link.";
             }
 
-            if (Math.Abs(refLink.Amount) < MinimalAmount)
+            if (Math.Abs(refLink.Amount) < MinimalAmount && refLink.Type == ReferralLinkType.GiftCoins.ToString())
             {
-                return $"Requested amount for RefLink with id {refLink.Id} is 0 (not set). Check transfer's history.";
+                return $"Requested amount for RefLink with id {refLink.Id} is 0 (not set). 0 amount gift links are not allowed.";
             }
 
             if (refLink.Type == ReferralLinkType.GiftCoins.ToString() && refLink.State != ReferralLinkState.SentToLykkeSharedWallet.ToString())
@@ -396,6 +396,11 @@ namespace Lykke.blue.Service.ReferralLinks.Controllers
                 if (shouldReceiveReward)
                 {
                     var newRefLinkClaimSender = await CreateNewRefLinkClaim(refLink, refLink.SenderClientId, true, false);
+
+                    if (Math.Abs(refLink.Amount) < MinimalAmount)
+                    {
+                        return Ok(new ClaimRefLinkResponse());
+                    }
 
                     var transactionRewardSender = await _exchangeService.TransferRewardCoins(refLink, false, refLink.SenderClientId, ControllerContext.GetControllerAndAction());
                     await SetRefLinkClaimTransactionId(transactionRewardSender, newRefLinkClaimSender);
