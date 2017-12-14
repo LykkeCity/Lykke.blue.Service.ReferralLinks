@@ -1,4 +1,5 @@
 ﻿using Lykke.blue.Service.ReferralLinks.Core.Settings.ServiceSettings;
+using Lykke.blue.Service.ReferralLinks.Core.Settings.SlackNotifications;
 using Lykke.Service.Kyc.Client;
 
 namespace Lykke.blue.Service.ReferralLinks.Core.Settings
@@ -11,6 +12,7 @@ namespace Lykke.blue.Service.ReferralLinks.Core.Settings
         public BalancesServiceClient BalancesServiceClient { get; set; }
         public KycServiceClientSettings KycServiceClient { get; set; }
         public ExchangeOperationsClient ExchangeOperationsServiceClient { get; set; }
+        public SlackNotificationsSettings SlackNotifications { get; set; }
     }
 
     public class ExchangeOperationsClient
