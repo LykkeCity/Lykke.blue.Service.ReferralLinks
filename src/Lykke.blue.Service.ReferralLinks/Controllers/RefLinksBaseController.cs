@@ -43,7 +43,13 @@ namespace Lykke.blue.Service.ReferralLinks.Controllers
             await LogError(callParams, controllerCtx, new Exception(error));
             return StatusCode((int)HttpStatusCode.InternalServerError, ErrorResponseModel.Create(TECHNICAL_ERROR_MESSAGE));
         }
- 
+
+        protected async Task<ObjectResult> LogAndReturnInternalServerError<T>(T callParams, ControllerContext controllerCtx, Exception ex)
+        {
+            await _log.WriteErrorAsync(controllerCtx.GetControllerAndAction(), new { callParams }.ToJson(), ex);
+            return StatusCode((int)HttpStatusCode.InternalServerError, ErrorResponseModel.Create(TECHNICAL_ERROR_MESSAGE));
+        }
+
         protected async Task LogInfo<T>(T callParams, ControllerContext controllerCtx, string info)
         {
             await _log.WriteInfoAsync(controllerCtx.GetControllerAndAction(), (new { callParams }).ToJson(), info);

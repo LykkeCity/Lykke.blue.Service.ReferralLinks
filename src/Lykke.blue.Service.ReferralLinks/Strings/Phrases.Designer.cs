@@ -79,6 +79,15 @@ namespace Lykke.blue.Service.ReferralLinks.Strings {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to You do not have enough balance in wallet..
+        /// </summary>
+        public static string InvalidBalanceAmount {
+            get {
+                return ResourceManager.GetString("InvalidBalanceAmount", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Provided claiming client id is not valid..
         /// </summary>
         public static string InvalidClaimingClientId {
@@ -120,15 +129,6 @@ namespace Lykke.blue.Service.ReferralLinks.Strings {
         public static string InvalidState {
             get {
                 return ResourceManager.GetString("InvalidState", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to You do not have enough TREEs in wallet..
-        /// </summary>
-        public static string InvalidTreesAmount {
-            get {
-                return ResourceManager.GetString("InvalidTreesAmount", resourceCulture);
             }
         }
         

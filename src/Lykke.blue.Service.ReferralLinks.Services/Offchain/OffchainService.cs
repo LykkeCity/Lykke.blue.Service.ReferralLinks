@@ -225,10 +225,12 @@ namespace Lykke.blue.Service.ReferralLinks.Services.Offchain
 
             await _offchainFinalizeCommandProducer.ProduceFinalize(offchainTransfer.Id, credentials.ClientId, result.TxHash);
 
+            await _logger.WriteInfoAsync("ProcessTransfer", "Offchain Finalize", $"FinalizeResult: {result.ToJson()}");
+
             return new OffchainResult
             {
                 TransferId = offchainTransfer.Id,
-                TransactionHex = "0x0", //result.Transaction,
+                TransactionHex = result.Transaction,
                 OperationResult = OffchainOperationResult.ClientCommitment
             };
         }

@@ -17,34 +17,6 @@ namespace Lykke.blue.Service.ReferralLinks.Client
             _service = new LykkeReferralLinksService(new Uri(serviceUrl));
         }
 
-        public Task<object> ClaimGiftCoins(ClaimReferralLinkRequest request)
-        {
-            throw new NotImplementedException("Reserved for version 2");
-            //try
-            //{
-            //    return await _service.ClaimGiftCoinsAsync(request);
-            //}
-            //catch (Exception ex)
-            //{
-            //    await _log.WriteErrorAsync(nameof(ReferralLinksClient), nameof(GetReferralLinksStatisticsBySenderId), ex);
-            //    throw;
-            //}
-        }
-
-        public Task<object> ClaimInvitationLink(ClaimReferralLinkRequest request)
-        {
-            throw new NotImplementedException("Reserved for version 2");
-            //try
-            //{
-            //    return await _service.ClaimInvitationLinkAsync(request);
-            //}
-            //catch (Exception ex)
-            //{
-            //    await _log.WriteErrorAsync(nameof(ReferralLinksClient), nameof(ClaimInvitationLink), ex);
-            //    throw;
-            //}
-        }
-
         public void Dispose()
         {
             if (_service == null)
@@ -53,32 +25,56 @@ namespace Lykke.blue.Service.ReferralLinks.Client
             _service = null;
         }
 
-        public Task<object> FinalizeRefLinkTransfer(OffchainFinalizeModel request)
+        public async Task<object> ClaimGiftCoins(string refLinkId, ClaimReferralLinkRequest request)
         {
-            throw new NotImplementedException("Reserved for version 2");
-            //try
-            //{
-            //    return await _service.FinalizeRefLinkTransferAsync(request);
-            //}
-            //catch (Exception ex)
-            //{
-            //    await _log.WriteErrorAsync(nameof(ReferralLinksClient), nameof(GetChannelKey), ex);
-            //    throw;
-            //}
+            try
+            {
+                return await _service.ClaimGiftCoinsAsync(refLinkId, request);
+            }
+            catch (Exception ex)
+            {
+                await _log.WriteErrorAsync(nameof(ReferralLinksClient), nameof(ClaimGiftCoins), ex);
+                throw;
+            }
         }
 
-        public Task<OffchainEncryptedKeyRespModel> GetChannelKey(OffchainGetChannelKeyRequest request)
+        public async Task<object> ClaimInvitationLink(string refLinkId, ClaimReferralLinkRequest request)
         {
-            throw new NotImplementedException("Reserved for version 2");
-            //try
-            //{
-            //    return await _service.GetChannelKeyAsync(request);
-            //}
-            //catch (Exception ex)
-            //{
-            //    await _log.WriteErrorAsync(nameof(ReferralLinksClient), nameof(GetChannelKey), ex);
-            //    throw;
-            //}
+            try
+            {
+                return await _service.ClaimInvitationLinkAsync(refLinkId, request);
+            }
+            catch (Exception ex)
+            {
+                await _log.WriteErrorAsync(nameof(ReferralLinksClient), nameof(ClaimInvitationLink), ex);
+                throw;
+            }
+        }
+
+        public async Task<object> FinalizeGiftCoinLinkTransfer(OffchainFinalizeModel request)
+        {
+            try
+            {
+                return await _service.FinalizeRefLinkTransferAsync(request);
+            }
+            catch (Exception ex)
+            {
+                await _log.WriteErrorAsync(nameof(ReferralLinksClient), nameof(FinalizeGiftCoinLinkTransfer), ex);
+                throw;
+            }
+        }
+
+        public async Task<OffchainEncryptedKeyRespModel> GetChannelKey(string asset, string clientId)
+        {
+            try
+            {
+                return await _service.GetChannelKeyAsync(asset, clientId);
+            }
+            catch (Exception ex)
+            {
+                await _log.WriteErrorAsync(nameof(ReferralLinksClient), nameof(GetChannelKey), ex);
+                throw;
+            }
         }
 
         public async Task<object> GetReferralLink(string id)
@@ -94,11 +90,11 @@ namespace Lykke.blue.Service.ReferralLinks.Client
             }
         }       
 
-        public async Task<object> GetReferralLinksStatisticsBySenderId(RefLinkStatisticsRequest request)
+        public async Task<object> GetReferralLinksStatisticsBySenderId(string senderClientId)
         {
             try
             {
-                return await _service.GetReferralLinksStatisticsBySenderIdAsync(request);
+                return await _service.GetReferralLinksStatisticsBySenderIdAsync(senderClientId);
             }
             catch (Exception ex)
             {
@@ -107,32 +103,30 @@ namespace Lykke.blue.Service.ReferralLinks.Client
             }
         }
 
-        public Task<object> ProcessChannel(OffchainChannelProcessModel request)
+        public async Task<object> ProcessChannel(OffchainChannelProcessModel request)
         {
-            throw new NotImplementedException("Reserved for version 2");
-            //try
-            //{
-            //    return await _service.ProcessChannelAsync(request);
-            //}
-            //catch (Exception ex)
-            //{
-            //    await _log.WriteErrorAsync(nameof(ReferralLinksClient), nameof(ProcessChannel), ex);
-            //    throw;
-            //}
+            try
+            {
+                return await _service.ProcessChannelAsync(request);
+            }
+            catch (Exception ex)
+            {
+                await _log.WriteErrorAsync(nameof(ReferralLinksClient), nameof(ProcessChannel), ex);
+                throw;
+            }
         }
 
-        public Task<object> RequestGiftCoinsReferralLink(GiftCoinsReferralLinkRequest request)
+        public async Task<object> RequestGiftCoinsReferralLink(GiftCoinsReferralLinkRequest request)
         {
-            throw new NotImplementedException("Reserved for version 2");
-            //try
-            //{
-            //    return await _service.RequestGiftCoinsReferralLinkAsync(request);
-            //}
-            //catch (Exception ex)
-            //{
-            //    await _log.WriteErrorAsync(nameof(ReferralLinksClient), nameof(RequestGiftCoinsReferralLink), ex);
-            //    throw;
-            //}
+            try
+            {
+                return await _service.RequestGiftCoinsReferralLinkAsync(request);
+            }
+            catch (Exception ex)
+            {
+                await _log.WriteErrorAsync(nameof(ReferralLinksClient), nameof(RequestGiftCoinsReferralLink), ex);
+                throw;
+            }
         }
 
         public async Task<object> RequestInvitationReferralLink(InvitationReferralLinkRequest request)
@@ -150,18 +144,17 @@ namespace Lykke.blue.Service.ReferralLinks.Client
 
        
 
-        public Task<object> TransferToLykkeWallet(TransferToLykkeWallet request)
+        public async Task<object> TransferToLykkeWallet(TransferToLykkeWallet request)
         {
-            throw new NotImplementedException("Reserved for version 2");
-            //try
-            //{
-            //    return await _service.TransferToLykkeWalletMethodAsync(request);
-            //}
-            //catch (Exception ex)
-            //{
-            //    await _log.WriteErrorAsync(nameof(ReferralLinksClient), nameof(TransferToLykkeWallet), ex);
-            //    throw;
-            //}
+            try
+            {
+                return await _service.TransferToLykkeHotWalletAsync(request);
+            }
+            catch (Exception ex)
+            {
+                await _log.WriteErrorAsync(nameof(ReferralLinksClient), nameof(TransferToLykkeWallet), ex);
+                throw;
+            }
         }
 
     }
