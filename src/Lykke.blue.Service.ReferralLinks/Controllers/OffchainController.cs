@@ -199,7 +199,7 @@ namespace Lykke.blue.Service.ReferralLinks.Controllers
         /// <returns></returns>
         [HttpPost("transfer/finalize")]
         [SwaggerOperation("FinalizeRefLinkTransfer")]
-        [ProducesResponseType(typeof(OffchainSuccessTradeRespModel), (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(OffchainTradeRespModel), (int)HttpStatusCode.OK)]
         [ProducesResponseType(typeof(ErrorResponseModel), (int)HttpStatusCode.BadRequest)]
         [ProducesResponseType(typeof(ErrorResponseModel), (int)HttpStatusCode.InternalServerError)]
         public async Task<IActionResult> Finalize([FromBody] OffchainFinalizeModel request)
@@ -261,7 +261,7 @@ namespace Lykke.blue.Service.ReferralLinks.Controllers
                     await LogInfo(request, ControllerContext, $"Offchain request set to complete: {offchainRequest.ToJson()}");
                 }
 
-                return Ok(new OffchainSuccessTradeRespModel
+                return Ok(new OffchainTradeRespModel
                 {
                     TransferId = response.TransferId,
                     TransactionHex = response.TransactionHex,

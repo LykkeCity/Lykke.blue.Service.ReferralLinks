@@ -4,15 +4,10 @@
 
 namespace Lykke.blue.Service.ReferralLinks.Client.AutorestClient
 {
-    using Lykke.blue;
-    using Lykke.blue.Service;
-    using Lykke.blue.Service.ReferralLinks;
-    using Lykke.blue.Service.ReferralLinks.Client;
     using Microsoft.Rest;
     using Microsoft.Rest.Serialization;
     using Models;
     using Newtonsoft.Json;
-    using System.Collections;
     using System.Collections.Generic;
     using System.Net;
     using System.Net.Http;
@@ -863,7 +858,7 @@ namespace Lykke.blue.Service.ReferralLinks.Client.AutorestClient
                 _responseContent = await _httpResponse.Content.ReadAsStringAsync().ConfigureAwait(false);
                 try
                 {
-                    _result.Body = SafeJsonConvert.DeserializeObject<OffchainSuccessTradeRespModel>(_responseContent, DeserializationSettings);
+                    _result.Body = SafeJsonConvert.DeserializeObject<OffchainTradeRespModel>(_responseContent, DeserializationSettings);
                 }
                 catch (JsonException ex)
                 {
