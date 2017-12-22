@@ -1,5 +1,5 @@
-﻿using System;
-using Lykke.blue.Service.ReferralLinks.Core.Domain.ReferralLink;
+﻿using Lykke.blue.Service.ReferralLinks.Core.Domain.ReferralLink;
+using System;
 
 namespace Lykke.blue.Service.ReferralLinks.Services.Domain
 {
@@ -23,5 +23,8 @@ namespace Lykke.blue.Service.ReferralLinks.Services.Domain
 
         public string State { get; set; }
 
+        public string ETag { get; set; }
+
+        public DateTime CreatedAt { get ; set ; }
     }
 }

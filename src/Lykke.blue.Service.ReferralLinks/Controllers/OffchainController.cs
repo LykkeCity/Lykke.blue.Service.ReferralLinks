@@ -94,7 +94,7 @@ namespace Lykke.blue.Service.ReferralLinks.Controllers
         public async Task<IActionResult> TransferToLykkeWallet([FromBody] TransferToLykkeWallet model)
         {
             var clientId = model.ClientId;
-            var refLink = await _referralLinksService.GetReferralLinkById(model.ReferralLinkId);
+            var refLink = await _referralLinksService.Get(model.ReferralLinkId);
 
             if (refLink == null)
             {
@@ -221,7 +221,7 @@ namespace Lykke.blue.Service.ReferralLinks.Controllers
                 return await LogAndReturnBadRequest(request, ControllerContext, "TransferId must not be empty");
             }
 
-            var refLinkEntity = await _referralLinksService.GetReferralLinkById(request.RefLinkId);
+            var refLinkEntity = await _referralLinksService.Get(request.RefLinkId);
             if (refLinkEntity == null)
             {
                 return await LogAndReturnBadRequest(request, ControllerContext, "RefLinkId not found");

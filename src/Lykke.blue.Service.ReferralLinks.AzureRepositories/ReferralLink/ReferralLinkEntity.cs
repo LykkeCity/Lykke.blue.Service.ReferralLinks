@@ -15,7 +15,6 @@ namespace Lykke.blue.Service.ReferralLinks.AzureRepositories.ReferralLink
         public string SenderOffchainTransferId { get; set; }
         public string Type { get; set; }
         public string State { get; set; }
-
-       
+        public DateTime CreatedAt { get; set; }
     }
 }

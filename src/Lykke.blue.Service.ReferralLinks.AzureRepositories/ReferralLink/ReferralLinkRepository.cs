@@ -1,10 +1,10 @@
 ﻿using AutoMapper;
 using AzureStorage;
-using Lykke.blue.Service.ReferralLinks.AzureRepositories.DTOs;
 using Lykke.blue.Service.ReferralLinks.Core.Domain.ReferralLink;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Lykke.blue.Service.ReferralLinks.AzureRepositories.ReferralLink
@@ -12,14 +12,19 @@ namespace Lykke.blue.Service.ReferralLinks.AzureRepositories.ReferralLink
     public class ReferralLinkRepository : IReferralLinkRepository
     {
         private readonly INoSQLTableStorage<ReferralLinkEntity> _referralLinkTable;
+        private static readonly SemaphoreSlim SemaphoreSlim = new SemaphoreSlim(1, 1);
+        private const string GroupReflinkIdentificator = "Group";
+        private const string ReflinkIdentificator = "ReferallLink";
 
         public ReferralLinkRepository(INoSQLTableStorage<ReferralLinkEntity> referralLinkTable)
         {
             _referralLinkTable = referralLinkTable;
         }
 
-        private static string GetPartitionKey() => "ReferallLink";
+        private static string GetPartitionKey() => $"{ReflinkIdentificator}";
 
+        private static string GetPartitionKeyGroupReferallLink(string guid) => $"{GroupReflinkIdentificator}-{guid}";
+        
         private static string GetRowKey(string id) => id;
 
         public async Task<IReferralLink> Create(IReferralLink referralLink)
@@ -31,14 +36,45 @@ namespace Lykke.blue.Service.ReferralLinks.AzureRepositories.ReferralLink
 
             await _referralLinkTable.InsertAsync(entity);
 
-            return Mapper.Map<ReferralLinkDto>(entity);
-        }        
+            return entity;
+        }
+
+        public async Task<string> CreateGroup(IEnumerable<IReferralLink> referralLinks)
+        {
+            var many = new List<ReferralLinkEntity>();
+            var massReferallLinkGuid = Guid.NewGuid().ToString();
+
+            foreach (var refLink in referralLinks)
+            {
+                var entity = Mapper.Map<ReferralLinkEntity>(refLink);
+
+                entity.PartitionKey = GetPartitionKeyGroupReferallLink(massReferallLinkGuid);
+                entity.RowKey = GetRowKey(refLink.Id);
+
+                many.Add(entity);
+            }
+            
+            await _referralLinkTable.InsertAsync(many);
+
+            return massReferallLinkGuid;
+        }
 
         public async Task<IReferralLink> Get(string id)
         {
             var entity = await _referralLinkTable.GetDataAsync(GetPartitionKey(), GetRowKey(id));
+            return entity;
+        }
 
-            return Mapper.Map<ReferralLinkDto>(entity);
+        public async Task<IEnumerable<IReferralLink>> GetGroup(string groupId)
+        {
+            var groupOfRefLinks = await _referralLinkTable.GetDataAsync(GetPartitionKeyGroupReferallLink(groupId));
+            return groupOfRefLinks;
+        }
+
+        public async Task<IEnumerable<IReferralLink>> GetGroupBySenderId(string senderId)
+        {
+            var groupOfRefLinks = (await _referralLinkTable.GetDataAsync(g=>g.SenderClientId == senderId)).Where(g=>g.PartitionKey.Contains(GroupReflinkIdentificator));
+            return groupOfRefLinks;
         }
 
         public async Task<IReferralLink> GetReferalLinkByUrl(string url)
@@ -47,7 +83,7 @@ namespace Lykke.blue.Service.ReferralLinks.AzureRepositories.ReferralLink
                 GetPartitionKey(),
                 x => x.Url == url);
 
-            return Mapper.Map<ReferralLinkDto>(entities.FirstOrDefault());
+            return entities.FirstOrDefault();
         }
 
         public async Task<IEnumerable<IReferralLink>> GetReferralLinksBySenderId(string senderClientId)
@@ -85,8 +121,35 @@ namespace Lykke.blue.Service.ReferralLinks.AzureRepositories.ReferralLink
                 return x;
             });
 
-            return Mapper.Map<ReferralLinkDto>(result);
+            return result;
         }
 
+        public async Task<IReferralLink> UpdateAsyncWithETagCheck(IReferralLink referralLink)
+        {
+            await SemaphoreSlim.WaitAsync();
+            try
+            {
+                var result = await _referralLinkTable.MergeAsync(GetPartitionKey(), GetRowKey(referralLink.Id), currentDbRecord =>
+                {
+                    if (referralLink.ETag != currentDbRecord.ETag)
+                    {
+                        return null;
+                    }
+
+                    Mapper.Map(referralLink, currentDbRecord);
+
+                    return currentDbRecord;
+                });
+
+                return result;
+            }
+            finally
+            {
+                SemaphoreSlim.Release();
+            }
+            
+        }
+
+        
     }
 }

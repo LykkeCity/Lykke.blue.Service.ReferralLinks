@@ -13,5 +13,7 @@ namespace Lykke.blue.Service.ReferralLinks.Core.Domain.ReferralLink
         string SenderOffchainTransferId { get; set; }
         string Type { get; }
         string State { get; set; }
+        string ETag { get; set; }
+        DateTime CreatedAt { get; set; }
     }
 }

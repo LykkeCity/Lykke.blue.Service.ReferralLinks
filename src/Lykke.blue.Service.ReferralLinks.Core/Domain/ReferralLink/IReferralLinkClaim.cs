@@ -8,5 +8,6 @@
         string RecipientTransactionId { get; set; }
         bool ShouldReceiveReward { get; }
         bool IsNewClient { get; }
+        string ETag { get; set; }
     }
 }

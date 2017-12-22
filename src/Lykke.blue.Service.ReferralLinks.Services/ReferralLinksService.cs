@@ -40,7 +40,8 @@ namespace Lykke.blue.Service.ReferralLinks.Services
                 Id = Guid.NewGuid().ToString(),
                 ExpirationDate = null,
                 Amount = _settings.InvitationLinkSettings.RewardAmount,
-                Asset = _settings.InvitationLinkSettings.RewardAsset
+                Asset = _settings.InvitationLinkSettings.RewardAsset,
+                CreatedAt = DateTime.UtcNow
             };
             entity.Url = await _firebaseService.GenerateUrl(entity.Id);
             entity.State = ReferralLinkState.Created.ToString();
@@ -48,7 +49,7 @@ namespace Lykke.blue.Service.ReferralLinks.Services
             return await _referralLinkRepository.Create(entity);          
         }
 
-        public async Task<IReferralLink> CreateGiftCoinsLink(GiftCoinsReferralLinkRequest referralLinkRequest)
+        public async Task<IReferralLink> CreateGiftCoinLink(GiftCoinsReferralLinkRequest referralLinkRequest)
         {
             var entity = new ReferralLink
             {
@@ -61,38 +62,70 @@ namespace Lykke.blue.Service.ReferralLinks.Services
             entity.Amount = referralLinkRequest.Amount;
             entity.Type = referralLinkRequest.Type.ToString();
             entity.State = ReferralLinkState.Created.ToString();
+            entity.CreatedAt = DateTime.UtcNow;
 
             return await _referralLinkRepository.Create(entity);
-    }
+        }
+
+
+        public async Task<string> CreateGroupOfGiftCoinLinks(GroupGiftCoinLinkRequest referralLinkRequest)
+        {
+            var result = new List<IReferralLink>();
+
+            foreach (var nextLinkAmount in referralLinkRequest.AmountForEachLink)
+            {
+                var entity = new ReferralLink
+                {
+                    Id = Guid.NewGuid().ToString(),
+                    ExpirationDate = DateTime.UtcNow.AddDays(_settings.GiftCoinsLinkSettings.ExpirationDaysLimit)
+                };
+                entity.Url = await _firebaseService.GenerateUrl(entity.Id);
+                entity.SenderClientId = referralLinkRequest.SenderClientId;
+                entity.Asset = referralLinkRequest.Asset;
+                entity.Amount = nextLinkAmount;
+                entity.Type = referralLinkRequest.Type.ToString();
+                entity.State = ReferralLinkState.Created.ToString();
+                entity.CreatedAt = DateTime.UtcNow;
+
+                result.Add(entity);
+            }
+
+            return await _referralLinkRepository.CreateGroup(result);
+        }
+
+        public async Task<IEnumerable<IReferralLink>> GetGroupBySenderId(string senderId)
+        {
+            return await _referralLinkRepository.GetGroupBySenderId(senderId);
+        }
 
         public async Task<IReferralLink> Get(string id)
         {
             return await _referralLinkRepository.Get(id);
         }
 
+        public async Task<IEnumerable<IReferralLink>> GetGroup(string groupId)
+        {
+            return await _referralLinkRepository.GetGroup(groupId);
+        }
+
         public async Task<IReferralLink> GetReferralLinkByUrl(string url)
         {
             return await _referralLinkRepository.GetReferalLinkByUrl(url);
         }
-
-        public async Task<IReferralLink> GetReferralLinkById(string id)
-        {
-            return await _referralLinkRepository.Get(id);
-        }
-        
+       
         public IEnumerable<IReferralLink> GetInvitationLinksForSenderId(string senderClientId)
         {
             return (_referralLinkRepository.GetReferralLinksBySenderId(senderClientId)).Result.Where(r=>r.Type == ReferralLinkType.Invitation.ToString());
         }
 
-        public bool InvitationLinkForSenderIdExists(string senderClientId)
-        {
-            return _referralLinkRepository.IsInvitationLinkForSenderAlreadyCreated(senderClientId);
-        }
-
         public async Task<IReferralLink> UpdateAsync(IReferralLink referralLink)
         {
             return await _referralLinkRepository.UpdateAsync(referralLink);
+        }
+
+        public async Task<IReferralLink> UpdateAsyncWithETagCheck(IReferralLink referralLink)
+        {
+            return await _referralLinkRepository.UpdateAsyncWithETagCheck(referralLink);
         }
 
         public async Task CheckForExpiredGiftCoinLink()

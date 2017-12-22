@@ -15,5 +15,7 @@ namespace Lykke.blue.Service.ReferralLinks.Services.Domain
         public bool ShouldReceiveReward { get; set; }
 
         public bool IsNewClient { get; set; }
-}
+
+        public string ETag { get; set; }
+    }
 }
