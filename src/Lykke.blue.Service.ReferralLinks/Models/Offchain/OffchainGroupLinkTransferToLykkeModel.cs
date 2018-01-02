@@ -1,8 +1,8 @@
 ﻿namespace Lykke.blue.Service.ReferralLinks.Models.Offchain
 {
-    public class OffchainTransferToLykkeModel
+    public class OffchainGroupLinkTransferToLykkeModel
     {
-        public string ReferralLinkId { get; set; }
+        public string GroupReferralLinkId { get; set; }
         public string PrevTempPrivateKey { get; set; }
     }
 }

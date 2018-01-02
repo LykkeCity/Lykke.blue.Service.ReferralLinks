@@ -8,13 +8,13 @@ using Lykke.blue.Service.ReferralLinks.Core.Services;
 using Lykke.blue.Service.ReferralLinks.Core.Settings.ServiceSettings;
 using Lykke.blue.Service.ReferralLinks.Extensions;
 using Lykke.blue.Service.ReferralLinks.Models;
+using Lykke.blue.Service.ReferralLinks.Models.GiftCoinRequests;
 using Lykke.blue.Service.ReferralLinks.Models.RefLinkResponseModels;
 using Lykke.blue.Service.ReferralLinks.Modules.Validation;
 using Lykke.blue.Service.ReferralLinks.Responses;
 using Lykke.blue.Service.ReferralLinks.Services.Domain;
 using Lykke.blue.Service.ReferralLinks.Services.ExchangeOperations;
 using Lykke.blue.Service.ReferralLinks.Strings;
-using Lykke.Service.Balances.Client;
 using Lykke.Service.ExchangeOperations.Client;
 using Lykke.Service.ExchangeOperations.Client.AutorestClient.Models;
 using Microsoft.AspNetCore.Mvc;
@@ -37,7 +37,7 @@ namespace Lykke.blue.Service.ReferralLinks.Controllers
         private readonly ISrvKycForAsset _srvKycForAsset;
         private readonly ExchangeService _exchangeService;
         private readonly CachedDataDictionary<string, Lykke.Service.Assets.Client.Models.Asset> _assets;
-        private readonly IBalancesClient _balancesClient;
+        
         private readonly ReferralLinksSettings _settings;
         private readonly double MinimalAmount = 0.00000001;
 
@@ -50,8 +50,7 @@ namespace Lykke.blue.Service.ReferralLinks.Controllers
             IExchangeOperationsServiceClient exchangeOperationsService,
             ReferralLinksSettings settings,
             IReferralLinkClaimsService referralLinkClaimsService,
-            ExchangeService exchangeService,
-            IBalancesClient balancesClient) : base(log)
+            ExchangeService exchangeService) : base(log)
         {
 
             _referralLinksService = referralLinksService;
@@ -60,7 +59,6 @@ namespace Lykke.blue.Service.ReferralLinks.Controllers
             _exchangeService = exchangeService;
             _settings = settings;
             _referralLinkClaimsService = referralLinkClaimsService;
-            _balancesClient = balancesClient;
             _statisticsService = statisticsService;
         }
 
@@ -214,59 +212,72 @@ namespace Lykke.blue.Service.ReferralLinks.Controllers
         [ProducesResponseType(typeof(ErrorResponseModel), (int)HttpStatusCode.BadRequest)]
         [ProducesResponseType(typeof(ErrorResponseModel), (int)HttpStatusCode.InternalServerError)]
         [ProducesResponseType(typeof(RequestRefLinkResponse), (int)HttpStatusCode.Created)]
-        public async Task<IActionResult> GroupGenerateGiftCoinLinks([FromBody] GroupGiftCoinLinkRequest request)
+        public async Task<IActionResult> GroupGenerateGiftCoinLinks([FromBody] GiftCoinRequestGroup request)
+        {
+            var validationError = await ValidateGiftCoinsLinkRequest(request);
+            if (String.IsNullOrEmpty(validationError))
+            {
+                return await LogAndReturnBadRequest(request, ControllerContext, validationError);
+            }
+
+            var referralLink = await _referralLinksService.CreateGroupOfGiftCoinLinks(request.SenderClientId, request.Asset, request.Type, request.AmountForEachLink);
+
+            await LogInfo(request, ControllerContext, referralLink.ToJson());
+
+            return Created(uri: $"api/referralLinks/group/{referralLink}", value: new RequestRefLinkResponse { RefLinkId = referralLink });
+        }
+
+        private async Task<string> ValidateGiftCoinsLinkRequest<T>(T request) where T : GiftCoinRequestBase
         {
             if (request == null)
             {
-                return await LogAndReturnBadRequest("", ControllerContext, Phrases.InvalidRequest);
+                return Phrases.InvalidRequest;
             }
 
             if (String.IsNullOrEmpty(request.SenderClientId))
             {
-                return await LogAndReturnBadRequest(request, ControllerContext, Phrases.InvalidSenderClientId);
-            }
-
-            if (request.AmountForEachLink.Length == 0)
-            {
-                return await LogAndReturnBadRequest(request, ControllerContext, Phrases.InvalidRequest);
-            }
-
-            if (request.AmountForEachLink.Sum() <=0 || request.AmountForEachLink.Any(linkAmount => linkAmount <= 0) )
-            {
-                return await LogAndReturnBadRequest(request, ControllerContext, Phrases.InvalidAmount);
+                return Phrases.InvalidSenderClientId;
             }
 
             var asset = (await _assets.GetDictionaryAsync()).Values.FirstOrDefault(v => v.Id == request.Asset);
 
             if (asset == null)
             {
-                return await LogAndReturnBadRequest(request, ControllerContext, Phrases.InvalidAsset);
+                return Phrases.InvalidAsset;
             }
 
             if (await _srvKycForAsset.IsKycNeeded(request.SenderClientId, asset.Id))
             {
-                return await LogAndReturnBadRequest(request, ControllerContext, $"KYC needed for sender client id {request.SenderClientId} before sending asset with id {asset.Id}");
+                return $"KYC needed for sender client id {request.SenderClientId} before sending asset with id {asset.Id}";
             }
 
-            var clientBalances = await _balancesClient.GetClientBalances(request.SenderClientId);
+            var refLinkTotalAmount = 0.0;
 
-            if (clientBalances == null)
+            var singleRefLinkRequest = request as GiftCoinRequest;
+
+            if (singleRefLinkRequest!=null)
             {
-                return await LogAndReturnInternalServerError(request, ControllerContext, $"Cant get clientBalance of asset {asset.Id} for client id {request.SenderClientId}.");
+                refLinkTotalAmount = singleRefLinkRequest.Amount;
             }
 
-            var balance = clientBalances.FirstOrDefault(x => x.AssetId == asset.Id)?.Balance;
+            var groupRefLinkRequest = request as GiftCoinRequestGroup;
 
-            if (!balance.HasValue || balance.Value < request.AmountForEachLink.Sum())
+            if (groupRefLinkRequest != null)
             {
-                return await LogAndReturnBadRequest(request, ControllerContext, Phrases.InvalidBalanceAmount);
+                if (groupRefLinkRequest.AmountForEachLink.Length == 0 || groupRefLinkRequest.AmountForEachLink.Sum() <= 0 || groupRefLinkRequest.AmountForEachLink.Any(linkAmount => linkAmount <= 0))
+                {
+                    return Phrases.InvalidAmount;
+                }
+
+                refLinkTotalAmount = groupRefLinkRequest.AmountForEachLink.Sum();
+            }
+            
+            if (refLinkTotalAmount <=0 || !await _referralLinksService.HasEnoughBalance(request.SenderClientId, asset.Id, refLinkTotalAmount))
+            {
+                return Phrases.InvalidBalanceAmount;
             }
 
-            var referralLink = await _referralLinksService.CreateGroupOfGiftCoinLinks(request);
-
-            await LogInfo(request, ControllerContext, referralLink.ToJson());
-
-            return Created(uri: $"api/referralLinks/group/{referralLink}", value: new RequestRefLinkResponse { RefLinkId = referralLink });
+            return "";
         }
 
 
@@ -281,50 +292,15 @@ namespace Lykke.blue.Service.ReferralLinks.Controllers
         [ProducesResponseType(typeof(ErrorResponseModel), (int)HttpStatusCode.BadRequest)]
         [ProducesResponseType(typeof(ErrorResponseModel), (int)HttpStatusCode.InternalServerError)]
         [ProducesResponseType(typeof(RequestRefLinkResponse), (int)HttpStatusCode.Created)]
-        public async Task<IActionResult> RequestGiftCoinsReferralLink([FromBody] GiftCoinsReferralLinkRequest request)
+        public async Task<IActionResult> RequestGiftCoinsReferralLink([FromBody] GiftCoinRequest request)
         {
-            if (request == null)
+            var validationError = await ValidateGiftCoinsLinkRequest(request);
+            if (String.IsNullOrEmpty(validationError))
             {
-                return await LogAndReturnBadRequest("", ControllerContext, Phrases.InvalidRequest);
+                return await LogAndReturnBadRequest(request, ControllerContext, validationError);
             }
 
-            if (request.Amount <= 0)
-            {
-                return await LogAndReturnBadRequest(request, ControllerContext, Phrases.InvalidAmount);
-            }
-
-            if (String.IsNullOrEmpty(request.SenderClientId))
-            {
-                return await LogAndReturnBadRequest(request, ControllerContext, Phrases.InvalidSenderClientId);
-            }
-
-            var asset = (await _assets.GetDictionaryAsync()).Values.FirstOrDefault(v => v.Id == request.Asset);
-
-            if (String.IsNullOrEmpty(request.Asset) || asset == null)
-            {
-                return await LogAndReturnBadRequest(request, ControllerContext, Phrases.InvalidAsset);
-            }
-
-            if (await _srvKycForAsset.IsKycNeeded(request.SenderClientId, asset.Id))
-            {
-                return await LogAndReturnBadRequest(request, ControllerContext, $"KYC needed for sender client id {request.SenderClientId} before sending asset with id {asset.Id}");
-            }
-
-            var clientBalances = await _balancesClient.GetClientBalances(request.SenderClientId);
-
-            if (clientBalances == null)
-            {
-                return await LogAndReturnInternalServerError(request, ControllerContext, $"Cant get clientBalance of asset {request.Asset} for client id {request.SenderClientId}.");
-            }
-
-            var balance = clientBalances.FirstOrDefault(x => x.AssetId == asset.Id)?.Balance;
-
-            if (!balance.HasValue || balance.Value < request.Amount)
-            {
-                return await LogAndReturnBadRequest(request, ControllerContext, Phrases.InvalidBalanceAmount);
-            }
-
-            var referralLink = await _referralLinksService.CreateGiftCoinLink(request);
+            var referralLink = await _referralLinksService.CreateGiftCoinLink(request.SenderClientId, request.Asset, request.Type, request.Amount);
 
             await LogInfo(request, ControllerContext, referralLink.ToJson());
 

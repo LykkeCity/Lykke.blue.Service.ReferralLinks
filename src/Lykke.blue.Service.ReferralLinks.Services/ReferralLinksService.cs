@@ -5,6 +5,7 @@ using Lykke.blue.Service.ReferralLinks.Core.Domain.ReferralLink.Requests;
 using Lykke.blue.Service.ReferralLinks.Core.Services;
 using Lykke.blue.Service.ReferralLinks.Core.Settings.ServiceSettings;
 using Lykke.blue.Service.ReferralLinks.Services.Domain;
+using Lykke.Service.Balances.Client;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -17,17 +18,20 @@ namespace Lykke.blue.Service.ReferralLinks.Services
         private readonly ReferralLinksSettings _settings;
         private readonly IReferralLinkRepository _referralLinkRepository;
         private readonly IFirebaseService _firebaseService;
+        private readonly IBalancesClient _balancesClient;
         private readonly ILog _log;
 
         public ReferralLinksService(
             IReferralLinkRepository referralLinkRepository, 
             IFirebaseService firebaseService,
             ReferralLinksSettings settings,
+            IBalancesClient balancesClient,
             ILog log)
         {
             _referralLinkRepository = referralLinkRepository;
             _firebaseService = firebaseService;
             _settings = settings;
+            _balancesClient = balancesClient;
             _log = log;
         }
 
@@ -49,7 +53,7 @@ namespace Lykke.blue.Service.ReferralLinks.Services
             return await _referralLinkRepository.Create(entity);          
         }
 
-        public async Task<IReferralLink> CreateGiftCoinLink(GiftCoinsReferralLinkRequest referralLinkRequest)
+        public async Task<IReferralLink> CreateGiftCoinLink(string senderId, string assetId, ReferralLinkType type, double amount)
         {
             var entity = new ReferralLink
             {
@@ -57,10 +61,10 @@ namespace Lykke.blue.Service.ReferralLinks.Services
                 ExpirationDate = DateTime.UtcNow.AddDays(_settings.GiftCoinsLinkSettings.ExpirationDaysLimit)
             };
             entity.Url = await _firebaseService.GenerateUrl(entity.Id);
-            entity.SenderClientId = referralLinkRequest.SenderClientId;
-            entity.Asset = referralLinkRequest.Asset;
-            entity.Amount = referralLinkRequest.Amount;
-            entity.Type = referralLinkRequest.Type.ToString();
+            entity.SenderClientId = senderId;
+            entity.Asset = assetId;
+            entity.Amount = amount;
+            entity.Type = type.ToString();
             entity.State = ReferralLinkState.Created.ToString();
             entity.CreatedAt = DateTime.UtcNow;
 
@@ -68,11 +72,11 @@ namespace Lykke.blue.Service.ReferralLinks.Services
         }
 
 
-        public async Task<string> CreateGroupOfGiftCoinLinks(GroupGiftCoinLinkRequest referralLinkRequest)
+        public async Task<string> CreateGroupOfGiftCoinLinks(string senderId, string assetId, ReferralLinkType type, double[] linksAmounts)
         {
             var result = new List<IReferralLink>();
 
-            foreach (var nextLinkAmount in referralLinkRequest.AmountForEachLink)
+            foreach (var nextLinkAmount in linksAmounts)
             {
                 var entity = new ReferralLink
                 {
@@ -80,10 +84,10 @@ namespace Lykke.blue.Service.ReferralLinks.Services
                     ExpirationDate = DateTime.UtcNow.AddDays(_settings.GiftCoinsLinkSettings.ExpirationDaysLimit)
                 };
                 entity.Url = await _firebaseService.GenerateUrl(entity.Id);
-                entity.SenderClientId = referralLinkRequest.SenderClientId;
-                entity.Asset = referralLinkRequest.Asset;
+                entity.SenderClientId = senderId;
+                entity.Asset = assetId;
                 entity.Amount = nextLinkAmount;
-                entity.Type = referralLinkRequest.Type.ToString();
+                entity.Type = type.ToString();
                 entity.State = ReferralLinkState.Created.ToString();
                 entity.CreatedAt = DateTime.UtcNow;
 
@@ -172,6 +176,21 @@ namespace Lykke.blue.Service.ReferralLinks.Services
                     await _log.WriteErrorAsync(nameof(CheckForExpiredGiftCoinLink), (new { expLink }).ToJson(), ex);
                 }
             }           
+        }
+
+        public async Task<bool> HasEnoughBalance(string clientId, string assetId, double amount)
+        {
+            var clientBalances = await _balancesClient.GetClientBalances(clientId);
+
+            var balance = clientBalances?.FirstOrDefault(x => x.AssetId == assetId)?.Balance;
+
+            if (!balance.HasValue || balance.Value < amount)
+            {
+                await _log.WriteWarningAsync("", nameof(HasEnoughBalance), $"Balance not enough or cant get clientBalance of asset {assetId} for client id {clientId}.") ;
+                return false;
+            }
+
+            return true;
         }
     }
 }
