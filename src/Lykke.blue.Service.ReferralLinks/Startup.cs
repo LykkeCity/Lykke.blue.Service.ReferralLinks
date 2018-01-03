@@ -3,9 +3,12 @@ using Autofac.Extensions.DependencyInjection;
 using AutoMapper;
 using AzureStorage.Tables;
 using Common.Log;
+using Lykke.blue.Service.ReferralLinks.Core;
 using Lykke.blue.Service.ReferralLinks.Core.Services;
 using Lykke.blue.Service.ReferralLinks.Core.Settings;
+using Lykke.blue.Service.ReferralLinks.Models;
 using Lykke.blue.Service.ReferralLinks.Modules;
+using Lykke.Common.ApiLibrary.Middleware;
 using Lykke.Common.ApiLibrary.Swagger;
 using Lykke.Logs;
 using Lykke.SettingsReader;
@@ -62,7 +65,7 @@ namespace Lykke.blue.Service.ReferralLinks
 
                 services.AddSwaggerGen(options =>
                 {
-                    options.DefaultLykkeConfiguration("v1", "Lykke Referral Links Service");
+                    options.DefaultLykkeConfiguration("v1", Constants.ComponentName);
                 });
 
                 var builder = new ContainerBuilder();
@@ -90,6 +93,18 @@ namespace Lykke.blue.Service.ReferralLinks
                 {
                     app.UseDeveloperExceptionPage();
                 }
+
+                app.UseLykkeMiddleware(Constants.ComponentName, ex =>
+                {
+                    string errorMessage = "Technical problem";
+
+                    if (!String.IsNullOrWhiteSpace(ex.Message))
+                    {
+                        errorMessage = ex.Message;
+                    }
+
+                    return ErrorResponseModel.Create(errorMessage);
+                });
 
                 app.UseMvc();
                 app.UseSwagger();

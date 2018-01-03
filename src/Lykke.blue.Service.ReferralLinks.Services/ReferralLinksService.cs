@@ -35,62 +35,29 @@ namespace Lykke.blue.Service.ReferralLinks.Services
             _log = log;
         }
 
-        public async Task<IReferralLink> CreateInvitationLink(InvitationReferralLinkRequest referralLinkRequest)
+        public async Task<IReferralLink> CreateInvitationLink(InvitationReferralLinkRequest req)
         {
-            var entity = new ReferralLink
-            {
-                SenderClientId = referralLinkRequest.SenderClientId,
-                Type = referralLinkRequest.Type.ToString(),
-                Id = Guid.NewGuid().ToString(),
-                ExpirationDate = null,
-                Amount = _settings.InvitationLinkSettings.RewardAmount,
-                Asset = _settings.InvitationLinkSettings.RewardAsset,
-                CreatedAt = DateTime.UtcNow
-            };
+            var entity = ReferralLink.Create(req.SenderClientId, _settings.InvitationLinkSettings.RewardAsset, _settings.InvitationLinkSettings.RewardAmount, ReferralLinkType.Invitation);
             entity.Url = await _firebaseService.GenerateUrl(entity.Id);
-            entity.State = ReferralLinkState.Created.ToString();
-
-            return await _referralLinkRepository.Create(entity);          
+            return await _referralLinkRepository.Create(entity);
         }
 
-        public async Task<IReferralLink> CreateGiftCoinLink(string senderId, string assetId, ReferralLinkType type, double amount)
+        public async Task<IReferralLink> CreateGiftCoinLink(string senderId, string assetId, double amount)
         {
-            var entity = new ReferralLink
-            {
-                Id = Guid.NewGuid().ToString(),
-                ExpirationDate = DateTime.UtcNow.AddDays(_settings.GiftCoinsLinkSettings.ExpirationDaysLimit)
-            };
-            entity.Url = await _firebaseService.GenerateUrl(entity.Id);
-            entity.SenderClientId = senderId;
-            entity.Asset = assetId;
-            entity.Amount = amount;
-            entity.Type = type.ToString();
-            entity.State = ReferralLinkState.Created.ToString();
-            entity.CreatedAt = DateTime.UtcNow;
-
+            var entity = ReferralLink.Create(senderId, assetId, amount, ReferralLinkType.GiftCoins, null, DateTime.UtcNow.AddDays(_settings.GiftCoinsLinkSettings.ExpirationDaysLimit));
+            entity.Url =  await _firebaseService.GenerateUrl(entity.Id);
             return await _referralLinkRepository.Create(entity);
         }
 
 
-        public async Task<string> CreateGroupOfGiftCoinLinks(string senderId, string assetId, ReferralLinkType type, double[] linksAmounts)
+        public async Task<string> CreateGroupOfGiftCoinLinks(string senderId, string assetId, double[] linksAmounts)
         {
             var result = new List<IReferralLink>();
 
             foreach (var nextLinkAmount in linksAmounts)
             {
-                var entity = new ReferralLink
-                {
-                    Id = Guid.NewGuid().ToString(),
-                    ExpirationDate = DateTime.UtcNow.AddDays(_settings.GiftCoinsLinkSettings.ExpirationDaysLimit)
-                };
+                var entity = ReferralLink.Create(senderId, assetId, nextLinkAmount, ReferralLinkType.GiftCoins, null, DateTime.UtcNow.AddDays(_settings.GiftCoinsLinkSettings.ExpirationDaysLimit));
                 entity.Url = await _firebaseService.GenerateUrl(entity.Id);
-                entity.SenderClientId = senderId;
-                entity.Asset = assetId;
-                entity.Amount = nextLinkAmount;
-                entity.Type = type.ToString();
-                entity.State = ReferralLinkState.Created.ToString();
-                entity.CreatedAt = DateTime.UtcNow;
-
                 result.Add(entity);
             }
 

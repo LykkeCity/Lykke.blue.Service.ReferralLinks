@@ -124,6 +124,14 @@ namespace Lykke.blue.Service.ReferralLinks.AzureRepositories.ReferralLink
             return result;
         }
 
+        /// <summary>
+        /// Ensures reflink state is not stale at the moment of update. Throws excpetion if it does.
+        /// Relies on ETag checks, performed by both AzureTableStorage db and MergeAsync itself. 
+        /// MergeAsync will return null if recored is stale, due to the Etag check in the injected lamda.
+        /// Code is also thread safe. 
+        /// </summary>
+        /// <param name="referralLink"></param>
+        /// <returns></returns>
         public async Task<IReferralLink> UpdateAsyncWithETagCheck(IReferralLink referralLink)
         {
             await SemaphoreSlim.WaitAsync();
@@ -141,6 +149,11 @@ namespace Lykke.blue.Service.ReferralLinks.AzureRepositories.ReferralLink
                     return currentDbRecord;
                 });
 
+                if (result == null)
+                {
+                    throw new Exception("Stale record, you may try again.");
+                }
+
                 return result;
             }
             finally
@@ -149,7 +162,5 @@ namespace Lykke.blue.Service.ReferralLinks.AzureRepositories.ReferralLink
             }
             
         }
-
-        
     }
 }

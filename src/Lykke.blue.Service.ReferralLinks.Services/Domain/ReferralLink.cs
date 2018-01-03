@@ -25,6 +25,22 @@ namespace Lykke.blue.Service.ReferralLinks.Services.Domain
 
         public string ETag { get; set; }
 
-        public DateTime CreatedAt { get ; set ; }
+        public DateTime? CreatedAt { get ; set ; }
+
+        public static ReferralLink Create(string senderId, string asset, double amount, ReferralLinkType type, string url = null, DateTime? expirationDate = null )
+        {
+            return new ReferralLink
+            {
+                Id = Guid.NewGuid().ToString(),
+                Url = url,
+                SenderClientId = senderId,
+                ExpirationDate = expirationDate,
+                Asset = asset,
+                Amount = amount,
+                Type = type.ToString(),
+                State = ReferralLinkState.Created.ToString(),
+                CreatedAt = DateTime.UtcNow
+            };
+        }
     }
 }

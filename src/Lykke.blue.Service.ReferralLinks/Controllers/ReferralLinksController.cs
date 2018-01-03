@@ -220,7 +220,7 @@ namespace Lykke.blue.Service.ReferralLinks.Controllers
                 return await LogAndReturnBadRequest(request, ControllerContext, validationError);
             }
 
-            var referralLink = await _referralLinksService.CreateGroupOfGiftCoinLinks(request.SenderClientId, request.Asset, request.Type, request.AmountForEachLink);
+            var referralLink = await _referralLinksService.CreateGroupOfGiftCoinLinks(request.SenderClientId, request.Asset, request.AmountForEachLink);
 
             await LogInfo(request, ControllerContext, referralLink.ToJson());
 
@@ -300,7 +300,7 @@ namespace Lykke.blue.Service.ReferralLinks.Controllers
                 return await LogAndReturnBadRequest(request, ControllerContext, validationError);
             }
 
-            var referralLink = await _referralLinksService.CreateGiftCoinLink(request.SenderClientId, request.Asset, request.Type, request.Amount);
+            var referralLink = await _referralLinksService.CreateGiftCoinLink(request.SenderClientId, request.Asset, request.Amount);
 
             await LogInfo(request, ControllerContext, referralLink.ToJson());
 
@@ -346,7 +346,7 @@ namespace Lykke.blue.Service.ReferralLinks.Controllers
             return Created(uri: $"api/referralLinks/{referralLink.Id}", value: new RequestRefLinkResponse { RefLinkUrl = referralLink.Url, RefLinkId = referralLink.Id });
         }
 
-        private string ValidateClaimRefLinkAndRequest(IReferralLink refLink, ClaimReferralLinkRequest request, string refLinkId)
+        private async Task<string>  ValidateClaimRefLinkAndRequest(IReferralLink refLink, ClaimReferralLinkRequest request, string refLinkId)
         {
             if (request.RecipientClientId == null)
             {
@@ -387,6 +387,12 @@ namespace Lykke.blue.Service.ReferralLinks.Controllers
                 return $"RefLink is expired at {refLink.ExpirationDate.Value} and can not be claimed.";
             }
 
+            if (refLink.Type == ReferralLinkType.GiftCoins.ToString())
+            {
+                if (await _srvKycForAsset.IsKycNeeded(request.RecipientClientId, refLink.Asset))
+                    return $"KYC needed for recipient client id {request.RecipientClientId} before claiming asset {refLink.Asset}";
+            }
+
             return null;
         }
 
@@ -406,25 +412,16 @@ namespace Lykke.blue.Service.ReferralLinks.Controllers
         {
             var refLink = await _referralLinksService.Get(refLinkId ?? "");
 
-            var validationError = ValidateClaimRefLinkAndRequest(refLink, request, refLinkId);
+            var validationError = await ValidateClaimRefLinkAndRequest(refLink, request, refLinkId);
             if (!String.IsNullOrEmpty(validationError))
             {
                 return await LogAndReturnBadRequest(request, ControllerContext, validationError);
             }
-
-            var asset = (await _assets.GetDictionaryAsync()).Values.FirstOrDefault(v => v.Id == refLink.Asset);
-
-            if (asset == null)
-            {
-                return await LogAndReturnBadRequest(request, ControllerContext, $"Asset with id {refLink.Asset} for Referral link {refLink.Id} not found. Can't claim link for unknown asset.");
-            }
-
-            if (await _srvKycForAsset.IsKycNeeded(request.RecipientClientId, asset.Id))
-                return await LogAndReturnBadRequest(request, ControllerContext, $"KYC needed for recipient client id {request.RecipientClientId} before claiming asset {refLink.Asset}");
+            
+            await UpdateRefLinkState(refLink, ReferralLinkState.Claimed); 
 
             var newRefLinkClaimRecipient = await CreateNewRefLinkClaim(refLink, request.RecipientClientId, true, request.IsNewClient);
-            await UpdateRefLinkState(refLink, ReferralLinkState.Claimed);
-            
+
             try
             {
                 var transactionRewardRecipient = await _exchangeService.TransferRewardCoins(refLink, request.IsNewClient, request.RecipientClientId, ControllerContext.GetControllerAndAction());
@@ -464,7 +461,7 @@ namespace Lykke.blue.Service.ReferralLinks.Controllers
 
             var refLink = await _referralLinksService.Get(refLinkId ?? "") ?? await _referralLinksService.GetReferralLinkByUrl(request.ReferalLinkUrl ?? "");
 
-            var validationError = ValidateClaimRefLinkAndRequest(refLink, request, refLinkId);
+            var validationError = await ValidateClaimRefLinkAndRequest(refLink, request, refLinkId);
             if (!String.IsNullOrEmpty(validationError))
             {
                 return await LogAndReturnBadRequest(request, ControllerContext, validationError);
@@ -557,10 +554,11 @@ namespace Lykke.blue.Service.ReferralLinks.Controllers
             });
         }
 
+        //throws exception if refLink is already being claimed or the record is stale
         private async Task UpdateRefLinkState(IReferralLink refLink, ReferralLinkState state)
         {
             refLink.State = state.ToString();
-            await _referralLinksService.UpdateAsync(refLink);
+            await _referralLinksService.UpdateAsyncWithETagCheck(refLink);
             await LogInfo(refLink, ControllerContext, $"RefLink state set to {state.ToString()}");
         }
 
