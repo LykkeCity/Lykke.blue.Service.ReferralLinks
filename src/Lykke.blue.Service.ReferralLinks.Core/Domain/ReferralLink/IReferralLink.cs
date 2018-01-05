@@ -15,5 +15,6 @@ namespace Lykke.blue.Service.ReferralLinks.Core.Domain.ReferralLink
         string State { get; set; }
         string ETag { get; set; }
         DateTime? CreatedAt { get; set; }
+        int ClaimsCount { get; set; }
     }
 }

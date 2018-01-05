@@ -367,30 +367,26 @@ namespace Lykke.blue.Service.ReferralLinks.Controllers
                 return "RecipientClientId can't be the same as SenderClientId. Client cant claim their own ref link.";
             }
 
-            if (Math.Abs(refLink.Amount) < MinimalAmount && refLink.Type == ReferralLinkType.GiftCoins.ToString())
+            if (refLink.Type == ReferralLinkType.GiftCoins.ToString())
             {
-                return $"Requested amount for RefLink with id {refLink.Id} is 0 (not set). 0 amount gift links are not allowed.";
+                if(refLink.State != ReferralLinkState.SentToLykkeSharedWallet.ToString()) return $"RefLink type {refLink.Type} with state {refLink.State} can not be claimed.";
+
+                if(Math.Abs(refLink.Amount) < MinimalAmount) return $"Requested amount for RefLink with id {refLink.Id} is 0 (not set). 0 amount gift links are not allowed.";
+
+                if (await _srvKycForAsset.IsKycNeeded(request.RecipientClientId, refLink.Asset))
+                    return $"KYC needed for recipient client id {request.RecipientClientId} before claiming asset {refLink.Asset}";
             }
 
-            if (refLink.Type == ReferralLinkType.GiftCoins.ToString() && refLink.State != ReferralLinkState.SentToLykkeSharedWallet.ToString())
+            if(refLink.Type == ReferralLinkType.Invitation.ToString())
             {
-                return $"RefLink type {refLink.Type} with state {refLink.State} can not be claimed.";
-            }
+                if(!request.IsNewClient) return "Not a new client.";
 
-            if (refLink.Type == ReferralLinkType.Invitation.ToString() && refLink.State != ReferralLinkState.Created.ToString())
-            {
-                return $"RefLink type {refLink.Type} with state {refLink.State} can not be claimed.";
+                if ((await _referralLinkClaimsService.GetRefLinkClaimsForClient(refLink.Id, request.RecipientClientId)).Any()) return $"Link already claimed by client id {request.RecipientClientId}";
             }
 
             if (refLink.ExpirationDate.HasValue && refLink.ExpirationDate.Value.CompareTo(DateTime.UtcNow) < 0)
             {
                 return $"RefLink is expired at {refLink.ExpirationDate.Value} and can not be claimed.";
-            }
-
-            if (refLink.Type == ReferralLinkType.GiftCoins.ToString())
-            {
-                if (await _srvKycForAsset.IsKycNeeded(request.RecipientClientId, refLink.Asset))
-                    return $"KYC needed for recipient client id {request.RecipientClientId} before claiming asset {refLink.Asset}";
             }
 
             return null;
@@ -413,12 +409,13 @@ namespace Lykke.blue.Service.ReferralLinks.Controllers
             var refLink = await _referralLinksService.Get(refLinkId ?? "");
 
             var validationError = await ValidateClaimRefLinkAndRequest(refLink, request, refLinkId);
+
             if (!String.IsNullOrEmpty(validationError))
             {
                 return await LogAndReturnBadRequest(request, ControllerContext, validationError);
             }
             
-            await UpdateRefLinkState(refLink, ReferralLinkState.Claimed); 
+            await SetRefLinkStateToClaimed(refLink); 
 
             var newRefLinkClaimRecipient = await CreateNewRefLinkClaim(refLink, request.RecipientClientId, true, request.IsNewClient);
 
@@ -454,31 +451,21 @@ namespace Lykke.blue.Service.ReferralLinks.Controllers
         [ProducesResponseType(typeof(ClaimRefLinkResponse), (int)HttpStatusCode.OK)]
         public async Task<IActionResult> ClaimInvitationLink(string refLinkId, [FromBody] ClaimReferralLinkRequest request )
         {
-            if (!request.IsNewClient)
-            {
-                return await LogAndReturnBadRequest(request, ControllerContext, "Not a new client.");
-            }
-
             var refLink = await _referralLinksService.Get(refLinkId ?? "") ?? await _referralLinksService.GetReferralLinkByUrl(request.ReferalLinkUrl ?? "");
 
             var validationError = await ValidateClaimRefLinkAndRequest(refLink, request, refLinkId);
+
             if (!String.IsNullOrEmpty(validationError))
             {
                 return await LogAndReturnBadRequest(request, ControllerContext, validationError);
             }
-
-            var claims = (await _referralLinkClaimsService.GetRefLinkClaims(refLink.Id)).ToList();
-
-            var alreadyClaimedByThisRecipient = claims.Any(c => c.RecipientClientId == request.RecipientClientId);
-            if (alreadyClaimedByThisRecipient)
-            {
-                return await LogAndReturnBadRequest(request, ControllerContext, $"Link already claimed by client id {request.RecipientClientId}");
-            }
-
-            bool shouldReceiveReward = await ShoulReceiveReward(claims, refLink);
-
+            
             try
             {
+                await IncrementClaimsCountAsync(refLink);
+
+                bool shouldReceiveReward = await ShoulReceiveReward(refLink);
+
                 var newRefLinkClaimRecipient = await CreateNewRefLinkClaim(refLink, request.RecipientClientId, shouldReceiveReward, true);
 
                 if (shouldReceiveReward)
@@ -530,10 +517,9 @@ namespace Lykke.blue.Service.ReferralLinks.Controllers
             }
         }
 
-        private async Task<bool> ShoulReceiveReward(IEnumerable<IReferralLinkClaim> claims, IReferralLink refLink)
+        private async Task<bool> ShoulReceiveReward(IReferralLink refLink)
         {
-            var countOfNewClientClaims = claims.Count(c => c.IsNewClient && c.ShouldReceiveReward && c.RecipientClientId != refLink.SenderClientId);
-            bool shouldReceiveReaward = countOfNewClientClaims < _settings.InvitationLinkSettings.MaxNumOfClientsToReceiveReward;
+            bool shouldReceiveReaward = refLink.ClaimsCount <= _settings.InvitationLinkSettings.MaxNumOfClientsToReceiveReward;
 
             if (!shouldReceiveReaward)
             {
@@ -553,13 +539,20 @@ namespace Lykke.blue.Service.ReferralLinks.Controllers
                 ShouldReceiveReward = shouldReceiveReward
             });
         }
-
-        //throws exception if refLink is already being claimed or the record is stale
-        private async Task UpdateRefLinkState(IReferralLink refLink, ReferralLinkState state)
+        
+        private async Task SetRefLinkStateToClaimed(IReferralLink refLink)
         {
-            refLink.State = state.ToString();
+            refLink.State = ReferralLinkState.Claimed.ToString();
+            refLink.ClaimsCount += 1;
             await _referralLinksService.UpdateAsyncWithETagCheck(refLink);
-            await LogInfo(refLink, ControllerContext, $"RefLink state set to {state.ToString()}");
+            await LogInfo(refLink, ControllerContext, $"RefLink {refLink.Id} state set to claimed and ClaimsCount increased to {refLink.ClaimsCount}");
+        }
+
+        private async Task IncrementClaimsCountAsync(IReferralLink refLink)
+        {
+            refLink.ClaimsCount += 1;
+            await _referralLinksService.UpdateAsyncWithETagCheck(refLink);
+            await LogInfo(refLink, ControllerContext, $"RefLink {refLink.Id} ClaimsCount increased to {refLink.ClaimsCount}");
         }
 
 

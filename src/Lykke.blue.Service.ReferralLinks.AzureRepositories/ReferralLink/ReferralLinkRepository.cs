@@ -94,16 +94,6 @@ namespace Lykke.blue.Service.ReferralLinks.AzureRepositories.ReferralLink
             );            
         }
 
-        public bool IsInvitationLinkForSenderAlreadyCreated(string senderClientId)
-        {
-            var numberOfCreatedReflinks = _referralLinkTable.GetDataAsync(
-                GetPartitionKey(),
-                x => x.SenderClientId == senderClientId && x.Type == ReferralLinkType.Invitation.ToString()
-            ).Result;
-
-            return numberOfCreatedReflinks.Any();
-        }
-
         public async Task<IEnumerable<IReferralLink>> GetExpiredGiftCoinLinks()
         {
             return await _referralLinkTable.GetDataAsync(

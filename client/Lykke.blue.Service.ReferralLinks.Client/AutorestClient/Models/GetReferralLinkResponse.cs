@@ -25,7 +25,7 @@ namespace Lykke.blue.Service.ReferralLinks.Client.AutorestClient.Models
         /// <summary>
         /// Initializes a new instance of the GetReferralLinkResponse class.
         /// </summary>
-        public GetReferralLinkResponse(double amount, string id = default(string), string url = default(string), System.DateTime? expirationDate = default(System.DateTime?), string asset = default(string), string state = default(string), string type = default(string))
+        public GetReferralLinkResponse(double amount, int claimsCount, string id = default(string), string url = default(string), System.DateTime? expirationDate = default(System.DateTime?), string asset = default(string), string state = default(string), string type = default(string), System.DateTime? createdAt = default(System.DateTime?))
         {
             Id = id;
             Url = url;
@@ -34,6 +34,8 @@ namespace Lykke.blue.Service.ReferralLinks.Client.AutorestClient.Models
             State = state;
             Amount = amount;
             Type = type;
+            CreatedAt = createdAt;
+            ClaimsCount = claimsCount;
             CustomInit();
         }
 
@@ -76,6 +78,16 @@ namespace Lykke.blue.Service.ReferralLinks.Client.AutorestClient.Models
         /// </summary>
         [JsonProperty(PropertyName = "Type")]
         public string Type { get; set; }
+
+        /// <summary>
+        /// </summary>
+        [JsonProperty(PropertyName = "CreatedAt")]
+        public System.DateTime? CreatedAt { get; set; }
+
+        /// <summary>
+        /// </summary>
+        [JsonProperty(PropertyName = "ClaimsCount")]
+        public int ClaimsCount { get; set; }
 
         /// <summary>
         /// Validate the object.

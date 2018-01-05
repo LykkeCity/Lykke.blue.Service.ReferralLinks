@@ -13,7 +13,6 @@ namespace Lykke.blue.Service.ReferralLinks.Core.Domain.ReferralLink
         Task<IReferralLink> UpdateAsyncWithETagCheck(IReferralLink referralLink);
         Task<IEnumerable<IReferralLink>> GetReferralLinksBySenderId(string senderClientId);
         Task<IEnumerable<IReferralLink>> GetExpiredGiftCoinLinks();
-        bool IsInvitationLinkForSenderAlreadyCreated(string senderClientId);
         Task<IReferralLink> GetReferalLinkByUrl(string url);
         Task<IEnumerable<IReferralLink>> GetGroupBySenderId(string senderId);
     }

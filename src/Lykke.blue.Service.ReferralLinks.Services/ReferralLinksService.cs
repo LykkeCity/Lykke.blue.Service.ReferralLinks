@@ -94,6 +94,7 @@ namespace Lykke.blue.Service.ReferralLinks.Services
             return await _referralLinkRepository.UpdateAsync(referralLink);
         }
 
+        //throws exception if refLink is already being claimed or the record is stale
         public async Task<IReferralLink> UpdateAsyncWithETagCheck(IReferralLink referralLink)
         {
             return await _referralLinkRepository.UpdateAsyncWithETagCheck(referralLink);

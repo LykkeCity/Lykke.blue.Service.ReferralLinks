@@ -73,17 +73,10 @@ namespace Lykke.blue.Service.ReferralLinks.Services.ExchangeOperations
             }
             catch (OffchainException ex)
             {
-                await _log.WriteErrorAsync(executionContext, request.ToJson(), ex);
                 throw new Exception($"ExchangeOperationsService error: Code={ex.OffchainExceptionCode}.OffchainException={ex.OffchainExceptionMessage}.Message={ex.Message}.{ex.InnerException?.Message}");
-            }
-            catch (ApplicationException ex)
-            {
-                await _log.WriteErrorAsync(executionContext, request.ToJson(), ex);
-                throw new Exception($"ExchangeOperationsService error: {ex.Message}{ex.InnerException?.Message}");
             }
             catch (Exception ex)
             {
-                await _log.WriteErrorAsync(executionContext, request.ToJson(), ex);
                 throw new Exception($"ExchangeOperationsService error: {ex.Message}{ex.InnerException?.Message}");
             }
         }
