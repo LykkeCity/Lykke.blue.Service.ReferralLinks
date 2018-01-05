@@ -9,15 +9,14 @@ namespace Lykke.blue.Service.ReferralLinks.Core.Services
     {
         Task<IReferralLink> CreateInvitationLink(InvitationReferralLinkRequest req);
         Task<IReferralLink> CreateGiftCoinLink(string senderId, string assetId, double amount);
-        Task<string> CreateGroupOfGiftCoinLinks(string senderId, string assetId, double[] linksAmounts);
+        Task<List<IReferralLink>> CreateGroupOfGiftCoinLinks(string senderId, string assetId, double[] linksAmounts);
         Task<IReferralLink> Get(string id);
         Task<bool> HasEnoughBalance(string clientId, string assetId, double amount);
-        Task<IEnumerable<IReferralLink>> GetGroup(string groupId);
         Task<IReferralLink> UpdateAsync(IReferralLink referralLink);
         Task<IReferralLink> UpdateAsyncWithETagCheck(IReferralLink referralLink); 
         Task<IReferralLink> GetReferralLinkByUrl(string url);
         Task CheckForExpiredGiftCoinLink();
         IEnumerable<IReferralLink> GetInvitationLinksForSenderId(string senderClientId);
-        Task<IEnumerable<IReferralLink>> GetGroupBySenderId(string senderId);
+        Task<IEnumerable<IReferralLink>> GetGiftCoinLinksBySenderId(string senderClientId);
     }
 }

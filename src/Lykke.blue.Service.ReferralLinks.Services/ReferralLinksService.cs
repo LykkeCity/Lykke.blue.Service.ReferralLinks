@@ -5,7 +5,10 @@ using Lykke.blue.Service.ReferralLinks.Core.Domain.ReferralLink.Requests;
 using Lykke.blue.Service.ReferralLinks.Core.Services;
 using Lykke.blue.Service.ReferralLinks.Core.Settings.ServiceSettings;
 using Lykke.blue.Service.ReferralLinks.Services.Domain;
+using Lykke.blue.Service.ReferralLinks.Services.ExchangeOperations;
 using Lykke.Service.Balances.Client;
+using Lykke.Service.ExchangeOperations.Client;
+using Lykke.Service.ExchangeOperations.Client.AutorestClient.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -19,20 +22,26 @@ namespace Lykke.blue.Service.ReferralLinks.Services
         private readonly IReferralLinkRepository _referralLinkRepository;
         private readonly IFirebaseService _firebaseService;
         private readonly IBalancesClient _balancesClient;
+        private readonly ExchangeService _exchangeService;
         private readonly ILog _log;
+        private readonly IReferralLinkClaimsService _referralLinkClaimsService;
 
         public ReferralLinksService(
             IReferralLinkRepository referralLinkRepository, 
             IFirebaseService firebaseService,
             ReferralLinksSettings settings,
             IBalancesClient balancesClient,
-            ILog log)
+            ILog log,
+            ExchangeService exchangeService,
+            IReferralLinkClaimsService referralLinkClaimsService)
         {
             _referralLinkRepository = referralLinkRepository;
             _firebaseService = firebaseService;
             _settings = settings;
             _balancesClient = balancesClient;
             _log = log;
+            _exchangeService = exchangeService;
+            _referralLinkClaimsService = referralLinkClaimsService;
         }
 
         public async Task<IReferralLink> CreateInvitationLink(InvitationReferralLinkRequest req)
@@ -50,7 +59,7 @@ namespace Lykke.blue.Service.ReferralLinks.Services
         }
 
 
-        public async Task<string> CreateGroupOfGiftCoinLinks(string senderId, string assetId, double[] linksAmounts)
+        public async Task<List<IReferralLink>> CreateGroupOfGiftCoinLinks(string senderId, string assetId, double[] linksAmounts)
         {
             var result = new List<IReferralLink>();
 
@@ -61,22 +70,14 @@ namespace Lykke.blue.Service.ReferralLinks.Services
                 result.Add(entity);
             }
 
-            return await _referralLinkRepository.CreateGroup(result);
-        }
+            await _referralLinkRepository.CreateGroup(result);
 
-        public async Task<IEnumerable<IReferralLink>> GetGroupBySenderId(string senderId)
-        {
-            return await _referralLinkRepository.GetGroupBySenderId(senderId);
+            return result.ToList();
         }
 
         public async Task<IReferralLink> Get(string id)
         {
             return await _referralLinkRepository.Get(id);
-        }
-
-        public async Task<IEnumerable<IReferralLink>> GetGroup(string groupId)
-        {
-            return await _referralLinkRepository.GetGroup(groupId);
         }
 
         public async Task<IReferralLink> GetReferralLinkByUrl(string url)
@@ -100,44 +101,45 @@ namespace Lykke.blue.Service.ReferralLinks.Services
             return await _referralLinkRepository.UpdateAsyncWithETagCheck(referralLink);
         }
 
+        private async Task ReturnGiftCoinsToSender(IReferralLink expLink)
+        {
+            ExchangeOperationResult coinsReturned =  await _exchangeService.TransferFromSharedWallet(expLink, expLink.SenderClientId, nameof(ReturnGiftCoinsToSender));
+
+            if (coinsReturned.IsOk())
+            {
+                expLink.State = ReferralLinkState.CoinsReturnedToSender.ToString();
+                await _referralLinkRepository.UpdateAsync(expLink);
+
+                await _referralLinkClaimsService.CreateAsync(new ReferralLinkClaim
+                {
+                    IsNewClient = false,
+                    RecipientClientId = expLink.SenderClientId,
+                    ReferralLinkId = expLink.Id,
+                    ShouldReceiveReward = false,
+                    RecipientTransactionId = coinsReturned.TransactionId,
+                });
+
+                await _log.WriteInfoAsync(nameof(ReturnGiftCoinsToSender), expLink.ToJson(), "Ref link is expired and coins have been returned to sender");
+            }
+            else
+            {
+                await _log.WriteWarningAsync(nameof(ReturnGiftCoinsToSender), expLink.ToJson(), $"{coinsReturned.Message}");
+            }
+        }
+
         public async Task CheckForExpiredGiftCoinLink()
         {
-            var expiredLink = await _referralLinkRepository.GetExpiredGiftCoinLinks();
+            var expiredLinks = await _referralLinkRepository.GetExpiredGiftCoinLinks();
 
-            foreach (var expLink in expiredLink)
+            foreach (var expLink in expiredLinks)
             {
-                await _log.WriteInfoAsync(nameof(CheckForExpiredGiftCoinLink), expiredLink.ToJson(), "Ref link is expired coins should be returned to sender");
-
-                //ExchangeOperationResult coinsRetured = new ExchangeOperationResult();
+                await _log.WriteInfoAsync(nameof(CheckForExpiredGiftCoinLink), expLink.ToJson(), "Ref link is expired coins should be returned to sender");
 
                 try
                 {
                     expLink.State = ReferralLinkState.Expired.ToString();
-                    await _referralLinkRepository.UpdateAsync(expLink);
-
-                    // Code below is for returning coins to sender, but it may be better to be called manually. It should be extracted to a separated method
-
-                    //coinsRetured = await _exchangeService.TransferRewardCoins(expLink, false, expLink.SenderClientId, nameof(ReturnCoinsToSenderForExpiredGiftCoins));
-                    //if (coinsRetured.IsOk())
-                    //{
-                    //    var claim = await _referralLinkClaimsService.CreateAsync(new ReferralLinkClaim
-                    //    {
-                    //        IsNewClient = false,
-                    //        RecipientClientId = expLink.SenderClientId,
-                    //        ReferralLinkId = expLink.Id,
-                    //        ShouldReceiveReward = false,
-                    //        RecipientTransactionId = coinsRetured.TransactionId,
-                    //    });
-
-                    //    expLink.State = ReferralLinkState.CoinsReturnedToSender.ToString();
-                    //    await _referralLinkRepository.UpdateAsync(expLink);
-
-                    //    await _log.WriteInfoAsync(nameof(ReturnCoinsToSenderForExpiredGiftCoins), expiredLink.ToJson(), "Ref link was expired and coins have been returned to sender");
-                    //}
-                    //else
-                    //{
-                    //    await _log.WriteWarningAsync(nameof(ReturnCoinsToSenderForExpiredGiftCoins), expiredLink.ToJson(), $"_exchangeService.TransferRewardCoins failed: Code={coinsRetured.Code}, Message={coinsRetured.Message}, TransactionId={coinsRetured.TransactionId}");
-                    //} 
+                    await _referralLinkRepository.UpdateAsyncWithETagCheck(expLink);
+                    await ReturnGiftCoinsToSender(expLink);
                 }
                 catch (Exception ex)
                 {
@@ -159,6 +161,11 @@ namespace Lykke.blue.Service.ReferralLinks.Services
             }
 
             return true;
+        }
+
+        public async Task<IEnumerable<IReferralLink>> GetGiftCoinLinksBySenderId(string senderClientId)
+        {
+            return (await _referralLinkRepository.GetReferralLinksBySenderId(senderClientId)).Where(r => r.Type == ReferralLinkType.GiftCoins.ToString());
         }
     }
 }

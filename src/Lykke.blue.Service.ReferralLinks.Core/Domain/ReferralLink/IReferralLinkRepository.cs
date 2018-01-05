@@ -6,14 +6,12 @@ namespace Lykke.blue.Service.ReferralLinks.Core.Domain.ReferralLink
     public interface IReferralLinkRepository
     {
         Task<IReferralLink> Create(IReferralLink referralLink);
-        Task<string> CreateGroup(IEnumerable<IReferralLink> referralLinks);
+        Task CreateGroup(IEnumerable<IReferralLink> referralLinks);
         Task<IReferralLink> Get(string id);
-        Task<IEnumerable<IReferralLink>> GetGroup(string groupId);
         Task<IReferralLink> UpdateAsync(IReferralLink referralLink);
         Task<IReferralLink> UpdateAsyncWithETagCheck(IReferralLink referralLink);
         Task<IEnumerable<IReferralLink>> GetReferralLinksBySenderId(string senderClientId);
         Task<IEnumerable<IReferralLink>> GetExpiredGiftCoinLinks();
         Task<IReferralLink> GetReferalLinkByUrl(string url);
-        Task<IEnumerable<IReferralLink>> GetGroupBySenderId(string senderId);
     }
 }

@@ -151,38 +151,6 @@ namespace Lykke.blue.Service.ReferralLinks.Controllers
         }
 
         /// <summary>
-        /// Create offchain transfer of group of referral links to Lykke wallet
-        /// </summary>
-        /// <returns></returns>
-        [HttpPost("transfer/group")]
-        [SwaggerOperation("GroupTransferToLykkeHotWallet")]
-        [ProducesResponseType(typeof(OffchainTradeRespModel), (int)HttpStatusCode.OK)]
-        [ProducesResponseType(typeof(ErrorResponseModel), (int)HttpStatusCode.BadRequest)]
-        [ProducesResponseType(typeof(ErrorResponseModel), (int)HttpStatusCode.InternalServerError)]
-        public async Task<IActionResult> GroupTransferToLykkeHotWallet([FromBody] OffchainGroupLinkTransferToLykkeModel model)
-        {
-            var refLinkGroup = (await _referralLinksService.GetGroup(model.GroupReferralLinkId))?.ToList();
-
-            if (refLinkGroup == null || !refLinkGroup.Any())
-            {
-                return await LogAndReturnBadRequest(model, ControllerContext, "Group Ref link Id not found or missing");
-            }
-
-            var clientId = refLinkGroup.First().SenderClientId;
-            var refLinkGroupAsset = refLinkGroup.First().Asset;
-
-            var refLinkGroupAmount = refLinkGroup.Sum(r => r.Amount);
-
-            if (refLinkGroupAmount <= 0 || !await _referralLinksService.HasEnoughBalance(clientId, refLinkGroupAsset, refLinkGroupAmount))
-            {
-                return await LogAndReturnBadRequest(model, ControllerContext, "Not enough balance.");
-            }
-
-            return await CreateOffChainTransfer(clientId, refLinkGroupAsset, (decimal)refLinkGroupAmount, model.PrevTempPrivateKey, model.GroupReferralLinkId);
-        }
-
-
-        /// <summary>
         /// Process offchain channel
         /// </summary>
         /// <returns></returns>
