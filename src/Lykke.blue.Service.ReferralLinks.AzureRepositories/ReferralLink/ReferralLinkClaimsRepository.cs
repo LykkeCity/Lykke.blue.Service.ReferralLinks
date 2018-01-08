@@ -55,30 +55,5 @@ namespace Lykke.blue.Service.ReferralLinks.AzureRepositories.ReferralLink
 
             return result;
         }
-
-        public async Task<IReferralLinkClaim> UpdateAsyncWithETagCheck(IReferralLinkClaim referralLinkClaim)
-        {
-            await SemaphoreSlim.WaitAsync();
-            try
-            {
-                var result = await _referralLinkClaimsTable.MergeAsync(GetPartitionKey(referralLinkClaim), GetRowKey(referralLinkClaim.Id), currentDbRecord =>
-                {
-                    if (referralLinkClaim.ETag != currentDbRecord.ETag)
-                    {
-                        return null;
-                    }
-
-                    Mapper.Map(referralLinkClaim, currentDbRecord);
-
-                    return currentDbRecord;
-                });
-
-                return result;
-            }
-            finally
-            {
-                SemaphoreSlim.Release();
-            }
-        }
     }
 }

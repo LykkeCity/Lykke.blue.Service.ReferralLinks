@@ -1,4 +1,5 @@
-﻿using Lykke.blue.Service.ReferralLinks.Core.Domain.ReferralLink;
+﻿// ReSharper disable ClassNeverInstantiated.Global
+using Lykke.blue.Service.ReferralLinks.Core.Domain.ReferralLink;
 using Lykke.blue.Service.ReferralLinks.Core.Services;
 using Lykke.blue.Service.ReferralLinks.Services.Domain;
 using System.Linq;
@@ -27,7 +28,7 @@ namespace Lykke.blue.Service.ReferralLinks.Services
 
             var invitationLinks = referralLinksForSender.Where(r => r.Type == ReferralLinkType.Invitation.ToString()).ToList();
 
-            statistics.NumberOfInvitationLinksSent = invitationLinks.Count();
+            statistics.NumberOfInvitationLinksSent = invitationLinks.Count;
             var claims = (await _referralLinkClaimsRepository.GetClaimsForRefLinks(invitationLinks.Select(r=>r.Id))).Where(l => l.RecipientClientId != senderClientId);
             statistics.NumberOfInvitationLinksAccepted = claims.Count();        
 

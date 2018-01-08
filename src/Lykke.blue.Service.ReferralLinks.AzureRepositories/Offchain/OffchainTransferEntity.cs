@@ -1,4 +1,5 @@
-﻿using Lykke.blue.Service.ReferralLinks.Core.Domain.Offchain;
+﻿// ReSharper disable ClassNeverInstantiated.Global
+using Lykke.blue.Service.ReferralLinks.Core.Domain.Offchain;
 using System;
 
 namespace Lykke.blue.Service.ReferralLinks.AzureRepositories.Offchain

@@ -5,13 +5,13 @@ namespace Lykke.blue.Service.ReferralLinks.Services.Domain
 {
     public class ReferralLink : IReferralLink
     {
-        public string Id { get; set; }
+        public string Id { get; private set; }
 
         public string Url { get; set; }
 
-        public string SenderClientId { get; set; }
+        public string SenderClientId { get; private set; }
 
-        public DateTime? ExpirationDate { get; set; }
+        public DateTime? ExpirationDate { get; private set; }
 
         public string Asset { get; set; }
 
@@ -19,7 +19,7 @@ namespace Lykke.blue.Service.ReferralLinks.Services.Domain
 
         public string SenderOffchainTransferId { get; set; }
 
-        public string Type { get; set; }
+        public string Type { get; private set; }
 
         public string State { get; set; }
 

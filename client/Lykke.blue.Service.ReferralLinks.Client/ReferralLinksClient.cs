@@ -3,6 +3,7 @@ using Lykke.blue.Service.ReferralLinks.Client.AutorestClient;
 using Lykke.blue.Service.ReferralLinks.Client.AutorestClient.Models;
 using System;
 using System.Threading.Tasks;
+// ReSharper disable UnusedMember.Global
 
 namespace Lykke.blue.Service.ReferralLinks.Client
 {

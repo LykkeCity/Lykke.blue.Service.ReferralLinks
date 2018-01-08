@@ -2,6 +2,8 @@
 // Changes may cause incorrect behavior and will be lost if the code is
 // regenerated.
 
+// ReSharper disable MemberCanBePrivate.Global
+// ReSharper disable InconsistentNaming
 namespace Lykke.blue.Service.ReferralLinks.Client.AutorestClient
 {
     using Models;
@@ -110,38 +112,6 @@ namespace Lykke.blue.Service.ReferralLinks.Client.AutorestClient
             }
 
             /// <summary>
-            /// Create offchain transfer of group of referral links to Lykke wallet
-            /// </summary>
-            /// <param name='operations'>
-            /// The operations group for this extension method.
-            /// </param>
-            /// <param name='model'>
-            /// </param>
-            public static object GroupTransferToLykkeHotWallet(this ILykkeBlueServiceReferralLinks operations, OffchainGroupLinkTransferToLykkeModel model = default(OffchainGroupLinkTransferToLykkeModel))
-            {
-                return operations.GroupTransferToLykkeHotWalletAsync(model).GetAwaiter().GetResult();
-            }
-
-            /// <summary>
-            /// Create offchain transfer of group of referral links to Lykke wallet
-            /// </summary>
-            /// <param name='operations'>
-            /// The operations group for this extension method.
-            /// </param>
-            /// <param name='model'>
-            /// </param>
-            /// <param name='cancellationToken'>
-            /// The cancellation token.
-            /// </param>
-            public static async Task<object> GroupTransferToLykkeHotWalletAsync(this ILykkeBlueServiceReferralLinks operations, OffchainGroupLinkTransferToLykkeModel model = default(OffchainGroupLinkTransferToLykkeModel), CancellationToken cancellationToken = default(CancellationToken))
-            {
-                using (var _result = await operations.GroupTransferToLykkeHotWalletWithHttpMessagesAsync(model, null, cancellationToken).ConfigureAwait(false))
-                {
-                    return _result.Body;
-                }
-            }
-
-            /// <summary>
             /// Process offchain channel
             /// </summary>
             /// <param name='operations'>
@@ -234,40 +204,6 @@ namespace Lykke.blue.Service.ReferralLinks.Client.AutorestClient
             public static async Task<object> GetReferralLinkByIdAsync(this ILykkeBlueServiceReferralLinks operations, string id, CancellationToken cancellationToken = default(CancellationToken))
             {
                 using (var _result = await operations.GetReferralLinkByIdWithHttpMessagesAsync(id, null, cancellationToken).ConfigureAwait(false))
-                {
-                    return _result.Body;
-                }
-            }
-
-            /// <summary>
-            /// Get mass generated referral link by id.
-            /// </summary>
-            /// <param name='operations'>
-            /// The operations group for this extension method.
-            /// </param>
-            /// <param name='groupId'>
-            /// The Id of the referral link group
-            /// </param>
-            public static object GetReferralLinkByGroupId(this ILykkeBlueServiceReferralLinks operations, string groupId)
-            {
-                return operations.GetReferralLinkByGroupIdAsync(groupId).GetAwaiter().GetResult();
-            }
-
-            /// <summary>
-            /// Get mass generated referral link by id.
-            /// </summary>
-            /// <param name='operations'>
-            /// The operations group for this extension method.
-            /// </param>
-            /// <param name='groupId'>
-            /// The Id of the referral link group
-            /// </param>
-            /// <param name='cancellationToken'>
-            /// The cancellation token.
-            /// </param>
-            public static async Task<object> GetReferralLinkByGroupIdAsync(this ILykkeBlueServiceReferralLinks operations, string groupId, CancellationToken cancellationToken = default(CancellationToken))
-            {
-                using (var _result = await operations.GetReferralLinkByGroupIdWithHttpMessagesAsync(groupId, null, cancellationToken).ConfigureAwait(false))
                 {
                     return _result.Body;
                 }

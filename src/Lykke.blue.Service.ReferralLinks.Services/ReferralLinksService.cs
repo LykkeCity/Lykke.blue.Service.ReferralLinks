@@ -1,4 +1,5 @@
-﻿using Common;
+﻿// ReSharper disable ClassNeverInstantiated.Global
+using Common;
 using Common.Log;
 using Lykke.blue.Service.ReferralLinks.Core.Domain.ReferralLink;
 using Lykke.blue.Service.ReferralLinks.Core.Domain.ReferralLink.Requests;

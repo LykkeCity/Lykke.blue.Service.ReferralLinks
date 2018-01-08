@@ -60,7 +60,7 @@ namespace Lykke.blue.Service.ReferralLinks.Controllers
             await _log.WriteWarningAsync(controllerCtx.GetControllerAndAction(), (new { callParams }).ToJson(), info);
         }
 
-        protected async Task LogError<T>(T callParams, ControllerContext controllerCtx, Exception ex)
+        private async Task LogError<T>(T callParams, ControllerContext controllerCtx, Exception ex)
         {
             await _log.WriteErrorAsync(controllerCtx.GetControllerAndAction(), (new { callParams }).ToJson(), ex);
         }

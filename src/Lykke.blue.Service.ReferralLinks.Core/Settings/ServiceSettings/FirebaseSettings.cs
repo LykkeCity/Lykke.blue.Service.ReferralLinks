@@ -1,4 +1,5 @@
-﻿namespace Lykke.blue.Service.ReferralLinks.Core.Settings.ServiceSettings
+﻿// ReSharper disable ClassNeverInstantiated.Global
+namespace Lykke.blue.Service.ReferralLinks.Core.Settings.ServiceSettings
 {
     public class FirebaseSettings
     {

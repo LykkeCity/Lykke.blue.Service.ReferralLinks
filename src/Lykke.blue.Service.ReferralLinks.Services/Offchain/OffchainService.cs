@@ -1,4 +1,5 @@
-﻿using Common;
+﻿// ReSharper disable ClassNeverInstantiated.Global
+using Common;
 using Common.Log;
 using Lykke.Bitcoin.Api.Client.BitcoinApi;
 using Lykke.Bitcoin.Api.Client.BitcoinApi.Models;
@@ -7,6 +8,8 @@ using Lykke.blue.Service.ReferralLinks.Core.Domain.WalletCredentials;
 using Lykke.blue.Service.ReferralLinks.Core.Services;
 using System;
 using System.Threading.Tasks;
+
+//OffchainService and all offchain functionality will be removed in next PR. No need to review.
 
 namespace Lykke.blue.Service.ReferralLinks.Services.Offchain
 {

@@ -47,7 +47,6 @@ namespace Lykke.blue.Service.ReferralLinks.Controllers
             IStatisticsService statisticsService,
             CachedDataDictionary<string, Lykke.Service.Assets.Client.Models.Asset> assets,
             ISrvKycForAsset srvKycForAsset,
-            IExchangeOperationsServiceClient exchangeOperationsService,
             ReferralLinksSettings settings,
             IReferralLinkClaimsService referralLinkClaimsService,
             ExchangeService exchangeService) : base(log)
@@ -108,11 +107,11 @@ namespace Lykke.blue.Service.ReferralLinks.Controllers
                 return await LogAndReturnNotFound(senderId, ControllerContext, "Requested id cant be empty");
             }
 
-            var groupOfReferralLinks = await _referralLinksService.GetGiftCoinLinksBySenderId(senderId);
+            var groupOfReferralLinks = (await _referralLinksService.GetGiftCoinLinksBySenderId(senderId)).ToList();
 
-            if (groupOfReferralLinks == null)
+            if (!groupOfReferralLinks.Any())
             {
-                var msg = $"Ref link groups for sender id {senderId} does not exist";
+                var msg = $"No gift coin links found for sender id {senderId}.";
                 return await LogAndReturnNotFound(senderId, ControllerContext, msg);
             }
 
@@ -277,11 +276,17 @@ namespace Lykke.blue.Service.ReferralLinks.Controllers
 
             var referralLink = await _referralLinksService.CreateGiftCoinLink(request.SenderClientId, request.Asset, request.Amount);
 
-            await LogInfo(request, ControllerContext, referralLink.ToJson());
+            var transferResult = await _exchangeService.TransferToSharedWallet(request.SenderClientId, referralLink.Amount, request.Asset);
 
-            return Created(uri: $"api/referralLinks/{referralLink.Id}", value: new RequestRefLinkResponse { RefLinkId = referralLink.Id, RefLinkUrl = referralLink.Url });
+            if (transferResult.IsOk())
+            {
+                await LogInfo(request, ControllerContext, referralLink.ToJson());
+
+                return Created(uri: $"api/referralLinks/{referralLink.Id}", value: new RequestRefLinkResponse { RefLinkId = referralLink.Id, RefLinkUrl = referralLink.Url });
+            }
+
+            return await LogAndReturnInternalServerError(request, ControllerContext, transferResult.Message);
         }
-
 
         /// <summary>
         /// Request invitation referral link.
@@ -477,7 +482,7 @@ namespace Lykke.blue.Service.ReferralLinks.Controllers
                                 }
                             );
                     }
-                    return await LogAndReturnInternalServerError(request, ControllerContext, $"TransactionRewardRecipientError: Code: {txRecipient.Code}, {txRecipient.Message}, recipient TxId: {txRecipient.TransactionId}; TransactionRewardSenderError: Code: {txSender.Code}, {txSender.Message}, sender TxId: {txSender.TransactionId}");
+                    return await LogAndReturnInternalServerError(request, ControllerContext, $"TransactionRecipient: Code: {txRecipient.Code}, {txRecipient.Message}, recipient TxId: {txRecipient.TransactionId}; TransactionSender: Code: {txSender.Code}, {txSender.Message}, sender TxId: {txSender.TransactionId}");
                 }
 
                 return Ok(new ClaimRefLinkResponse());

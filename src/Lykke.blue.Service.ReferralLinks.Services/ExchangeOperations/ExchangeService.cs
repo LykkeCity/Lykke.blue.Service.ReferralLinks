@@ -1,4 +1,5 @@
-﻿using Common;
+﻿// ReSharper disable ClassNeverInstantiated.Global
+using Common;
 using Common.Log;
 using Lykke.blue.Service.ReferralLinks.Core;
 using Lykke.blue.Service.ReferralLinks.Core.Domain.ExchangeOperations;
@@ -41,7 +42,7 @@ namespace Lykke.blue.Service.ReferralLinks.Services.ExchangeOperations
             return await ExchangeTransfer(_settings.ReferralLinksService.LykkeReferralClientId, recipientClientId, refLink.Amount, refLink.Asset, executionContext);
         }
 
-        public async Task<ExchangeOperationResult> ExchangeTransfer(string sourceClientId, string destClientId, double amount, string assetId, string executionContext = null)
+        private async Task<ExchangeOperationResult> ExchangeTransfer(string sourceClientId, string destClientId, double amount, string assetId, string executionContext = null)
         {
             var request = new { SourceClientId = sourceClientId, DestClientId = destClientId, Amount = amount, AssetId = assetId };
 

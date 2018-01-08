@@ -1,4 +1,5 @@
-﻿using Autofac;
+﻿// ReSharper disable ClassNeverInstantiated.Global
+using Autofac;
 using Autofac.Extensions.DependencyInjection;
 using AutoMapper;
 using AzureStorage.Tables;
@@ -85,6 +86,7 @@ namespace Lykke.blue.Service.ReferralLinks
             }
         }
 
+        // ReSharper disable once UnusedMember.Global
         public void Configure(IApplicationBuilder app, IHostingEnvironment env, IApplicationLifetime appLifetime)
         {
             try
@@ -115,7 +117,7 @@ namespace Lykke.blue.Service.ReferralLinks
                 });
                 app.UseStaticFiles();
 
-                appLifetime.ApplicationStarted.Register(() => StartApplication(app).Wait());
+                appLifetime.ApplicationStarted.Register(() => StartApplication().Wait());
                 appLifetime.ApplicationStopped.Register(() => CleanUp().Wait());
             }
             catch (Exception ex)
@@ -125,7 +127,7 @@ namespace Lykke.blue.Service.ReferralLinks
             }
         }
 
-        private async Task StartApplication(IApplicationBuilder app)
+        private async Task StartApplication()
         {
             try
             {

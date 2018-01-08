@@ -1,5 +1,6 @@
 ﻿using Lykke.Bitcoin.Api.Client.BitcoinApi.Models;
 using System;
+// ReSharper disable UnusedAutoPropertyAccessor.Local
 
 namespace Lykke.blue.Service.ReferralLinks.Core.Domain.Offchain
 {

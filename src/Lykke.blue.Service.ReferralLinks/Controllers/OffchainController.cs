@@ -17,6 +17,8 @@ using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 
+//OffchainService and all offchain functionality will be removed in next PR. No need to review.
+
 namespace Lykke.blue.Service.ReferralLinks.Controllers
 {
     [Route("api/offchain")] 

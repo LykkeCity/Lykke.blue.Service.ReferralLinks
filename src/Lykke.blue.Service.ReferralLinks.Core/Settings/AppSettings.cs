@@ -1,6 +1,7 @@
 ﻿using Lykke.blue.Service.ReferralLinks.Core.Settings.ServiceSettings;
 using Lykke.blue.Service.ReferralLinks.Core.Settings.SlackNotifications;
 using Lykke.Service.Kyc.Client;
+// ReSharper disable ClassNeverInstantiated.Global
 
 namespace Lykke.blue.Service.ReferralLinks.Core.Settings
 {

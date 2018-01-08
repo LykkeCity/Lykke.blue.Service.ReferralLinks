@@ -4,6 +4,7 @@ namespace Lykke.blue.Service.ReferralLinks.Models
 {
     public class ErrorResponseModel
     {
+        // ReSharper disable once MemberCanBePrivate.Global - must be public for json serialization
         public string ErrorMessage { get; }
 
         private Dictionary<string, List<string>> ModelErrors { get; }
