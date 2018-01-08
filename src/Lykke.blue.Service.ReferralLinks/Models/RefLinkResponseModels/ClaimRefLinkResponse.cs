@@ -4,6 +4,6 @@
     {
         public string TransactionRewardRecipient { get; set; }
         public string TransactionRewardSender { get; set; }
-        public string SenderOffchainTransferId { get; set; }
+        public string SenderTransactionId { get; set; }
     }
 }

@@ -178,7 +178,7 @@ namespace Lykke.blue.Service.ReferralLinks.Controllers
         /// <param name="request"></param>
         /// <returns></returns>
         [HttpPost("giftCoins/group")]
-        [SwaggerOperation("RequestGiftCoinsReferralLink")]
+        [SwaggerOperation("GroupGenerateGiftCoinLinks")]
         [ProducesResponseType(typeof(ErrorResponseModel), (int)HttpStatusCode.BadRequest)]
         [ProducesResponseType(typeof(ErrorResponseModel), (int)HttpStatusCode.InternalServerError)]
         [ProducesResponseType(typeof(RequestRefLinkResponse), (int)HttpStatusCode.Created)]
@@ -192,13 +192,21 @@ namespace Lykke.blue.Service.ReferralLinks.Controllers
 
             var refLinkGroup =  await _referralLinksService.CreateGroupOfGiftCoinLinks(request.SenderClientId, request.Asset, request.AmountForEachLink);
 
-            var groupTransferResult =  await _exchangeService.TransferToSharedWallet(request.SenderClientId, refLinkGroup.Sum(r => r.Amount), request.Asset);
-
-            if (groupTransferResult.IsOk())
+            try
             {
-                return Created($"api/referralLinks/giftCoins/sender/{request.SenderClientId}", "");
+                var groupTransferResult = await _exchangeService.TransferToSharedWallet(request.SenderClientId, refLinkGroup.Sum(r => r.Amount), request.Asset);
+
+                if (groupTransferResult.IsOk())
+                {
+                    return Created($"api/referralLinks/giftCoins/sender/{request.SenderClientId}", "");
+                }
+
+                return await LogAndReturnInternalServerError(request, ControllerContext, groupTransferResult.Message);
             }
-            return await LogAndReturnInternalServerError(request, ControllerContext, groupTransferResult.Message);
+            catch (Exception ex)
+            {
+                return await LogAndReturnInternalServerError(request, ControllerContext, ex);
+            }
         }
 
         private async Task<string> ValidateGiftCoinsLinkRequest<T>(T request) where T : GiftCoinRequestBase
@@ -276,16 +284,27 @@ namespace Lykke.blue.Service.ReferralLinks.Controllers
 
             var referralLink = await _referralLinksService.CreateGiftCoinLink(request.SenderClientId, request.Asset, request.Amount);
 
-            var transferResult = await _exchangeService.TransferToSharedWallet(request.SenderClientId, referralLink.Amount, request.Asset);
-
-            if (transferResult.IsOk())
+            try
             {
-                await LogInfo(request, ControllerContext, referralLink.ToJson());
+                var transferResult = await _exchangeService.TransferToSharedWallet(request.SenderClientId, referralLink.Amount, referralLink.Asset);
 
-                return Created(uri: $"api/referralLinks/{referralLink.Id}", value: new RequestRefLinkResponse { RefLinkId = referralLink.Id, RefLinkUrl = referralLink.Url });
+                if (transferResult.IsOk())
+                {
+                    referralLink.SenderTransactionId = transferResult.TransactionId;
+                    referralLink.State = ReferralLinkState.SentToLykkeSharedWallet.ToString();
+                    await _referralLinksService.UpdateAsync(referralLink);
+
+                    await LogInfo(request, ControllerContext, referralLink.ToJson());
+
+                    return Created(uri: $"api/referralLinks/{referralLink.Id}", value: new RequestRefLinkResponse { RefLinkId = referralLink.Id, RefLinkUrl = referralLink.Url });
+                }
+
+                return await LogAndReturnInternalServerError(request, ControllerContext, transferResult.Message);
             }
-
-            return await LogAndReturnInternalServerError(request, ControllerContext, transferResult.Message);
+            catch (Exception ex)
+            {
+                return await LogAndReturnInternalServerError(request, ControllerContext, ex);
+            }
         }
 
         /// <summary>
@@ -413,7 +432,7 @@ namespace Lykke.blue.Service.ReferralLinks.Controllers
                 if (transactionRewardRecipient.IsOk())
                 {
                     await SetRefLinkClaimTransactionId(transactionRewardRecipient, newRefLinkClaimRecipient);
-                    return Ok(new ClaimRefLinkResponse { TransactionRewardRecipient = transactionRewardRecipient.TransactionId, SenderOffchainTransferId = refLink.SenderOffchainTransferId });
+                    return Ok(new ClaimRefLinkResponse { TransactionRewardRecipient = transactionRewardRecipient.TransactionId, SenderTransactionId = refLink.SenderTransactionId });
                 }
                 return await LogAndReturnInternalServerError(request, ControllerContext, $"TransactionRewardRecipientError: Code: {transactionRewardRecipient.Code}, Message: {transactionRewardRecipient.Message}");
             }

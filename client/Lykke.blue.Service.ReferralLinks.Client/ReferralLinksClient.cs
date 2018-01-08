@@ -10,12 +10,12 @@ namespace Lykke.blue.Service.ReferralLinks.Client
     public class ReferralLinksClient : IReferralLinksClient, IDisposable
     {
         private readonly ILog _log;
-        private LykkeReferralLinksService _service;
+        private ILykkeBlueServiceReferralLinks _service;
 
         public ReferralLinksClient(string serviceUrl, ILog log)
         {
             _log = log;
-            _service = new LykkeReferralLinksService(new Uri(serviceUrl));
+            _service = new LykkeBlueServiceReferralLinks(new Uri(serviceUrl));
         }
 
         public void Dispose()
@@ -52,32 +52,6 @@ namespace Lykke.blue.Service.ReferralLinks.Client
             }
         }
 
-        public async Task<object> FinalizeGiftCoinLinkTransfer(OffchainFinalizeModel request)
-        {
-            try
-            {
-                return await _service.FinalizeRefLinkTransferAsync(request);
-            }
-            catch (Exception ex)
-            {
-                await _log.WriteErrorAsync(nameof(ReferralLinksClient), nameof(FinalizeGiftCoinLinkTransfer), ex);
-                throw;
-            }
-        }
-
-        public async Task<OffchainEncryptedKeyRespModel> GetChannelKey(string asset, string clientId)
-        {
-            try
-            {
-                return await _service.GetChannelKeyAsync(asset, clientId);
-            }
-            catch (Exception ex)
-            {
-                await _log.WriteErrorAsync(nameof(ReferralLinksClient), nameof(GetChannelKey), ex);
-                throw;
-            }
-        }
-
         public async Task<object> GetReferralLink(string id)
         {
             try
@@ -89,7 +63,20 @@ namespace Lykke.blue.Service.ReferralLinks.Client
                 await _log.WriteErrorAsync(nameof(ReferralLinksClient), nameof(GetReferralLink), ex);
                 throw;
             }
-        }       
+        }
+
+        public async Task<object> GetReferralLinkByUrl(string url)
+        {
+            try
+            {
+                return await _service.GetReferralLinkByUrlAsync(url);
+            }
+            catch (Exception ex)
+            {
+                await _log.WriteErrorAsync(nameof(ReferralLinksClient), nameof(GetReferralLink), ex);
+                throw;
+            }
+        }
 
         public async Task<object> GetReferralLinksStatisticsBySenderId(string senderClientId)
         {
@@ -104,20 +91,8 @@ namespace Lykke.blue.Service.ReferralLinks.Client
             }
         }
 
-        public async Task<object> ProcessChannel(OffchainChannelProcessModel request)
-        {
-            try
-            {
-                return await _service.ProcessChannelAsync(request);
-            }
-            catch (Exception ex)
-            {
-                await _log.WriteErrorAsync(nameof(ReferralLinksClient), nameof(ProcessChannel), ex);
-                throw;
-            }
-        }
 
-        public async Task<object> RequestGiftCoinsReferralLink(GiftCoinsReferralLinkRequest request)
+        public async Task<object> RequestGiftCoinsReferralLink(GiftCoinRequest request)
         {
             try
             {
@@ -126,6 +101,19 @@ namespace Lykke.blue.Service.ReferralLinks.Client
             catch (Exception ex)
             {
                 await _log.WriteErrorAsync(nameof(ReferralLinksClient), nameof(RequestGiftCoinsReferralLink), ex);
+                throw;
+            }
+        }
+
+        public async Task<object> GroupGenerateGiftCoinLinks(GiftCoinRequestGroup request)
+        {
+            try
+            {
+                return await _service.GroupGenerateGiftCoinLinksAsync(request);
+            }
+            catch (Exception ex)
+            {
+                await _log.WriteErrorAsync(nameof(ReferralLinksClient), nameof(RequestInvitationReferralLink), ex);
                 throw;
             }
         }
@@ -143,20 +131,17 @@ namespace Lykke.blue.Service.ReferralLinks.Client
             }
         }
 
-       
-
-        public async Task<object> TransferToLykkeWallet(TransferToLykkeWallet request)
+        public async Task<object> GetGiftCoinReferralLinks(string senderClientId)
         {
             try
             {
-                return await _service.TransferToLykkeHotWalletAsync(request);
+                return await _service.GetGroupReferralLinkBySenderIdAsync(senderClientId);
             }
             catch (Exception ex)
             {
-                await _log.WriteErrorAsync(nameof(ReferralLinksClient), nameof(TransferToLykkeWallet), ex);
+                await _log.WriteErrorAsync(nameof(ReferralLinksClient), nameof(RequestInvitationReferralLink), ex);
                 throw;
             }
         }
-
     }
 }

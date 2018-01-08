@@ -17,7 +17,7 @@ namespace Lykke.blue.Service.ReferralLinks.Services.Domain
 
         public double Amount { get; set; }
 
-        public string SenderOffchainTransferId { get; set; }
+        public string SenderTransactionId { get; set; }
 
         public string Type { get; private set; }
 

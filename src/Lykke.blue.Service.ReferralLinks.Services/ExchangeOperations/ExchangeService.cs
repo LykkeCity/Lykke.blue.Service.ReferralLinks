@@ -3,7 +3,6 @@ using Common;
 using Common.Log;
 using Lykke.blue.Service.ReferralLinks.Core;
 using Lykke.blue.Service.ReferralLinks.Core.Domain.ExchangeOperations;
-using Lykke.blue.Service.ReferralLinks.Core.Domain.Offchain;
 using Lykke.blue.Service.ReferralLinks.Core.Domain.ReferralLink;
 using Lykke.blue.Service.ReferralLinks.Core.Settings;
 using Lykke.MatchingEngine.Connector.Abstractions.Models;
@@ -78,10 +77,6 @@ namespace Lykke.blue.Service.ReferralLinks.Services.ExchangeOperations
                 return result;
 
 
-            }
-            catch (OffchainException ex)
-            {
-                throw new Exception($"ExchangeOperationsService error: Code={ex.OffchainExceptionCode}.OffchainException={ex.OffchainExceptionMessage}.Message={ex.Message}.{ex.InnerException?.Message}");
             }
             catch (Exception ex)
             {

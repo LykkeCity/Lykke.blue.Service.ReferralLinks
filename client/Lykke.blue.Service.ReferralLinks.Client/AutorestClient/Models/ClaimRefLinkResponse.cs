@@ -25,11 +25,11 @@ namespace Lykke.blue.Service.ReferralLinks.Client.AutorestClient.Models
         /// <summary>
         /// Initializes a new instance of the ClaimRefLinkResponse class.
         /// </summary>
-        public ClaimRefLinkResponse(string transactionRewardRecipient = default(string), string transactionRewardSender = default(string), string senderOffchainTransferId = default(string))
+        public ClaimRefLinkResponse(string transactionRewardRecipient = default(string), string transactionRewardSender = default(string), string senderTransactionId = default(string))
         {
             TransactionRewardRecipient = transactionRewardRecipient;
             TransactionRewardSender = transactionRewardSender;
-            SenderOffchainTransferId = senderOffchainTransferId;
+            SenderTransactionId = senderTransactionId;
             CustomInit();
         }
 
@@ -50,8 +50,8 @@ namespace Lykke.blue.Service.ReferralLinks.Client.AutorestClient.Models
 
         /// <summary>
         /// </summary>
-        [JsonProperty(PropertyName = "SenderOffchainTransferId")]
-        public string SenderOffchainTransferId { get; set; }
+        [JsonProperty(PropertyName = "SenderTransactionId")]
+        public string SenderTransactionId { get; set; }
 
     }
 }

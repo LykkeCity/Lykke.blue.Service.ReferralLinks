@@ -1,6 +1,5 @@
 ﻿using Common;
 using Common.Log;
-using Lykke.blue.Service.ReferralLinks.Core.Domain.Offchain;
 using Lykke.blue.Service.ReferralLinks.Extensions;
 using Lykke.blue.Service.ReferralLinks.Models;
 using Microsoft.AspNetCore.Mvc;
@@ -24,12 +23,6 @@ namespace Lykke.blue.Service.ReferralLinks.Controllers
         {
             await LogInfo(request, controllerCtx,info);
             return NotFound(ErrorResponseModel.Create(info));
-        }
-
-        protected async Task<ObjectResult> LogOffchainExceptionAndReturn<T>(T request, ControllerContext controllerCtx, OffchainException ex)
-        {
-            await LogError(request, controllerCtx, new Exception($"OffchainException: {ex.OffchainExceptionMessage}, Code: {ex.OffchainExceptionCode}, Error: {ex.Message}"));
-            return StatusCode((int)HttpStatusCode.InternalServerError, ErrorResponseModel.Create(TECHNICAL_ERROR_MESSAGE));
         }
 
         protected async Task<ObjectResult> LogAndReturnBadRequest<T>(T request, ControllerContext controllerCtx, string info)

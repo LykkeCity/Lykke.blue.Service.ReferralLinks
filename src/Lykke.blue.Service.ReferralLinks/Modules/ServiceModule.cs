@@ -10,7 +10,6 @@ using Lykke.blue.Service.ReferralLinks.Core.Settings;
 using Lykke.blue.Service.ReferralLinks.Services;
 using Lykke.blue.Service.ReferralLinks.Services.ExchangeOperations;
 using Lykke.blue.Service.ReferralLinks.Services.Kyc;
-using Lykke.blue.Service.ReferralLinks.Services.Offchain;
 using Lykke.Service.Assets.Client;
 using Lykke.Service.Balances.Client;
 using Lykke.Service.ExchangeOperations.Client;
@@ -61,8 +60,6 @@ namespace Lykke.blue.Service.ReferralLinks.Modules
             builder.RegisterType<HealthService>().As<IHealthService>().SingleInstance();
             builder.RegisterType<SrvKycForAsset>().As<ISrvKycForAsset>().SingleInstance();
             
-            builder.RegisterType<OffchainService>().As<IOffchainService>().SingleInstance();
-
             builder.RegisterType<ReferralLinksService>().As<IReferralLinksService>().SingleInstance();
             builder.RegisterType<ReferralLinkClaimsService>().As<IReferralLinkClaimsService>().SingleInstance();
             builder.RegisterType<StatisticsService>().As<IStatisticsService>().SingleInstance();
