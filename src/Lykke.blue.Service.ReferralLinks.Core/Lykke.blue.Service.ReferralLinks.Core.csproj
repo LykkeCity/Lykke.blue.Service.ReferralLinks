@@ -9,7 +9,7 @@
 
   <ItemGroup>
     <PackageReference Include="Lykke.Bitcoin.Api.Client" Version="1.0.13" />
-    <PackageReference Include="Lykke.Common" Version="3.0.2" />
+    <PackageReference Include="Lykke.Common" Version="4.1.0" />
     <PackageReference Include="Lykke.Service.Kyc.Abstractions" Version="1.0.50" />
     <PackageReference Include="Lykke.Service.Kyc.Client" Version="1.0.50" />
     <PackageReference Include="Microsoft.Rest.ClientRuntime" Version="2.3.10" />
