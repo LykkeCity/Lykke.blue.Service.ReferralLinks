@@ -568,7 +568,7 @@ namespace Lykke.blue.Service.ReferralLinks.Client.AutorestClient
                 _responseContent = await _httpResponse.Content.ReadAsStringAsync().ConfigureAwait(false);
                 try
                 {
-                    _result.Body = SafeJsonConvert.DeserializeObject<GetReferralLinkResponse>(_responseContent, DeserializationSettings);
+                    _result.Body = SafeJsonConvert.DeserializeObject<IList<GetReferralLinkResponse>>(_responseContent, DeserializationSettings);
                 }
                 catch (JsonException ex)
                 {

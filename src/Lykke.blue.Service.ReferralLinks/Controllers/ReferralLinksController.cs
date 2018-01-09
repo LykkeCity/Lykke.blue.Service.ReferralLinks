@@ -99,7 +99,7 @@ namespace Lykke.blue.Service.ReferralLinks.Controllers
         [HttpGet("giftCoins/sender/{senderId}")]
         [SwaggerOperation("GetGroupReferralLinkBySenderId")]
         [ProducesResponseType(typeof(ErrorResponseModel), (int)HttpStatusCode.NotFound)]
-        [ProducesResponseType(typeof(GetReferralLinkResponse), (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(IEnumerable<GetReferralLinkResponse>), (int)HttpStatusCode.OK)]
         public async Task<IActionResult> GetGroupReferralLinkBySenderId(string senderId)
         {
             if (String.IsNullOrEmpty(senderId))
