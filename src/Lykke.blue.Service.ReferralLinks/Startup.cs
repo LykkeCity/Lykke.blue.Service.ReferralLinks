@@ -98,6 +98,8 @@ namespace Lykke.blue.Service.ReferralLinks
 
                 app.UseLykkeMiddleware(Constants.ComponentName, ex =>
                 {
+                    Log.WriteFatalErrorAsync(Constants.ComponentName, "", ex);
+
                     string errorMessage = "Technical problem";
 
                     if (!String.IsNullOrWhiteSpace(ex.Message))

@@ -38,8 +38,6 @@
     <PackageReference Include="Lykke.Common.ApiLibrary" Version="1.1.0" />
     <PackageReference Include="Lykke.Logs" Version="3.5.1" />
     <PackageReference Include="Lykke.Service.Assets.Client" Version="2.1.0.120" />
-    <PackageReference Include="Lykke.Service.Kyc.Abstractions" Version="1.0.50" />
-    <PackageReference Include="Lykke.Service.Kyc.Client" Version="1.0.50" />
     <PackageReference Include="Lykke.Service.Session" Version="1.0.33" />
     <PackageReference Include="Lykke.SettingsReader" Version="1.1.1" />
     <PackageReference Include="Lykke.SlackNotification.AzureQueue" Version="2.0.1" />
