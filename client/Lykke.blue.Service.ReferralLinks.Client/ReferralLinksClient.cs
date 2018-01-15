@@ -1,8 +1,12 @@
 ﻿using Common.Log;
 using Lykke.blue.Service.ReferralLinks.Client.AutorestClient;
 using Lykke.blue.Service.ReferralLinks.Client.AutorestClient.Models;
+using Lykke.blue.Service.ReferralLinks.Client.Models;
+using Microsoft.AspNetCore.Mvc;
 using System;
+using System.Net;
 using System.Threading.Tasks;
+
 // ReSharper disable UnusedMember.Global
 
 namespace Lykke.blue.Service.ReferralLinks.Client
@@ -39,24 +43,40 @@ namespace Lykke.blue.Service.ReferralLinks.Client
             }
         }
 
-        public async Task<object> ClaimInvitationLink(string refLinkId, ClaimReferralLinkRequest request)
+        public async Task<Microsoft.AspNetCore.Mvc.ObjectResult> ClaimInvitationLink(string refLinkId, ClaimReferralLinkRequest request)
         {
             try
             {
-                return await _service.ClaimInvitationLinkAsync(refLinkId, request);
+                var httpResponse = await _service.ClaimInvitationLinkWithHttpMessagesAsync(refLinkId,request);
+
+                if (httpResponse.Response.StatusCode == HttpStatusCode.BadRequest)
+                {
+                    return new BadRequestObjectResult(await httpResponse.Response.Content.ReadAsStringAsync().ConfigureAwait(false));
+                }
+
+                var result = httpResponse.Body;
+
+                if (result is ClaimRefLinkResponse) return new OkObjectResult(ClaimReferralLinkDto.Create(result as ClaimRefLinkResponse));
+
+                throw new Exception();
             }
             catch (Exception ex)
             {
                 await _log.WriteErrorAsync(nameof(ReferralLinksClient), nameof(ClaimInvitationLink), ex);
                 throw;
             }
+
+
+
         }
 
-        public async Task<object> GetReferralLink(string id)
+        public async Task<ReferralLinkDto> GetReferralLink(string id)
         {
             try
             {
-                return await _service.GetReferralLinkByIdAsync(id);
+                var res = await _service.GetReferralLinkByIdAsync(id);
+                if (res is GetReferralLinkResponse) return ReferralLinkDto.Create(res as GetReferralLinkResponse);
+                return null;
             }
             catch (Exception ex)
             {
@@ -65,11 +85,13 @@ namespace Lykke.blue.Service.ReferralLinks.Client
             }
         }
 
-        public async Task<object> GetReferralLinkByUrl(string url)
+        public async Task<ReferralLinkDto> GetReferralLinkByUrl(string url)
         {
             try
             {
-                return await _service.GetReferralLinkByUrlAsync(url);
+                var res = await _service.GetReferralLinkByUrlAsync(url);
+                if (res is GetReferralLinkResponse) return ReferralLinkDto.Create(res as GetReferralLinkResponse);
+                return null;
             }
             catch (Exception ex)
             {
@@ -118,11 +140,22 @@ namespace Lykke.blue.Service.ReferralLinks.Client
             }
         }
 
-        public async Task<object> RequestInvitationReferralLink(InvitationReferralLinkRequest request)
+        public async Task<Microsoft.AspNetCore.Mvc.ObjectResult> RequestInvitationReferralLink(InvitationReferralLinkRequest request)
         {
             try
             {
-                return await _service.RequestInvitationReferralLinkAsync(request);
+                var httpResponse = await _service.RequestInvitationReferralLinkWithHttpMessagesAsync(request);
+
+                if (httpResponse.Response.StatusCode == HttpStatusCode.BadRequest)
+                {
+                    return new BadRequestObjectResult(await httpResponse.Response.Content.ReadAsStringAsync().ConfigureAwait(false));
+                }
+
+                var result = httpResponse.Body;
+
+                if (result is RequestRefLinkResponse) return new OkObjectResult(RequestReferralLinkDto.Create(result as RequestRefLinkResponse));
+
+                throw new Exception();
             }
             catch (Exception ex)
             {
