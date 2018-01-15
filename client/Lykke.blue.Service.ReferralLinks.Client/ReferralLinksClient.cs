@@ -4,6 +4,8 @@ using Lykke.blue.Service.ReferralLinks.Client.AutorestClient.Models;
 using Lykke.blue.Service.ReferralLinks.Client.Models;
 using Microsoft.AspNetCore.Mvc;
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 
@@ -30,20 +32,34 @@ namespace Lykke.blue.Service.ReferralLinks.Client
             _service = null;
         }
 
-        public async Task<object> ClaimGiftCoins(string refLinkId, ClaimReferralLinkRequest request)
+        public async Task<Microsoft.AspNetCore.Mvc.ObjectResult> ClaimGiftCoinsAsync(string refLinkId, ClaimReferralLinkRequest request)
         {
             try
             {
-                return await _service.ClaimGiftCoinsAsync(refLinkId, request);
+                var httpResponse = await _service.ClaimGiftCoinsWithHttpMessagesAsync(refLinkId, request);
+
+                if (httpResponse.Response.StatusCode == HttpStatusCode.BadRequest)
+                {
+                    return new BadRequestObjectResult(await httpResponse.Response.Content.ReadAsStringAsync().ConfigureAwait(false));
+                }
+
+                var result = httpResponse.Body;
+
+                if (httpResponse.Response.StatusCode == HttpStatusCode.OK && result is ClaimRefLinkResponse)
+                {
+                    return new OkObjectResult(ClaimReferralLinkDto.Create((ClaimRefLinkResponse) result));
+                }
+
+                throw new Exception(httpResponse.Body.ToString());
             }
             catch (Exception ex)
             {
-                await _log.WriteErrorAsync(nameof(ReferralLinksClient), nameof(ClaimGiftCoins), ex);
+                await _log.WriteErrorAsync(nameof(ReferralLinksClient), nameof(ClaimGiftCoinsAsync), ex);
                 throw;
             }
         }
 
-        public async Task<Microsoft.AspNetCore.Mvc.ObjectResult> ClaimInvitationLink(string refLinkId, ClaimReferralLinkRequest request)
+        public async Task<Microsoft.AspNetCore.Mvc.ObjectResult> ClaimInvitationLinkAsync(string refLinkId, ClaimReferralLinkRequest request)
         {
             try
             {
@@ -56,13 +72,16 @@ namespace Lykke.blue.Service.ReferralLinks.Client
 
                 var result = httpResponse.Body;
 
-                if (result is ClaimRefLinkResponse) return new OkObjectResult(ClaimReferralLinkDto.Create(result as ClaimRefLinkResponse));
+                if (httpResponse.Response.StatusCode == HttpStatusCode.OK && result is ClaimRefLinkResponse)
+                {
+                    return new OkObjectResult(ClaimReferralLinkDto.Create((ClaimRefLinkResponse) result));
+                }
 
-                throw new Exception();
+                throw new Exception(httpResponse.Body.ToString());
             }
             catch (Exception ex)
             {
-                await _log.WriteErrorAsync(nameof(ReferralLinksClient), nameof(ClaimInvitationLink), ex);
+                await _log.WriteErrorAsync(nameof(ReferralLinksClient), nameof(ClaimInvitationLinkAsync), ex);
                 throw;
             }
 
@@ -70,7 +89,7 @@ namespace Lykke.blue.Service.ReferralLinks.Client
 
         }
 
-        public async Task<ReferralLinkDto> GetReferralLink(string id)
+        public async Task<ReferralLinkDto> GetReferralLinkAsync(string id)
         {
             try
             {
@@ -80,12 +99,12 @@ namespace Lykke.blue.Service.ReferralLinks.Client
             }
             catch (Exception ex)
             {
-                await _log.WriteErrorAsync(nameof(ReferralLinksClient), nameof(GetReferralLink), ex);
+                await _log.WriteErrorAsync(nameof(ReferralLinksClient), nameof(GetReferralLinkAsync), ex);
                 throw;
             }
         }
 
-        public async Task<ReferralLinkDto> GetReferralLinkByUrl(string url)
+        public async Task<ReferralLinkDto> GetReferralLinkByUrlAsync(string url)
         {
             try
             {
@@ -95,52 +114,80 @@ namespace Lykke.blue.Service.ReferralLinks.Client
             }
             catch (Exception ex)
             {
-                await _log.WriteErrorAsync(nameof(ReferralLinksClient), nameof(GetReferralLink), ex);
+                await _log.WriteErrorAsync(nameof(ReferralLinksClient), nameof(GetReferralLinkAsync), ex);
                 throw;
             }
         }
 
-        public async Task<object> GetReferralLinksStatisticsBySenderId(string senderClientId)
+        public async Task<ReferralLinksStatisticsDto> GetReferralLinksStatisticsBySenderIdAsync(string senderClientId)
         {
             try
             {
-                return await _service.GetReferralLinksStatisticsBySenderIdAsync(senderClientId);
+                var result = await _service.GetReferralLinksStatisticsBySenderIdAsync(senderClientId);
+                if (result is GetReferralLinksStatisticsBySenderIdResponse) return ReferralLinksStatisticsDto.Create(result as GetReferralLinksStatisticsBySenderIdResponse);
+                return null;
             }
             catch (Exception ex)
             {
-                await _log.WriteErrorAsync(nameof(ReferralLinksClient), nameof(GetReferralLinksStatisticsBySenderId), ex);
+                await _log.WriteErrorAsync(nameof(ReferralLinksClient), nameof(GetReferralLinksStatisticsBySenderIdAsync), ex);
                 throw;
             }
         }
 
 
-        public async Task<object> RequestGiftCoinsReferralLink(GiftCoinRequest request)
+        public async Task<Microsoft.AspNetCore.Mvc.ObjectResult> RequestGiftCoinsReferralLinkAsync(GiftCoinRequest request)
         {
             try
             {
-                return await _service.RequestGiftCoinsReferralLinkAsync(request);
+                var httpResponse = await _service.RequestGiftCoinsReferralLinkWithHttpMessagesAsync(request);
+
+                if (httpResponse.Response.StatusCode == HttpStatusCode.BadRequest)
+                {
+                    return new BadRequestObjectResult(await httpResponse.Response.Content.ReadAsStringAsync().ConfigureAwait(false));
+                }
+
+                var result = httpResponse.Body;
+
+                if (httpResponse.Response.StatusCode == HttpStatusCode.Created && result is RequestRefLinkResponse)
+                {
+                    return new CreatedResult(httpResponse.Response.Headers.Location, RequestReferralLinkDto.Create((RequestRefLinkResponse) result));
+                }
+
+                throw new Exception(httpResponse.Body.ToString());
             }
             catch (Exception ex)
             {
-                await _log.WriteErrorAsync(nameof(ReferralLinksClient), nameof(RequestGiftCoinsReferralLink), ex);
+                await _log.WriteErrorAsync(nameof(ReferralLinksClient), nameof(RequestGiftCoinsReferralLinkAsync), ex);
                 throw;
             }
         }
 
-        public async Task<object> GroupGenerateGiftCoinLinks(GiftCoinRequestGroup request)
+        public async Task<Microsoft.AspNetCore.Mvc.ObjectResult> GroupGenerateGiftCoinLinksAsync(GiftCoinRequestGroup request)
         {
             try
             {
-                return await _service.GroupGenerateGiftCoinLinksAsync(request);
+                var httpResponse = await _service.GroupGenerateGiftCoinLinksWithHttpMessagesAsync(request);
+
+                if (httpResponse.Response.StatusCode == HttpStatusCode.BadRequest)
+                {
+                    return new BadRequestObjectResult(await httpResponse.Response.Content.ReadAsStringAsync().ConfigureAwait(false));
+                }
+
+                if (httpResponse.Response.StatusCode == HttpStatusCode.Created)
+                {
+                    return new CreatedResult(httpResponse.Response.Headers.Location, "");
+                }
+
+                throw new Exception(httpResponse.Body.ToString());
             }
             catch (Exception ex)
             {
-                await _log.WriteErrorAsync(nameof(ReferralLinksClient), nameof(RequestInvitationReferralLink), ex);
+                await _log.WriteErrorAsync(nameof(ReferralLinksClient), nameof(GroupGenerateGiftCoinLinksAsync), ex);
                 throw;
             }
         }
 
-        public async Task<Microsoft.AspNetCore.Mvc.ObjectResult> RequestInvitationReferralLink(InvitationReferralLinkRequest request)
+        public async Task<Microsoft.AspNetCore.Mvc.ObjectResult> RequestInvitationReferralLinkAsync(InvitationReferralLinkRequest request)
         {
             try
             {
@@ -153,26 +200,36 @@ namespace Lykke.blue.Service.ReferralLinks.Client
 
                 var result = httpResponse.Body;
 
-                if (result is RequestRefLinkResponse) return new OkObjectResult(RequestReferralLinkDto.Create(result as RequestRefLinkResponse));
+                if (httpResponse.Response.StatusCode == HttpStatusCode.Created && result is RequestRefLinkResponse)
+                {
+                    return new CreatedResult(httpResponse.Response.Headers.Location, RequestReferralLinkDto.Create(result as RequestRefLinkResponse));
+                }
+
+                if (httpResponse.Response.StatusCode == HttpStatusCode.OK && result is RequestRefLinkResponse)
+                {
+                    return new OkObjectResult(RequestReferralLinkDto.Create(result as RequestRefLinkResponse));
+                }
 
                 throw new Exception();
             }
             catch (Exception ex)
             {
-                await _log.WriteErrorAsync(nameof(ReferralLinksClient), nameof(RequestInvitationReferralLink), ex);
+                await _log.WriteErrorAsync(nameof(ReferralLinksClient), nameof(RequestInvitationReferralLinkAsync), ex);
                 throw;
             }
         }
 
-        public async Task<object> GetGiftCoinReferralLinks(string senderClientId)
+        public async Task<IEnumerable<ReferralLinkDto>> GetGiftCoinReferralLinksAsync(string senderClientId)
         {
             try
             {
-                return await _service.GetGroupReferralLinkBySenderIdAsync(senderClientId);
+                var res = await _service.GetGroupReferralLinkBySenderIdAsync(senderClientId);
+                if(res is IEnumerable<GetReferralLinkResponse>) return new List<ReferralLinkDto>( (res as IEnumerable<GetReferralLinkResponse>).Select(ReferralLinkDto.Create)  );
+                return null;
             }
             catch (Exception ex)
             {
-                await _log.WriteErrorAsync(nameof(ReferralLinksClient), nameof(RequestInvitationReferralLink), ex);
+                await _log.WriteErrorAsync(nameof(ReferralLinksClient), nameof(GetGiftCoinReferralLinksAsync), ex);
                 throw;
             }
         }
