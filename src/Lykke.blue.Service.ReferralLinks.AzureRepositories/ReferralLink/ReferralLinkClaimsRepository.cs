@@ -4,7 +4,6 @@ using Lykke.blue.Service.ReferralLinks.Core.Domain.ReferralLink;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading;
 using System.Threading.Tasks;
 
 namespace Lykke.blue.Service.ReferralLinks.AzureRepositories.ReferralLink
@@ -12,7 +11,6 @@ namespace Lykke.blue.Service.ReferralLinks.AzureRepositories.ReferralLink
     public class ReferralLinkClaimsRepository : IReferralLinkClaimsRepository
     {
         private readonly INoSQLTableStorage<ReferralLinkClaimEntity> _referralLinkClaimsTable;
-        private static readonly SemaphoreSlim SemaphoreSlim = new SemaphoreSlim(1, 1);
 
         public ReferralLinkClaimsRepository(INoSQLTableStorage<ReferralLinkClaimEntity> referralLinkClaimsTable)
         {
