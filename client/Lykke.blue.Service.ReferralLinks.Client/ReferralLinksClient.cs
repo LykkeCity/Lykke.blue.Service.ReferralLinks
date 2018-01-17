@@ -1,4 +1,5 @@
-﻿using Common.Log;
+﻿using Common;
+using Common.Log;
 using Lykke.blue.Service.ReferralLinks.Client.AutorestClient;
 using Lykke.blue.Service.ReferralLinks.Client.AutorestClient.Models;
 using Lykke.blue.Service.ReferralLinks.Client.Models;
@@ -17,6 +18,7 @@ namespace Lykke.blue.Service.ReferralLinks.Client
     {
         private readonly ILog _log;
         private ILykkeBlueServiceReferralLinks _service;
+        public const string ServiceName = "Lykke.Blue.Service.ReferralLinks";
 
         public ReferralLinksClient(string serviceUrl, ILog log)
         {
@@ -53,12 +55,11 @@ namespace Lykke.blue.Service.ReferralLinks.Client
                     return new OkObjectResult(ClaimReferralLinkDto.Create((ClaimRefLinkResponse) result));
                 }
 
-                throw new Exception(httpResponse.Body.ToString());
+                return await LogAndReturnInternalServerError(request, nameof(ClaimGiftCoinsAsync), new Exception(result.ToString()));
             }
             catch (Exception ex)
             {
-                await _log.WriteErrorAsync(nameof(ReferralLinksClient), nameof(ClaimGiftCoinsAsync), ex);
-                throw;
+                return await LogAndReturnInternalServerError(request, nameof(ClaimGiftCoinsAsync), ex);
             }
         }
 
@@ -80,16 +81,12 @@ namespace Lykke.blue.Service.ReferralLinks.Client
                     return new OkObjectResult(ClaimReferralLinkDto.Create((ClaimRefLinkResponse) result));
                 }
 
-                throw new Exception(httpResponse.Body.ToString());
+                return await LogAndReturnInternalServerError(request, nameof(ClaimInvitationLinkAsync), new Exception(result.ToString()));
             }
             catch (Exception ex)
             {
-                await _log.WriteErrorAsync(nameof(ReferralLinksClient), nameof(ClaimInvitationLinkAsync), ex);
-                throw;
+                return await LogAndReturnInternalServerError(request, nameof(ClaimInvitationLinkAsync), ex);
             }
-
-
-
         }
 
         public async Task<ReferralLinkDto> GetReferralLinkAsync(string id)
@@ -102,8 +99,8 @@ namespace Lykke.blue.Service.ReferralLinks.Client
             }
             catch (Exception ex)
             {
-                await _log.WriteErrorAsync(nameof(ReferralLinksClient), nameof(GetReferralLinkAsync), ex);
-                throw;
+                await _log.WriteErrorAsync(ServiceName, nameof(GetReferralLinkAsync), id, ex);
+                return null;
             }
         }
 
@@ -117,8 +114,8 @@ namespace Lykke.blue.Service.ReferralLinks.Client
             }
             catch (Exception ex)
             {
-                await _log.WriteErrorAsync(nameof(ReferralLinksClient), nameof(GetReferralLinkAsync), ex);
-                throw;
+                await _log.WriteErrorAsync(ServiceName, nameof(GetReferralLinkByUrlAsync), url, ex);
+                return null;
             }
         }
 
@@ -132,9 +129,15 @@ namespace Lykke.blue.Service.ReferralLinks.Client
             }
             catch (Exception ex)
             {
-                await _log.WriteErrorAsync(nameof(ReferralLinksClient), nameof(GetReferralLinksStatisticsBySenderIdAsync), ex);
-                throw;
+                await _log.WriteErrorAsync(ServiceName, nameof(GetReferralLinksStatisticsBySenderIdAsync), senderClientId, ex);
+                return null;
             }
+        }
+
+        private async Task<Microsoft.AspNetCore.Mvc.ObjectResult> LogAndReturnInternalServerError<T>(T request, string context, Exception exception)
+        {
+            await _log.WriteErrorAsync(ServiceName, context, request.ToJson(), exception);
+            return new Microsoft.AspNetCore.Mvc.ObjectResult(HttpStatusCode.InternalServerError);
         }
 
 
@@ -156,12 +159,11 @@ namespace Lykke.blue.Service.ReferralLinks.Client
                     return new CreatedResult(httpResponse.Response.Headers.Location, RequestReferralLinkDto.Create((RequestRefLinkResponse) result));
                 }
 
-                throw new Exception(httpResponse.Body.ToString());
+                return await LogAndReturnInternalServerError(request, nameof(RequestGiftCoinsReferralLinkAsync), new Exception(result.ToString()));
             }
             catch (Exception ex)
             {
-                await _log.WriteErrorAsync(nameof(ReferralLinksClient), nameof(RequestGiftCoinsReferralLinkAsync), ex);
-                throw;
+                return await LogAndReturnInternalServerError(request, nameof(RequestGiftCoinsReferralLinkAsync), ex);
             }
         }
 
@@ -181,12 +183,13 @@ namespace Lykke.blue.Service.ReferralLinks.Client
                     return new CreatedResult(httpResponse.Response.Headers.Location, "");
                 }
 
-                throw new Exception(httpResponse.Body.ToString());
+                var result = httpResponse.Body;
+
+                return await LogAndReturnInternalServerError(request, nameof(GroupGenerateGiftCoinLinksAsync), new Exception(result.ToString()));
             }
             catch (Exception ex)
             {
-                await _log.WriteErrorAsync(nameof(ReferralLinksClient), nameof(GroupGenerateGiftCoinLinksAsync), ex);
-                throw;
+                return await LogAndReturnInternalServerError(request, nameof(GroupGenerateGiftCoinLinksAsync), ex);
             }
         }
 
@@ -213,12 +216,11 @@ namespace Lykke.blue.Service.ReferralLinks.Client
                     return new OkObjectResult(RequestReferralLinkDto.Create(result as RequestRefLinkResponse));
                 }
 
-                throw new Exception();
+                return await LogAndReturnInternalServerError(request, nameof(RequestInvitationReferralLinkAsync), new Exception(result.ToString()));
             }
             catch (Exception ex)
             {
-                await _log.WriteErrorAsync(nameof(ReferralLinksClient), nameof(RequestInvitationReferralLinkAsync), ex);
-                throw;
+                return await LogAndReturnInternalServerError(request, nameof(RequestInvitationReferralLinkAsync), ex);
             }
         }
 
@@ -232,8 +234,8 @@ namespace Lykke.blue.Service.ReferralLinks.Client
             }
             catch (Exception ex)
             {
-                await _log.WriteErrorAsync(nameof(ReferralLinksClient), nameof(GetGiftCoinReferralLinksAsync), ex);
-                throw;
+                await _log.WriteErrorAsync(ServiceName, nameof(GetGiftCoinReferralLinksAsync), senderClientId, ex);
+                return null;
             }
         }
     }
