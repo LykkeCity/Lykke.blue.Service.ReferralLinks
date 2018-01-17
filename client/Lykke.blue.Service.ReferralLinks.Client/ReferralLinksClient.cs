@@ -55,7 +55,7 @@ namespace Lykke.blue.Service.ReferralLinks.Client
                     return new OkObjectResult(ClaimReferralLinkDto.Create((ClaimRefLinkResponse) result));
                 }
 
-                return await LogAndReturnInternalServerError(request, nameof(ClaimGiftCoinsAsync), new Exception(result.ToString()));
+                return await LogAndReturnInternalServerError(request, nameof(ClaimGiftCoinsAsync), result);
             }
             catch (Exception ex)
             {
@@ -81,7 +81,7 @@ namespace Lykke.blue.Service.ReferralLinks.Client
                     return new OkObjectResult(ClaimReferralLinkDto.Create((ClaimRefLinkResponse) result));
                 }
 
-                return await LogAndReturnInternalServerError(request, nameof(ClaimInvitationLinkAsync), new Exception(result.ToString()));
+                return await LogAndReturnInternalServerError(request, nameof(ClaimInvitationLinkAsync), result);
             }
             catch (Exception ex)
             {
@@ -137,9 +137,15 @@ namespace Lykke.blue.Service.ReferralLinks.Client
         private async Task<Microsoft.AspNetCore.Mvc.ObjectResult> LogAndReturnInternalServerError<T>(T request, string context, Exception exception)
         {
             await _log.WriteErrorAsync(ServiceName, context, request.ToJson(), exception);
-            return new Microsoft.AspNetCore.Mvc.ObjectResult(HttpStatusCode.InternalServerError);
+            return new Microsoft.AspNetCore.Mvc.ObjectResult("Technical error") { StatusCode = (int)HttpStatusCode.InternalServerError };
         }
 
+        private async Task<Microsoft.AspNetCore.Mvc.ObjectResult> LogAndReturnInternalServerError<T>(T request, string context, object response)
+        {
+            var errorMessage = (response as ErrorResponseModel)?.ErrorMessage ?? response.ToString();
+            await _log.WriteErrorAsync(ServiceName, context, request.ToJson(), new Exception(errorMessage));
+            return new Microsoft.AspNetCore.Mvc.ObjectResult("Technical error"){ StatusCode = (int) HttpStatusCode.InternalServerError };
+        }
 
         public async Task<Microsoft.AspNetCore.Mvc.ObjectResult> RequestGiftCoinsReferralLinkAsync(GiftCoinRequest request)
         {
@@ -159,7 +165,7 @@ namespace Lykke.blue.Service.ReferralLinks.Client
                     return new CreatedResult(httpResponse.Response.Headers.Location, RequestReferralLinkDto.Create((RequestRefLinkResponse) result));
                 }
 
-                return await LogAndReturnInternalServerError(request, nameof(RequestGiftCoinsReferralLinkAsync), new Exception(result.ToString()));
+                return await LogAndReturnInternalServerError(request, nameof(RequestGiftCoinsReferralLinkAsync), result);
             }
             catch (Exception ex)
             {
@@ -185,7 +191,7 @@ namespace Lykke.blue.Service.ReferralLinks.Client
 
                 var result = httpResponse.Body;
 
-                return await LogAndReturnInternalServerError(request, nameof(GroupGenerateGiftCoinLinksAsync), new Exception(result.ToString()));
+                return await LogAndReturnInternalServerError(request, nameof(GroupGenerateGiftCoinLinksAsync), result);
             }
             catch (Exception ex)
             {
@@ -216,7 +222,8 @@ namespace Lykke.blue.Service.ReferralLinks.Client
                     return new OkObjectResult(RequestReferralLinkDto.Create(result as RequestRefLinkResponse));
                 }
 
-                return await LogAndReturnInternalServerError(request, nameof(RequestInvitationReferralLinkAsync), new Exception(result.ToString()));
+                
+                return await LogAndReturnInternalServerError(request, nameof(RequestInvitationReferralLinkAsync), result);
             }
             catch (Exception ex)
             {
