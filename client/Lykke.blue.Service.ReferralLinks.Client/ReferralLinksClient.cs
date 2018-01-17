@@ -21,7 +21,10 @@ namespace Lykke.blue.Service.ReferralLinks.Client
         public ReferralLinksClient(string serviceUrl, ILog log)
         {
             _log = log;
-            _service = new LykkeBlueServiceReferralLinks(new Uri(serviceUrl));
+            var srv = new LykkeBlueServiceReferralLinks(new Uri(serviceUrl));
+            srv.SetRetryPolicy(null); //prevent autorest client from retrying Internal server error 500 responses
+            _service = srv;
+
         }
 
         public void Dispose()
