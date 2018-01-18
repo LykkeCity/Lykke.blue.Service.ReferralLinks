@@ -13,7 +13,7 @@ namespace Lykke.blue.Service.ReferralLinks.Client.Models
             return new ClaimReferralLinkDto
             {
                 TransactionRewardRecipient = model.TransactionRewardRecipient,
-                TransactionRewardSender = model.TransactionRewardRecipient,
+                TransactionRewardSender = model.TransactionRewardSender,
                 SenderTransactionId = model.SenderTransactionId
             };
         }
