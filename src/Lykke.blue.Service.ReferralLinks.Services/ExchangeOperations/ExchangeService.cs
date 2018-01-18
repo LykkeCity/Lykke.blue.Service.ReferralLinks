@@ -1,14 +1,14 @@
-﻿using Common;
+﻿// ReSharper disable ClassNeverInstantiated.Global
+using Common;
 using Common.Log;
+using Lykke.blue.Service.ReferralLinks.Core;
 using Lykke.blue.Service.ReferralLinks.Core.Domain.ExchangeOperations;
-using Lykke.blue.Service.ReferralLinks.Core.Domain.Offchain;
 using Lykke.blue.Service.ReferralLinks.Core.Domain.ReferralLink;
 using Lykke.blue.Service.ReferralLinks.Core.Settings;
 using Lykke.MatchingEngine.Connector.Abstractions.Models;
 using Lykke.Service.ExchangeOperations.Client;
 using Lykke.Service.ExchangeOperations.Client.AutorestClient.Models;
 using System;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace Lykke.blue.Service.ReferralLinks.Services.ExchangeOperations
@@ -31,62 +31,60 @@ namespace Lykke.blue.Service.ReferralLinks.Services.ExchangeOperations
             _settings = settings;
         }
 
-        public async Task<ExchangeOperationResult> TransferRewardCoins(IReferralLink refLink, bool isNewClient, string recipientClientId, string executionContext)
+        public async Task<ExchangeOperationResult> TransferToSharedWallet(string sourceClientId, double amount, string assetId, string executionContext = null)
         {
-            var request = new { RefLinkId = refLink.Id, RefLinkUrl = refLink.Url, RecipientClientId = recipientClientId, IsNewClient = isNewClient };
+            return await ExchangeTransfer(sourceClientId, _settings.ReferralLinksService.LykkeReferralClientId, amount, assetId, executionContext);
+        }
+
+        public async Task<ExchangeOperationResult> TransferFromSharedWallet(IReferralLink refLink, string recipientClientId, string executionContext = null)
+        {
+            return await ExchangeTransfer(_settings.ReferralLinksService.LykkeReferralClientId, recipientClientId, refLink.Amount, refLink.Asset, executionContext);
+        }
+
+        private async Task<ExchangeOperationResult> ExchangeTransfer(string sourceClientId, string destClientId, double amount, string assetId, string executionContext = null)
+        {
+            var request = new { SourceClientId = sourceClientId, DestClientId = destClientId, Amount = amount, AssetId = assetId };
 
             try
             {
-                var asset = (await _assets.GetDictionaryAsync()).Values.FirstOrDefault(v => v.Id == refLink.Asset);
-                if (asset == null)
-                {
-                    var message = $"Asset with symbol id {refLink.Asset} not found";
-                    await _log.WriteErrorAsync(executionContext, nameof(TransferRewardCoins), (new { Error = message }).ToJson(), new Exception(message));
-                    return new ExchangeOperationResult { Message = message };
-                }
-
                 var result = await _exchangeOperationsService.TransferAsync(
-                         recipientClientId,
-                         _settings.ReferralLinksService.LykkeReferralClientId,
-                         refLink.Amount,
-                         asset.Id,
-                         TransferType.Common.ToString()
-                         );
+                    destClientId,
+                    sourceClientId,
+                    amount,
+                    assetId,
+                    TransferType.Common.ToString()
+                );
 
                 if (!result.IsOk())
                 {
-                    string error;
-                    if(result.Code.HasValue && Enum.IsDefined(typeof(MeStatusCodes), result.Code.Value))
+                    string error = $"Transfer failed: {result.Message}, TxId: {result.TransactionId}";
+                    if (result.Code.HasValue && Enum.IsDefined(typeof(MeStatusCodes), result.Code.Value))
                     {
-                        error = $"Error: {((MeStatusCodes)result.Code.Value).ToString()}, Message: {result.Message}, TransactionId: {result.TransactionId}";                        
+                        error = error + $", ErrorCode: {((MeStatusCodes)result.Code.Value).ToString()}";
                     }
                     else
                     {
-                        error = $"Error: {result.Code}, Message: {result.Message}, TransactionId: {result.TransactionId}";
+                        error = error + $", ErrorCode: {result.Code}";
                     }
-                    await _log.WriteErrorAsync(executionContext, nameof(TransferRewardCoins), error, new Exception(error));
+
+                    await _log.WriteErrorAsync(Constants.ComponentName, executionContext, request.ToJson(), new Exception(error));
                     result.Message = error;
-                    return result;
                 }
-                await _log.WriteInfoAsync(executionContext, request.ToJson(), $"Transfer successfull: {result.ToJson()}");
+                else
+                {
+                    await _log.WriteInfoAsync(executionContext, request.ToJson(), $"Transfer successfull: {result.ToJson()}");
+                }
                 return result;
-            }
-            catch (OffchainException ex)
-            {
-                await _log.WriteErrorAsync(executionContext, request.ToJson(), ex);
-                throw new Exception($"ExchangeOperationsService error: Code={ex.OffchainExceptionCode}.OffchainException={ex.OffchainExceptionMessage}.Message={ex.Message}.{ex.InnerException?.Message}");
-            }
-            catch (ApplicationException ex)
-            {
-                await _log.WriteErrorAsync(executionContext, request.ToJson(), ex);
-                throw new Exception($"ExchangeOperationsService error: {ex.Message}{ex.InnerException?.Message}");
+
+
             }
             catch (Exception ex)
             {
-                await _log.WriteErrorAsync(executionContext, request.ToJson(), ex);
                 throw new Exception($"ExchangeOperationsService error: {ex.Message}{ex.InnerException?.Message}");
             }
         }
+
+       
 
     }
 }

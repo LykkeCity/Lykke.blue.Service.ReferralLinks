@@ -1,6 +1,5 @@
 ﻿using AutoMapper;
 using AzureStorage;
-using Lykke.blue.Service.ReferralLinks.AzureRepositories.DTOs;
 using Lykke.blue.Service.ReferralLinks.Core.Domain.ReferralLink;
 using System;
 using System.Collections.Generic;
@@ -34,7 +33,7 @@ namespace Lykke.blue.Service.ReferralLinks.AzureRepositories.ReferralLink
 
             await _referralLinkClaimsTable.InsertAsync(entity);
 
-            return Mapper.Map<ReferralLinkClaimsDto>(entity);
+            return entity;
         }
 
         public async Task<IEnumerable<IReferralLinkClaim>> GetClaimsForRefLinks(IEnumerable<string> refLinkIds)
@@ -52,7 +51,7 @@ namespace Lykke.blue.Service.ReferralLinks.AzureRepositories.ReferralLink
                 return x;
             });
 
-            return Mapper.Map<ReferralLinkClaimsDto>(result);
+            return result;
         }
     }
 }

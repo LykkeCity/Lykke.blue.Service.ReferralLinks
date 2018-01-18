@@ -1,4 +1,5 @@
-﻿using Lykke.blue.Service.ReferralLinks.Core.Services;
+﻿// ReSharper disable ClassNeverInstantiated.Global
+using Lykke.blue.Service.ReferralLinks.Core.Services;
 using Lykke.blue.Service.ReferralLinks.Core.Settings;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;

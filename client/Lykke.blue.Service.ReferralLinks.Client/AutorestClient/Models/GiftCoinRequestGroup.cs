@@ -4,28 +4,34 @@
 
 namespace Lykke.blue.Service.ReferralLinks.Client.AutorestClient.Models
 {
+    using Lykke.blue;
+    using Lykke.blue.Service;
+    using Lykke.blue.Service.ReferralLinks;
+    using Lykke.blue.Service.ReferralLinks.Client;
+    using Lykke.blue.Service.ReferralLinks.Client.AutorestClient;
     using Newtonsoft.Json;
+    using System.Collections;
+    using System.Collections.Generic;
+    using System.Linq;
 
-    public partial class GiftCoinsReferralLinkRequest
+    public partial class GiftCoinRequestGroup
     {
         /// <summary>
-        /// Initializes a new instance of the GiftCoinsReferralLinkRequest
-        /// class.
+        /// Initializes a new instance of the GiftCoinRequestGroup class.
         /// </summary>
-        public GiftCoinsReferralLinkRequest()
+        public GiftCoinRequestGroup()
         {
           CustomInit();
         }
 
         /// <summary>
-        /// Initializes a new instance of the GiftCoinsReferralLinkRequest
-        /// class.
+        /// Initializes a new instance of the GiftCoinRequestGroup class.
         /// </summary>
-        public GiftCoinsReferralLinkRequest(double amount, string senderClientId = default(string), string asset = default(string))
+        public GiftCoinRequestGroup(IList<double?> amountForEachLink = default(IList<double?>), string senderClientId = default(string), string asset = default(string))
         {
+            AmountForEachLink = amountForEachLink;
             SenderClientId = senderClientId;
             Asset = asset;
-            Amount = amount;
             CustomInit();
         }
 
@@ -33,6 +39,11 @@ namespace Lykke.blue.Service.ReferralLinks.Client.AutorestClient.Models
         /// An initialization method that performs custom operations like setting defaults
         /// </summary>
         partial void CustomInit();
+
+        /// <summary>
+        /// </summary>
+        [JsonProperty(PropertyName = "AmountForEachLink")]
+        public IList<double?> AmountForEachLink { get; set; }
 
         /// <summary>
         /// </summary>
@@ -44,20 +55,5 @@ namespace Lykke.blue.Service.ReferralLinks.Client.AutorestClient.Models
         [JsonProperty(PropertyName = "Asset")]
         public string Asset { get; set; }
 
-        /// <summary>
-        /// </summary>
-        [JsonProperty(PropertyName = "Amount")]
-        public double Amount { get; set; }
-
-        /// <summary>
-        /// Validate the object.
-        /// </summary>
-        /// <exception cref="Microsoft.Rest.ValidationException">
-        /// Thrown if validation fails
-        /// </exception>
-        public virtual void Validate()
-        {
-            //Nothing to validate
-        }
     }
 }

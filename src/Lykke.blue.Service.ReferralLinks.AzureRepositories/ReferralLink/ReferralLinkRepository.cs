@@ -1,10 +1,10 @@
 ﻿using AutoMapper;
 using AzureStorage;
-using Lykke.blue.Service.ReferralLinks.AzureRepositories.DTOs;
 using Lykke.blue.Service.ReferralLinks.Core.Domain.ReferralLink;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Lykke.blue.Service.ReferralLinks.AzureRepositories.ReferralLink
@@ -12,13 +12,15 @@ namespace Lykke.blue.Service.ReferralLinks.AzureRepositories.ReferralLink
     public class ReferralLinkRepository : IReferralLinkRepository
     {
         private readonly INoSQLTableStorage<ReferralLinkEntity> _referralLinkTable;
+        private static readonly SemaphoreSlim SemaphoreSlim = new SemaphoreSlim(1, 1);
+        private const string ReflinkPartitionKey = "ReferallLink";
 
         public ReferralLinkRepository(INoSQLTableStorage<ReferralLinkEntity> referralLinkTable)
         {
             _referralLinkTable = referralLinkTable;
         }
 
-        private static string GetPartitionKey() => "ReferallLink";
+        private static string GetPartitionKey() => ReflinkPartitionKey;
 
         private static string GetRowKey(string id) => id;
 
@@ -31,14 +33,30 @@ namespace Lykke.blue.Service.ReferralLinks.AzureRepositories.ReferralLink
 
             await _referralLinkTable.InsertAsync(entity);
 
-            return Mapper.Map<ReferralLinkDto>(entity);
-        }        
+            return entity;
+        }
+
+        public async Task CreateGroup(IEnumerable<IReferralLink> referralLinks)
+        {
+            var many = new List<ReferralLinkEntity>();
+
+            foreach (var refLink in referralLinks)
+            {
+                var entity = Mapper.Map<ReferralLinkEntity>(refLink);
+
+                entity.PartitionKey = GetPartitionKey();
+                entity.RowKey = GetRowKey(refLink.Id);
+
+                many.Add(entity);
+            }
+            
+            await _referralLinkTable.InsertAsync(many);
+        }
 
         public async Task<IReferralLink> Get(string id)
         {
             var entity = await _referralLinkTable.GetDataAsync(GetPartitionKey(), GetRowKey(id));
-
-            return Mapper.Map<ReferralLinkDto>(entity);
+            return entity;
         }
 
         public async Task<IReferralLink> GetReferalLinkByUrl(string url)
@@ -47,7 +65,7 @@ namespace Lykke.blue.Service.ReferralLinks.AzureRepositories.ReferralLink
                 GetPartitionKey(),
                 x => x.Url == url);
 
-            return Mapper.Map<ReferralLinkDto>(entities.FirstOrDefault());
+            return entities.FirstOrDefault();
         }
 
         public async Task<IEnumerable<IReferralLink>> GetReferralLinksBySenderId(string senderClientId)
@@ -58,22 +76,12 @@ namespace Lykke.blue.Service.ReferralLinks.AzureRepositories.ReferralLink
             );            
         }
 
-        public bool IsInvitationLinkForSenderAlreadyCreated(string senderClientId)
-        {
-            var numberOfCreatedReflinks = _referralLinkTable.GetDataAsync(
-                GetPartitionKey(),
-                x => x.SenderClientId == senderClientId && x.Type == ReferralLinkType.Invitation.ToString()
-            ).Result;
-
-            return numberOfCreatedReflinks.Any();
-        }
-
         public async Task<IEnumerable<IReferralLink>> GetExpiredGiftCoinLinks()
         {
             return await _referralLinkTable.GetDataAsync(
                 GetPartitionKey(), 
                 x => x.Type == ReferralLinkType.GiftCoins.ToString() && x.ExpirationDate < DateTime.UtcNow && x.State == ReferralLinkState.Created.ToString()
-            );           
+                );           
         }
 
         public async Task<IReferralLink> UpdateAsync(IReferralLink referralLink)
@@ -85,8 +93,46 @@ namespace Lykke.blue.Service.ReferralLinks.AzureRepositories.ReferralLink
                 return x;
             });
 
-            return Mapper.Map<ReferralLinkDto>(result);
+            return result;
         }
 
+        /// <summary>
+        /// Ensures reflink state is not stale at the moment of update. Throws excpetion if it does.
+        /// Relies on ETag checks, performed by both AzureTableStorage db and MergeAsync itself. 
+        /// MergeAsync will return null if recored is stale, due to the Etag check in the injected lamda.
+        /// Code is also thread safe. 
+        /// </summary>
+        /// <param name="referralLink"></param>
+        /// <returns></returns>
+        public async Task<IReferralLink> UpdateAsyncWithETagCheck(IReferralLink referralLink)
+        {
+            await SemaphoreSlim.WaitAsync();
+            try
+            {
+                var result = await _referralLinkTable.MergeAsync(GetPartitionKey(), GetRowKey(referralLink.Id), currentDbRecord =>
+                {
+                    if (referralLink.ETag != currentDbRecord.ETag)
+                    {
+                        return null;
+                    }
+
+                    Mapper.Map(referralLink, currentDbRecord);
+
+                    return currentDbRecord;
+                });
+
+                if (result == null)
+                {
+                    throw new Exception("Stale record, you may try again.");
+                }
+
+                return result;
+            }
+            finally
+            {
+                SemaphoreSlim.Release();
+            }
+            
+        }
     }
 }

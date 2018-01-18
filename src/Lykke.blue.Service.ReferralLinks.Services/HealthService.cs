@@ -1,6 +1,7 @@
-﻿using System.Collections.Generic;
+﻿// ReSharper disable ClassNeverInstantiated.Global
 using Lykke.blue.Service.ReferralLinks.Core.Domain.Health;
 using Lykke.blue.Service.ReferralLinks.Core.Services;
+using System.Collections.Generic;
 
 namespace Lykke.blue.Service.ReferralLinks.Services
 {

@@ -1,5 +1,4 @@
 ﻿using AutoMapper;
-using Lykke.blue.Service.ReferralLinks.AzureRepositories.DTOs;
 using Lykke.blue.Service.ReferralLinks.AzureRepositories.ReferralLink;
 using Lykke.blue.Service.ReferralLinks.Core.Domain.ReferralLink;
 using Microsoft.WindowsAzure.Storage.Table;
@@ -10,6 +9,8 @@ namespace Lykke.blue.Service.ReferralLinks.AzureRepositories
     {
         public AutoMapperProfile()
         {
+            // To entities
+
             CreateMap<IReferralLink, ReferralLinkEntity>();
             CreateMap<IReferralLinkClaim, ReferralLinkClaimEntity>();
 
@@ -23,9 +24,6 @@ namespace Lykke.blue.Service.ReferralLinks.AzureRepositories
                     cfg.ForMember("Timestamp", opt => opt.Ignore());
                 }
             });
-
-            CreateMap<ReferralLinkEntity, ReferralLinkDto>();
-            CreateMap<ReferralLinkClaimEntity, ReferralLinkClaimsDto>();
         }
     }
 }

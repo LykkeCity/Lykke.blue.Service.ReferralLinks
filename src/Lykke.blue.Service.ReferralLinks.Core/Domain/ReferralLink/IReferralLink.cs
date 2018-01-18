@@ -10,8 +10,11 @@ namespace Lykke.blue.Service.ReferralLinks.Core.Domain.ReferralLink
         DateTime? ExpirationDate { get; }        
         string Asset { get; set; }
         double Amount { get; set; }
-        string SenderOffchainTransferId { get; set; }
+        string SenderTransactionId { get; set; }
         string Type { get; }
         string State { get; set; }
+        string ETag { get;}
+        DateTime? CreatedAt { get; set; }
+        int ClaimsCount { get; set; }
     }
 }

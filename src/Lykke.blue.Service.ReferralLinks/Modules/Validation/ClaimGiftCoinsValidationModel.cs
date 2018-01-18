@@ -1,5 +1,6 @@
 ﻿using FluentValidation;
 using Lykke.blue.Service.ReferralLinks.Models;
+// ReSharper disable UnusedMember.Global
 
 namespace Lykke.blue.Service.ReferralLinks.Modules.Validation
 {

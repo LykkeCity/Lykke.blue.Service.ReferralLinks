@@ -14,11 +14,6 @@ namespace Lykke.blue.Service.ReferralLinks.Core.Domain.Health
             _list = new List<HealthIssue>();
         }
 
-        public void Add(string type, string value)
-        {
-            _list.Add(HealthIssue.Create(type, value));
-        }
-
         public IEnumerator<HealthIssue> GetEnumerator()
         {
             return _list.GetEnumerator();

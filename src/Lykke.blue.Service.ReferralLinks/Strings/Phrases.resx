@@ -123,6 +123,9 @@
   <data name="InvalidAsset" xml:space="preserve">
     <value>Provided asset is not valid.</value>
   </data>
+  <data name="InvalidBalanceAmount" xml:space="preserve">
+    <value>You do not have enough balance in wallet.</value>
+  </data>
   <data name="InvalidClaimingClientId" xml:space="preserve">
     <value>Provided claiming client id is not valid.</value>
   </data>
@@ -137,9 +140,6 @@
   </data>
   <data name="InvalidState" xml:space="preserve">
     <value>Provided state is not valid.</value>
-  </data>
-  <data name="InvalidTreesAmount" xml:space="preserve">
-    <value>You do not have enough TREEs in wallet.</value>
   </data>
   <data name="ReferralLinksLimitReached" xml:space="preserve">
     <value>Maximum number of referral links reached.</value>

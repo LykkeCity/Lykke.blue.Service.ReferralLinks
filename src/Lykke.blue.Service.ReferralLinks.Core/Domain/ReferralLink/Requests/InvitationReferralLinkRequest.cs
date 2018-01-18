@@ -1,4 +1,5 @@
 ﻿using System.Runtime.Serialization;
+// ReSharper disable UnusedMember.Global
 
 namespace Lykke.blue.Service.ReferralLinks.Core.Domain.ReferralLink.Requests
 {

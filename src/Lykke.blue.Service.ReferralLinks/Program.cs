@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Hosting;
+﻿// ReSharper disable ClassNeverInstantiated.Global
+using Microsoft.AspNetCore.Hosting;
 using System;
 using System.IO;
 using System.Threading.Tasks;
@@ -7,6 +8,7 @@ namespace Lykke.blue.Service.ReferralLinks
 {
     public class Program
     {
+        // ReSharper disable once UnusedParameter.Global
         public static void Main(string[] args)
         {
             Console.WriteLine($"ReferralLinks version {Microsoft.Extensions.PlatformAbstractions.PlatformServices.Default.Application.ApplicationVersion}");

@@ -1,11 +1,15 @@
-﻿using Autofac;
+﻿// ReSharper disable ClassNeverInstantiated.Global
+using Autofac;
 using Autofac.Extensions.DependencyInjection;
 using AutoMapper;
 using AzureStorage.Tables;
 using Common.Log;
+using Lykke.blue.Service.ReferralLinks.Core;
 using Lykke.blue.Service.ReferralLinks.Core.Services;
 using Lykke.blue.Service.ReferralLinks.Core.Settings;
+using Lykke.blue.Service.ReferralLinks.Models;
 using Lykke.blue.Service.ReferralLinks.Modules;
+using Lykke.Common.ApiLibrary.Middleware;
 using Lykke.Common.ApiLibrary.Swagger;
 using Lykke.Logs;
 using Lykke.SettingsReader;
@@ -62,7 +66,7 @@ namespace Lykke.blue.Service.ReferralLinks
 
                 services.AddSwaggerGen(options =>
                 {
-                    options.DefaultLykkeConfiguration("v1", "Lykke Referral Links Service");
+                    options.DefaultLykkeConfiguration("v1", Constants.ComponentName);
                 });
 
                 var builder = new ContainerBuilder();
@@ -82,6 +86,7 @@ namespace Lykke.blue.Service.ReferralLinks
             }
         }
 
+        // ReSharper disable once UnusedMember.Global
         public void Configure(IApplicationBuilder app, IHostingEnvironment env, IApplicationLifetime appLifetime)
         {
             try
@@ -90,6 +95,12 @@ namespace Lykke.blue.Service.ReferralLinks
                 {
                     app.UseDeveloperExceptionPage();
                 }
+
+                app.UseLykkeMiddleware(Constants.ComponentName, ex =>
+                {
+                    Log.WriteErrorAsync(Constants.ComponentName, "Unexpected error", ex);
+                    return ErrorResponseModel.Create("Technical problem");
+                });
 
                 app.UseMvc();
                 app.UseSwagger();
@@ -100,7 +111,7 @@ namespace Lykke.blue.Service.ReferralLinks
                 });
                 app.UseStaticFiles();
 
-                appLifetime.ApplicationStarted.Register(() => StartApplication(app).Wait());
+                appLifetime.ApplicationStarted.Register(() => StartApplication().Wait());
                 appLifetime.ApplicationStopped.Register(() => CleanUp().Wait());
             }
             catch (Exception ex)
@@ -110,15 +121,14 @@ namespace Lykke.blue.Service.ReferralLinks
             }
         }
 
-        private async Task StartApplication(IApplicationBuilder app)
+        private async Task StartApplication()
         {
             try
             {
                 await Log.WriteMonitorAsync("Referral Links Service", "Startup", "Service Started");
 
-                //Start timer that will periodically check for expired referral links - reserved for version 2
-                //var appSettings = Configuration.LoadSettings<AppSettings>();
-                //ConfigureExpiredLinksTimer(app, appSettings);
+                var appSettings = Configuration.LoadSettings<AppSettings>();
+                ConfigureExpiredLinksTimer(appSettings);
             }
             catch (Exception ex)
             {
@@ -127,12 +137,7 @@ namespace Lykke.blue.Service.ReferralLinks
             }
         }
 
-        /// <summary>
-        ///  Reserved for version 2
-        /// </summary>
-        /// <param name="app"></param>
-        /// <param name="settings"></param>
-        private void ConfigureExpiredLinksTimer(IApplicationBuilder app, IReloadingManager<AppSettings> settings)
+        private void ConfigureExpiredLinksTimer(IReloadingManager<AppSettings> settings)
         {
             _timer = new Timer(settings.CurrentValue.ReferralLinksService.GiftCoinsLinkSettings.ExpiredLinksCheckTimeoutMinutes * 60000);
             _timer.Elapsed += ReturnCoinsToSenderForExpiredGiftCoins;

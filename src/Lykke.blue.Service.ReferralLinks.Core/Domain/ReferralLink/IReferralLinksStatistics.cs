@@ -1,4 +1,6 @@
-﻿namespace Lykke.blue.Service.ReferralLinks.Core.Domain.ReferralLink
+﻿// ReSharper disable UnusedMemberInSuper.Global
+// ReSharper disable UnusedMember.Global
+namespace Lykke.blue.Service.ReferralLinks.Core.Domain.ReferralLink
 {
     public interface IReferralLinksStatistics
     {

@@ -19,5 +19,9 @@ namespace Lykke.blue.Service.ReferralLinks.Responses
         public double Amount { get; set; }
 
         public string Type { get; set; }
+
+        public DateTime? CreatedAt { get; set; }
+
+        public int ClaimsCount { get; set; }
     }
 }

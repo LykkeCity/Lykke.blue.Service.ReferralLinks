@@ -2,6 +2,8 @@
 // Changes may cause incorrect behavior and will be lost if the code is
 // regenerated.
 
+// ReSharper disable MemberCanBePrivate.Global
+// ReSharper disable InconsistentNaming
 namespace Lykke.blue.Service.ReferralLinks.Client.AutorestClient
 {
     using System.Threading;

@@ -4,28 +4,32 @@
 
 namespace Lykke.blue.Service.ReferralLinks.Client.AutorestClient.Models
 {
+    using Lykke.blue;
+    using Lykke.blue.Service;
+    using Lykke.blue.Service.ReferralLinks;
+    using Lykke.blue.Service.ReferralLinks.Client;
+    using Lykke.blue.Service.ReferralLinks.Client.AutorestClient;
     using Newtonsoft.Json;
+    using System.Linq;
 
-    public partial class GiftCoinsReferralLinkRequest
+    public partial class GiftCoinRequest
     {
         /// <summary>
-        /// Initializes a new instance of the GiftCoinsReferralLinkRequest
-        /// class.
+        /// Initializes a new instance of the GiftCoinRequest class.
         /// </summary>
-        public GiftCoinsReferralLinkRequest()
+        public GiftCoinRequest()
         {
           CustomInit();
         }
 
         /// <summary>
-        /// Initializes a new instance of the GiftCoinsReferralLinkRequest
-        /// class.
+        /// Initializes a new instance of the GiftCoinRequest class.
         /// </summary>
-        public GiftCoinsReferralLinkRequest(double amount, string senderClientId = default(string), string asset = default(string))
+        public GiftCoinRequest(double amount, string senderClientId = default(string), string asset = default(string))
         {
+            Amount = amount;
             SenderClientId = senderClientId;
             Asset = asset;
-            Amount = amount;
             CustomInit();
         }
 
@@ -36,6 +40,11 @@ namespace Lykke.blue.Service.ReferralLinks.Client.AutorestClient.Models
 
         /// <summary>
         /// </summary>
+        [JsonProperty(PropertyName = "Amount")]
+        public double Amount { get; set; }
+
+        /// <summary>
+        /// </summary>
         [JsonProperty(PropertyName = "SenderClientId")]
         public string SenderClientId { get; set; }
 
@@ -43,11 +52,6 @@ namespace Lykke.blue.Service.ReferralLinks.Client.AutorestClient.Models
         /// </summary>
         [JsonProperty(PropertyName = "Asset")]
         public string Asset { get; set; }
-
-        /// <summary>
-        /// </summary>
-        [JsonProperty(PropertyName = "Amount")]
-        public double Amount { get; set; }
 
         /// <summary>
         /// Validate the object.
