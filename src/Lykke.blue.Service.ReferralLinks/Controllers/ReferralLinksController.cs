@@ -198,6 +198,15 @@ namespace Lykke.blue.Service.ReferralLinks.Controllers
 
                 if (groupTransferResult.IsOk())
                 {
+                    foreach (var refLink in refLinkGroup)
+                    {
+                        refLink.SenderTransactionId = groupTransferResult.TransactionId;
+                        refLink.State = ReferralLinkState.SentToLykkeSharedWallet.ToString();
+                        await _referralLinksService.UpdateAsync(refLink);
+                    }
+
+                    await LogInfo(request, ControllerContext, $"{refLinkGroup.Count} gift coin ref link(s) have been created. Total reward amount is {refLinkGroup.Sum(r => r.Amount)} from the specified asset. Transferred to Lykke shared wallet with SenderTransactionId {groupTransferResult.TransactionId} ");
+
                     return Created($"api/referralLinks/giftCoins/sender/{request.SenderClientId}", "");
                 }
 

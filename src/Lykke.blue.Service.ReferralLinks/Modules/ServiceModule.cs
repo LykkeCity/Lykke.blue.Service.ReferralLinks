@@ -110,7 +110,7 @@ namespace Lykke.blue.Service.ReferralLinks.Modules
                 var ctx = c.Resolve<IComponentContext>();
                 return new CachedDataDictionary<string, Lykke.Service.Assets.Client.Models.Asset>(
                     async () =>
-                        (await ctx.Resolve<IAssetsService>().AssetGetAllWithHttpMessagesAsync()).Body.ToDictionary(itm => itm.Id));   
+                        (await ctx.Resolve<IAssetsService>().AssetGetAllWithHttpMessagesAsync(true)).Body.ToDictionary(itm => itm.Id));   
             }).SingleInstance();
 
             builder.Register(x =>
