@@ -80,7 +80,7 @@ namespace Lykke.blue.Service.ReferralLinks.AzureRepositories.ReferralLink
         {
             return await _referralLinkTable.GetDataAsync(
                 GetPartitionKey(), 
-                x => x.Type == ReferralLinkType.GiftCoins.ToString() && x.ExpirationDate < DateTime.UtcNow && x.State == ReferralLinkState.Created.ToString()
+                x => x.Type == ReferralLinkType.GiftCoins.ToString() && x.ExpirationDate < DateTime.UtcNow && x.State == ReferralLinkState.SentToLykkeSharedWallet.ToString()
                 );           
         }
 
