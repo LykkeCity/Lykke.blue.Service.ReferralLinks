@@ -10,7 +10,7 @@ namespace Lykke.blue.Service.ReferralLinks.Core.Settings
         public ReferralLinksSettings ReferralLinksService { get; set; }
         public AssetsServiceClient AssetsServiceClient { get; set; }
         public BalancesServiceClient BalancesServiceClient { get; set; }
-        public KycServiceSettings KycServiceClient { get; set; }
+        public KycServiceClientSettings KycServiceClient { get; set; }
         public ExchangeOperationsClient ExchangeOperationsServiceClient { get; set; }
         public SlackNotificationsSettings SlackNotifications { get; set; }
     }
